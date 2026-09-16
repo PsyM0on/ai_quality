@@ -217,7 +217,7 @@ if (isset($_GET['latest'])) {
         <div class="card-value skeleton" id="temp">00.0</div>
         <div class="card-unit">°C Ambient</div>
         <div id="heat-index-wrap" style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--border); font-size: 11px; font-family: var(--mono); display: flex; justify-content: space-between; align-items: center;">
-            <span style="color: var(--muted); font-size: 10px;">Status:</span>
+            <span style="color: var(--muted); font-size: 10px;">Heat Index:</span>
             <span id="heat_index_val" style="font-weight: 600; color: var(--accent); font-size: 11px;">—</span>
         </div>
     </div>
@@ -544,11 +544,11 @@ if (isset($_GET['latest'])) {
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=15" defer></script>
+<script src="assets/js/dashboard.js?v=16" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=10')
+        navigator.serviceWorker.register('./sw.js?update=11')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update(); // Force update check
