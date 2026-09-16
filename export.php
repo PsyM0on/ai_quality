@@ -77,7 +77,7 @@ if ($do_export) {
             temp,
             hum,
             mq135,
-            pm25,
+            pm10,
             aqi
         FROM telemetry_raw
         WHERE `timestamp` BETWEEN ? AND ?
@@ -163,7 +163,7 @@ if ($do_export) {
             $row['temp'],
             $row['hum'],
             $row['mq135'],
-            $row['pm25'],
+            $row['pm10'],
             $row['aqi'],
             $closest_pred['predicted_aqi'] ?? '—',
             $closest_pred['category'] ?? '—',
