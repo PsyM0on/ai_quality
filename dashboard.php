@@ -163,6 +163,7 @@ if (isset($_GET['latest'])) {
 <!-- ═══════════════════════════════════════════════════ -->
 <header class="topbar">
     <div class="topbar-left">
+        <div class="logo-dot"></div>
         <h1>Eco Quality</h1>
         <span class="status-badge" id="status-badge">CONNECTING…</span>
     </div>
@@ -171,7 +172,7 @@ if (isset($_GET['latest'])) {
             <span id="theme-icon">☾</span>
             <span id="theme-label">Dark</span>
         </button>
-        <button onclick="openMenu()" style="padding: 6px 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text); border-radius: 6px; cursor: pointer; font-size: 16px; line-height: 1;" title="Menu">
+        <button class="theme-btn" onclick="openMenu()" title="Menu" style="font-size: 16px; line-height: 1;">
             ☰
         </button>
     </div>
@@ -544,11 +545,11 @@ if (isset($_GET['latest'])) {
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=17" defer></script>
+<script src="assets/js/dashboard.js?v=18" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=12')
+        navigator.serviceWorker.register('./sw.js?update=13')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update(); // Force update check
