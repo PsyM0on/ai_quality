@@ -8,22 +8,14 @@ require_once("includes/db.php");
 $maint_file = "maintenance.txt";
 $maint_mode = file_exists($maint_file) ? trim(file_get_contents($maint_file)) : "OFF";
 
-if (isset($_GET['fetch'])) {
-    header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-    header("Pragma: no-cache");
-    header("Content-Type: application/json");
-    $result = $conn->query("SELECT * FROM telemetry_raw ORDER BY id DESC LIMIT 20");
-    $data = [];
-    while ($row = $result->fetch_assoc()) $data[] = $row;
-    echo json_encode($data);
-    exit;
-}
-
 if (isset($_GET['latest'])) {
     header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
     header("Pragma: no-cache");
     header("Content-Type: application/json");
-    $result = $conn->query("SELECT *, UNIX_TIMESTAMP(timestamp) as ts_unix, UNIX_TIMESTAMP() as now_unix FROM telemetry_raw ORDER BY id DESC LIMIT 1");
+    $result = $conn->query("SELECT *, UNIX_TIMESTAMP(timestamp) as ts_unix, UNIX_TIMESTAMP() as now_unix FROM telemetry_raw ORDER BY id DESC LIMIT 20");
+    $data = [];
+    while ($row = $result->fetch_assoc()) $data[] = $row;
+    $latest = count($data) > 0 ? $data[0] : null;
     $latest = $result ? $result->fetch_assoc() : null;
     
     if ($latest) {
@@ -128,7 +120,7 @@ if (isset($_GET['latest'])) {
         $latest['uesi_advice'] = $uesi_advice;
     }
     
-    echo json_encode($latest);
+    echo json_encode(['latest' => $latest, 'history' => $data]);
     exit;
 }
 ?>
@@ -544,14 +536,14 @@ if (isset($_GET['latest'])) {
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=13" defer></script>
+<script src="assets/js/dashboard.js?v=14" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=8')
+        navigator.serviceWorker.register('./sw.js?update=9')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
-                reg.update(); // Force update check
+                
             })
             .catch(err => console.log('SW Failed', err));
     });

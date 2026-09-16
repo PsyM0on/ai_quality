@@ -1,4 +1,4 @@
-const CACHE_NAME = 'airquality-cache-v13';
+const CACHE_NAME = 'airquality-cache-v14';
 const ASSETS_TO_CACHE = [
   './dashboard.php',
   './assets/css/dashboard.css',
@@ -34,7 +34,7 @@ self.addEventListener('activate', (event) => {
 
 // Network-first strategy for live sensor data
 self.addEventListener('fetch', (event) => {
-  if (event.request.url.includes('latest=1') || event.request.url.includes('api.php')) {
+  if (event.request.url.includes('latest=1') || event.request.url.includes('/api/')) {
     event.respondWith(fetch(event.request));
     return;
   }
