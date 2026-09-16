@@ -165,7 +165,6 @@ if (isset($_GET['latest'])) {
     <div class="topbar-left">
         <div class="logo-dot"></div>
         <h1>Eco Quality</h1>
-        <span class="status-badge" id="status-badge">CONNECTING…</span>
     </div>
     <div class="topbar-right" style="display: flex; gap: 10px; align-items: center;">
         <button class="theme-btn" onclick="toggleTheme()" style="padding: 6px 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text); border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 11px;">
@@ -545,11 +544,11 @@ if (isset($_GET['latest'])) {
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=18" defer></script>
+<script src="assets/js/dashboard.js?v=19" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=13')
+        navigator.serviceWorker.register('./sw.js?update=14')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update(); // Force update check

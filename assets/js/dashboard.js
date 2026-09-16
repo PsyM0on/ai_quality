@@ -194,28 +194,19 @@ function live() {
                 if(el) el.classList.remove('skeleton');
             });
 
-            const badge = document.getElementById('status-badge');
+            const dot = document.querySelector('.logo-dot');
             if (!d) {
-                badge.textContent = 'NO DATA';
-                badge.style.background = 'rgba(245,166,35,.1)';
-                badge.style.color = 'var(--warn)';
-                badge.style.borderColor = 'rgba(245,166,35,.2)';
+                if (dot) { dot.style.background = '#F5A623'; dot.style.boxShadow = '0 0 8px #F5A623'; }
                 blankValues('No Data');
                 return;
             }
 
             const diff = d.now_unix - d.ts_unix;
             if (diff > 60) {
-                badge.innerHTML = '🔴 SENSOR OFFLINE';
-                badge.style.background = 'rgba(240, 82, 82, 0.1)';
-                badge.style.color = '#F05252';
-                badge.style.borderColor = 'rgba(240, 82, 82, 0.2)';
+                if (dot) { dot.style.background = '#F05252'; dot.style.boxShadow = '0 0 8px #F05252'; }
                 blankValues('Offline');
             } else {
-                badge.innerHTML = '● SENSOR ONLINE';
-                badge.style.background = 'rgba(0, 207, 168, 0.1)';
-                badge.style.color = '#00CFA8';
-                badge.style.borderColor = 'rgba(0, 207, 168, 0.2)';
+                if (dot) { dot.style.background = 'var(--accent)'; dot.style.boxShadow = '0 0 8px var(--accent)'; }
 
                 document.getElementById('temp').textContent = d.temp  ?? '—';
                 document.getElementById('hum').textContent  = d.hum   ?? '—';
@@ -261,7 +252,8 @@ function live() {
         })
         .catch(() => {
             isLiveFetching = false;
-            document.getElementById('status-badge').textContent = 'ERR';
+            const dot = document.querySelector('.logo-dot');
+            if (dot) { dot.style.background = '#F05252'; dot.style.boxShadow = '0 0 8px #F05252'; }
             blankValues('Error');
         });
 }

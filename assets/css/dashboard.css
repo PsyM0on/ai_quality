@@ -1,4 +1,4 @@
-/* â”€â”€ RESET â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+﻿/* â”€â”€ RESET â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 /* â”€â”€ DESIGN TOKENS (DARK â€“ DEFAULT) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
@@ -693,20 +693,19 @@ body.light .acc-rating.needs-improvement { background:rgba(185,40,40,.16);  colo
     50%       { opacity: 0.85; transform: scale(1.01); }
 }
 
-/* ── DASHBOARD FOOTER ────────────────────────────────── */
+/* â”€â”€ DASHBOARD FOOTER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .dashboard-footer {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     flex-wrap: wrap;
     gap: 16px;
-    padding: 28px 4px 16px;
-    margin-top: 24px;
+    padding: 24px 4px 12px;
+    margin-top: 16px;
     border-top: 1px solid var(--border);
-    font-size: 10.5px;
+    font-size: 11px;
     font-family: var(--mono);
     color: var(--muted);
-    opacity: 0.8;
 }
 .footer-left { flex: 1; min-width: 200px; line-height: 1.5; }
 .footer-right {
