@@ -104,9 +104,12 @@ def main():
                 
         model_age_minutes = 0
         if is_fresh:
-            rf = joblib.load(RF_MODEL_PATH)
-            scaler = joblib.load(RF_SCALER_PATH)
-            model_age_minutes = int((time.time() - os.path.getmtime(RF_MODEL_PATH)) / 60)
+            try:
+                rf = joblib.load(RF_MODEL_PATH)
+                scaler = joblib.load(RF_SCALER_PATH)
+                model_age_minutes = int((time.time() - os.path.getmtime(RF_MODEL_PATH)) / 60)
+            except Exception:
+                is_fresh = False
             
             # For comparison metrics only
             X_scaled = scaler.transform(X)

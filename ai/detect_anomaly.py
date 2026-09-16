@@ -78,9 +78,21 @@ if train_model:
     joblib.dump(scaler, SCALER_PATH)
     model_age_minutes = 0
 else:
-    model = joblib.load(MODEL_PATH)
-    scaler = joblib.load(SCALER_PATH)
-    X_scaled = scaler.transform(X)
+    try:
+        model = joblib.load(MODEL_PATH)
+        scaler = joblib.load(SCALER_PATH)
+        X_scaled = scaler.transform(X)
+    except Exception:
+        scaler = StandardScaler()
+        X_scaled = scaler.fit_transform(X)
+        model = IsolationForest(contamination=0.05, n_estimators=100, random_state=42)
+        model.fit(X_scaled)
+        try:
+            joblib.dump(model, MODEL_PATH)
+            joblib.dump(scaler, SCALER_PATH)
+        except Exception:
+            pass
+        model_age_minutes = 0
 
 # The most recent row is at index 0 because of DESC order
 latest_scaled = X_scaled[0].reshape(1, -1)
