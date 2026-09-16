@@ -544,11 +544,11 @@ if (isset($_GET['latest'])) {
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=13" defer></script>
+<script src="assets/js/dashboard.js?v=15" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=8')
+        navigator.serviceWorker.register('./sw.js?update=10')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update(); // Force update check

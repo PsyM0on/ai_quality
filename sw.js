@@ -1,4 +1,4 @@
-const CACHE_NAME = 'airquality-cache-v13';
+const CACHE_NAME = 'airquality-cache-v15';
 const ASSETS_TO_CACHE = [
   './dashboard.php',
   './assets/css/dashboard.css',
