@@ -71,7 +71,7 @@ if train_model:
     X_scaled = scaler.fit_transform(X)
     
     # Train Isolation Forest
-    model = IsolationForest(contamination=0.05, n_estimators=100, random_state=42)
+    model = IsolationForest(contamination=0.05, n_estimators=100, random_state=42, n_jobs=-1)
     model.fit(X_scaled)
     
     joblib.dump(model, MODEL_PATH)
@@ -85,7 +85,7 @@ else:
     except Exception:
         scaler = StandardScaler()
         X_scaled = scaler.fit_transform(X)
-        model = IsolationForest(contamination=0.05, n_estimators=100, random_state=42)
+        model = IsolationForest(contamination=0.05, n_estimators=100, random_state=42, n_jobs=-1)
         model.fit(X_scaled)
         try:
             joblib.dump(model, MODEL_PATH)

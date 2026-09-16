@@ -36,6 +36,7 @@ MODELS_DIR = os.path.join(os.path.dirname(__file__), 'models')
 RF_MODEL_PATH = os.path.join(MODELS_DIR, 'rf_model.joblib')
 RF_SCALER_PATH = os.path.join(MODELS_DIR, 'rf_scaler.joblib')
 RF_FEATURES_PATH = os.path.join(MODELS_DIR, 'rf_features.joblib')
+RF_METRICS_PATH = os.path.join(MODELS_DIR, 'rf_metrics.json')
 
 def main():
     try:
@@ -103,53 +104,71 @@ def main():
                 is_fresh = True
                 
         model_age_minutes = 0
+        metrics_loaded = False
+        
         if is_fresh:
             try:
                 rf = joblib.load(RF_MODEL_PATH)
                 scaler = joblib.load(RF_SCALER_PATH)
                 model_age_minutes = int((time.time() - os.path.getmtime(RF_MODEL_PATH)) / 60)
+                
+                # 🚀 FAST INFERENCE: Load cached comparison metrics without re-predicting full dataset
+                if os.path.exists(RF_METRICS_PATH):
+                    with open(RF_METRICS_PATH, 'r', encoding='utf-8') as mf:
+                        m_data = json.load(mf)
+                        mae_rf = m_data.get('mae_rf', 0.0)
+                        mae_lr = m_data.get('mae_lr', 0.0)
+                        r2 = m_data.get('r2', 0.0)
+                        improvement_pct = m_data.get('improvement_pct', 0.0)
+                        feat_imp = m_data.get('feat_imp', [])
+                        metrics_loaded = True
             except Exception:
                 is_fresh = False
-            
-            # For comparison metrics only
-            X_scaled = scaler.transform(X)
-            y_pred_rf = rf.predict(X_scaled)
-            mae_rf = mean_absolute_error(y, y_pred_rf)
-            r2 = r2_score(y, y_pred_rf)
-            
-            lr = LinearRegression()
-            lr.fit(X_scaled, y)
-            mae_lr = mean_absolute_error(y, lr.predict(X_scaled))
-        else:
+
+        if not is_fresh or not metrics_loaded:
             scaler = StandardScaler()
             X_scaled = scaler.fit_transform(X)
             
-            rf = RandomForestRegressor(n_estimators=100, random_state=42)
+            # 🚀 MULTI-CORE PARALLELISM: n_jobs=-1 utilizes all CPU cores for training
+            rf = RandomForestRegressor(n_estimators=100, random_state=42, n_jobs=-1)
             rf.fit(X_scaled, y)
             
-            lr = LinearRegression()
+            lr = LinearRegression(n_jobs=-1)
             lr.fit(X_scaled, y)
             
             y_pred_rf = rf.predict(X_scaled)
-            mae_rf = mean_absolute_error(y, y_pred_rf)
-            r2 = r2_score(y, y_pred_rf)
-            mae_lr = mean_absolute_error(y, lr.predict(X_scaled))
+            mae_rf = float(mean_absolute_error(y, y_pred_rf))
+            r2 = float(r2_score(y, y_pred_rf))
+            mae_lr = float(mean_absolute_error(y, lr.predict(X_scaled)))
             
-            # Save models
+            improvement_pct = 0.0
+            if mae_lr > 0:
+                improvement_pct = round(((mae_lr - mae_rf) / mae_lr) * 100, 1)
+
+            # Feature Importance
+            importances = rf.feature_importances_
+            feat_imp = [{"feature": f, "importance": float(imp)} for f, imp in zip(features, importances)]
+            feat_imp.sort(key=lambda x: x['importance'], reverse=True)
+
+            # Save models and metadata cache
             os.makedirs(MODELS_DIR, exist_ok=True)
-            joblib.dump(rf, RF_MODEL_PATH)
-            joblib.dump(scaler, RF_SCALER_PATH)
-            joblib.dump(features, RF_FEATURES_PATH)
+            try:
+                joblib.dump(rf, RF_MODEL_PATH)
+                joblib.dump(scaler, RF_SCALER_PATH)
+                joblib.dump(features, RF_FEATURES_PATH)
+                
+                with open(RF_METRICS_PATH, 'w', encoding='utf-8') as mf:
+                    json.dump({
+                        'mae_rf': mae_rf,
+                        'mae_lr': mae_lr,
+                        'r2': r2,
+                        'improvement_pct': improvement_pct,
+                        'feat_imp': feat_imp,
+                        'training_samples': len(train_df)
+                    }, mf)
+            except Exception:
+                pass
             model_age_minutes = 0
-
-        # Feature Importance
-        importances = rf.feature_importances_
-        feat_imp = [{"feature": f, "importance": float(imp)} for f, imp in zip(features, importances)]
-        feat_imp.sort(key=lambda x: x['importance'], reverse=True)
-
-        improvement_pct = 0.0
-        if mae_lr > 0:
-            improvement_pct = ((mae_lr - mae_rf) / mae_lr) * 100
 
         # Prediction output for current data
         latest_row = df.iloc[-1].copy()
