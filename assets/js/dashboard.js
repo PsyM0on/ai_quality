@@ -709,13 +709,13 @@ function openMqInfo() {
     const modalBody = document.getElementById('glass-modal-body');
     if (!modal || !modalBody) return;
     modalBody.innerHTML = `
-        <div class="tip-title">MQ-135 Gas Sensor: Scope & Academic Justification</div>
+        <div class="tip-title">MQ-135 Gas Sensor</div>
         <div style="font-size: 11px; line-height: 1.5; color: var(--text); margin-bottom: 12px;">
             <strong>Sensor Principle:</strong> SnO₂ Metal-Oxide Semiconductor (MOS).<br>
             <strong>Detectable Spectrum:</strong> Volatile Organic Compounds (VOCs), NH₃, Benzene, Alcohol, Smoke, and CO₂.
         </div>
         <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 10px; font-size: 11px; color: var(--muted); line-height: 1.5;">
-            <strong style="color:var(--accent);">Scientific Methodology (Academic Defense Rigor):</strong><br>
+            <strong style="color:var(--accent);">Note:</strong><br>
             Low-cost MOS sensors exhibit broad cross-sensitivity across multiple gases and are subject to ambient temperature and humidity drift. Per international environmental IoT standards, this system represents readings as a <strong>Relative Gas Contamination Index (ADC displacement from zero-point baseline)</strong> rather than isolated gas PPM. This avoids uncalibrated chemical claims while effectively capturing sudden urban emission plumes.
         </div>
     `;
