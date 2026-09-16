@@ -588,7 +588,6 @@ function loadAnomaly() {
             const reason = document.getElementById('source_reasoning');
             
             if (badge) badge.textContent = `${sa.confidence}% Match`;
-            if (icon) icon.textContent = sa.icon || '🤖';
             if (title) title.textContent = sa.source;
             if (reason) reason.textContent = sa.reasoning;
         }
