@@ -184,10 +184,7 @@ function live() {
 
     fetch('dashboard.php?latest=1&_t=' + Date.now(), { cache: 'no-store' })
         .then(r => r.json())
-        .then(res => {
-            let d = res ? res.latest : null;
-            let history = res ? res.history : [];
-            if (history.length > 0) updateChart(history);
+        .then(d => {
             isLiveFetching = false;
             
             // Remove Skeleton Loaders once data arrives (only happens on first load)
@@ -280,16 +277,97 @@ function blankValues(statusMsg = 'Offline') {
 }
 
 /* ── SENSOR HISTORY ───────────────────────────────────── */
+let isLoadFetching = false;
+function load() {
+    if (isLoadFetching) return;
+    isLoadFetching = true;
+    fetch('dashboard.php?fetch=1&_t=' + Date.now(), { cache: 'no-store' })
+        .then(r => r.json())
+        .then(data => {
+            isLoadFetching = false;
+            document.getElementById('row-count').textContent = data.length + ' rows';
+
+            const labels = data.map(x => '#' + x.id).reverse();
+            const pm   = data.map(x => parseFloat(x.pm10)).reverse();
+            const aqi  = data.map(x => parseFloat(x.aqi)).reverse();
+            const temp = data.map(x => parseFloat(x.temp)).reverse();
+            const hum  = data.map(x => parseFloat(x.hum)).reverse();
+            const mq   = data.map(x => parseFloat(x.mq135)).reverse();
+
+            if (!chart) {
+                const t    = isLight ? LIGHT_CHART : DARK_CHART;
+                const mono = "'JetBrains Mono', monospace";
+                
+                // Create beautiful gradient fills for the chart
+                const ctx = document.getElementById('chart').getContext('2d');
+                let gradPM = ctx.createLinearGradient(0, 0, 0, 280);
+                gradPM.addColorStop(0, 'rgba(0,207,168,0.3)');
+                gradPM.addColorStop(1, 'rgba(0,207,168,0.0)');
+                
+                let gradAQI = ctx.createLinearGradient(0, 0, 0, 280);
+                gradAQI.addColorStop(0, 'rgba(245,166,35,0.3)');
+                gradAQI.addColorStop(1, 'rgba(245,166,35,0.0)');
+
+                chart = new Chart(ctx, {
+                    type: 'line',
+                    data: { labels, datasets: [
+                        { label:'PM10',    data:pm,   yAxisID:'y',  borderColor:'#00CFA8', backgroundColor:gradPM,  borderWidth:2, pointRadius:0, pointHoverRadius:4, tension:0.4, fill:true  },
+                        { label:'AQI',     data:aqi,  yAxisID:'y',  borderColor:'#F5A623', backgroundColor:gradAQI, borderWidth:2, pointRadius:0, pointHoverRadius:4, tension:0.4, fill:true  },
+                        { label:'Temp °C', data:temp, yAxisID:'y',  borderColor:'#F05252', backgroundColor:'transparent',  borderWidth:2, borderDash:[5,5], pointRadius:0, pointHoverRadius:4, tension:0.4, fill:false },
+                        { label:'Hum %',   data:hum,  yAxisID:'y1', borderColor:'#4C9EEB', backgroundColor:'transparent', borderWidth:2, borderDash:[5,5], pointRadius:0, pointHoverRadius:4, tension:0.4, fill:false },
+                        { label:'MQ135',   data:mq,   yAxisID:'y1', borderColor:'#8A93B8', backgroundColor:'transparent', borderWidth:1.5, pointRadius:0, pointHoverRadius:4, tension:0.4, fill:false },
+                    ]},
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode:'index', intersect:false },
+                    layout: { padding: { bottom: 0 } },
+                    plugins: {
+                        legend: { labels:{ color:t.legend, font:{family:mono,size:11}, boxWidth:12, boxHeight:2, usePointStyle:false } },
+                        tooltip: { 
+                            backgroundColor:t.bg, borderColor:t.border, borderWidth:1,
+                            titleColor:t.tick, bodyColor:t.body,
+                            titleFont:{family:mono,size:11}, bodyFont:{family:mono,size:12},
+                            padding: 10, cornerRadius: 8
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false }, // Cleaner modern look without vertical lines
+                            ticks: { color:t.tick, font:{family:mono,size:10}, maxTicksLimit:6 }
+                        },
+                        y: {
+                            position: 'left',
+                            grid: { color:t.grid, drawBorder: false },
+                            ticks: { color:t.tick, font:{family:mono,size:10} },
+                            title: { display:false } // Removed for cleaner look, legend is enough
+                        },
+                        y1: {
+                            position: 'right',
+                            grid: { display: false },
+                            ticks: { color:'#8A93B8', font:{family:mono,size:10} },
+                            title: { display:false }
+                        }
+                    }
+                }
+            });
+        } else {
+            chart.data.labels = labels;
+            [pm, aqi, temp, hum, mq].forEach((d, i) => chart.data.datasets[i].data = d);
+            chart.update();
+        }
+    }).catch(err => {
+        isLoadFetching = false;
+        console.error('load() failed:', err);
+    });
+}
 
 /* ── DAILY SUMMARY ────────────────────────────────────── */
 function loadDaily() {
     const targets = ['day_today_aqi', 'day_today_cat', 'day_yest_aqi', 'day_yest_cat'];
     targets.forEach(id => { let el = document.getElementById(id); if(el) el.classList.add('skeleton'); });
 
-    fetch('api/daily.php?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(res => {
-            let d = res ? res.latest : null;
-            let history = res ? res.history : [];
-            if (history.length > 0) updateChart(history);
+    fetch('api/daily.php?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(d => {
         targets.forEach(id => { let el = document.getElementById(id); if(el) el.classList.remove('skeleton'); });
         
         if (d.error) {
@@ -339,10 +417,7 @@ function loadTrend() {
 
     fetch('api/rf_predict.php?t=' + Date.now(), { cache: 'no-store' }) // 🚀 prevent caching
         .then(response => response.json())
-        .then(res => {
-            let d = res ? res.latest : null;
-            let history = res ? res.history : [];
-            if (history.length > 0) updateChart(history);
+        .then(d => {
             
             // Remove Skeletons
             targets.forEach(id => { let el = document.getElementById(id); if(el) el.classList.remove('skeleton'); });
@@ -461,10 +536,7 @@ function loadTrend() {
 
 /* ── ANOMALY DETECTION (ISOLATION FOREST) ──────────────── */
 function loadAnomaly() {
-    fetch('api/anomaly.php?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(res => {
-            let d = res ? res.latest : null;
-            let history = res ? res.history : [];
-            if (history.length > 0) updateChart(history);
+    fetch('api/anomaly.php?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(d => {
         if (d.error) {
             document.getElementById('anomaly-label').textContent = 'Error';
             document.getElementById('anomaly-msg').textContent   = d.error;
@@ -531,7 +603,7 @@ function loadAnomaly() {
 setInterval(live, 2000);
 
 // Historical chart & table: every 5 seconds
-
+setInterval(load, 5000);
 
 // AI Trend Forecast: every 5 minutes
 setInterval(loadTrend, 300000);
@@ -544,7 +616,7 @@ setInterval(loadDaily, 300000);
 
 /* ── INITIAL LOAD ─────────────────────────────────────── */
 live();
-
+load();
 
 // Stagger AI loads to prevent 100% CPU spikes on page refresh
 setTimeout(loadTrend, 2000);
@@ -729,65 +801,4 @@ function openHeatIndexInfo() {
     `;
     modal.classList.add('show');
     document.body.style.overflow = 'hidden';
-}
-
-
-function updateChart(data) {
-    document.getElementById('row-count').textContent = data.length + ' rows';
-
-    const labels = data.map(x => '#' + x.id).reverse();
-    const pm   = data.map(x => parseFloat(x.pm10)).reverse();
-    const aqi  = data.map(x => parseFloat(x.aqi)).reverse();
-    const temp = data.map(x => parseFloat(x.temp)).reverse();
-    const hum  = data.map(x => parseFloat(x.hum)).reverse();
-    const mq   = data.map(x => parseFloat(x.mq135)).reverse();
-
-    if (!chart) {
-        const t    = isLight ? LIGHT_CHART : DARK_CHART;
-        const mono = "'JetBrains Mono', monospace";
-        
-        const ctx = document.getElementById('chart').getContext('2d');
-        let gradPM = ctx.createLinearGradient(0, 0, 0, 280);
-        gradPM.addColorStop(0, 'rgba(0,207,168,0.3)');
-        gradPM.addColorStop(1, 'rgba(0,207,168,0.0)');
-        
-        let gradAQI = ctx.createLinearGradient(0, 0, 0, 280);
-        gradAQI.addColorStop(0, 'rgba(245,166,35,0.3)');
-        gradAQI.addColorStop(1, 'rgba(245,166,35,0.0)');
-
-        chart = new Chart(ctx, {
-            type: 'line',
-            data: { labels, datasets: [
-                { label:'PM10',    data:pm,   yAxisID:'y',  borderColor:'#00CFA8', backgroundColor:gradPM,  borderWidth:2, pointRadius:0, pointHoverRadius:4, tension:0.4, fill:true  },
-                { label:'AQI',     data:aqi,  yAxisID:'y',  borderColor:'#F5A623', backgroundColor:gradAQI, borderWidth:2, pointRadius:0, pointHoverRadius:4, tension:0.4, fill:true  },
-                { label:'Temp °C', data:temp, yAxisID:'y',  borderColor:'#F05252', backgroundColor:'transparent',  borderWidth:2, borderDash:[5,5], pointRadius:0, pointHoverRadius:4, tension:0.4, fill:false },
-                { label:'Hum %',   data:hum,  yAxisID:'y1', borderColor:'#4C9EEB', backgroundColor:'transparent', borderWidth:2, borderDash:[5,5], pointRadius:0, pointHoverRadius:4, tension:0.4, fill:false },
-                { label:'MQ135',   data:mq,   yAxisID:'y1', borderColor:'#8A93B8', backgroundColor:'transparent', borderWidth:1.5, pointRadius:0, pointHoverRadius:4, tension:0.4, fill:false },
-            ]},
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: { mode:'index', intersect:false },
-                layout: { padding: { bottom: 0 } },
-                plugins: {
-                    legend: { labels:{ color:t.legend, font:{family:mono,size:11}, boxWidth:12, boxHeight:2, usePointStyle:false } },
-                    tooltip: { 
-                        backgroundColor:t.bg, borderColor:t.border, borderWidth:1,
-                        titleColor:t.tick, bodyColor:t.body,
-                        titleFont:{family:mono,size:11}, bodyFont:{family:mono,size:12},
-                        padding: 10, cornerRadius: 8
-                    }
-                },
-                scales: {
-                    x: { grid: { display: false }, ticks: { color:t.tick, font:{family:mono,size:10}, maxTicksLimit:6 } },
-                    y: { position: 'left', grid: { color:t.grid, drawBorder: false }, ticks: { color:t.tick, font:{family:mono,size:10} }, title: { display:false } },
-                    y1: { position: 'right', grid: { display: false }, ticks: { color:'#8A93B8', font:{family:mono,size:10} }, title: { display:false } }
-                }
-            }
-        });
-    } else {
-        chart.data.labels = labels;
-        [pm, aqi, temp, hum, mq].forEach((d, i) => chart.data.datasets[i].data = d);
-        chart.update();
-    }
 }
