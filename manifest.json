@@ -1,0 +1,38 @@
+{
+  "id": "/ai_quality/",
+  "name": "Eco Quality",
+  "short_name": "Eco Quality",
+  "description": "AI-Driven Environmental Monitoring System for Urban Air Quality Assessment and Prediction",
+  "start_url": "./dashboard.php",
+  "scope": "/ai_quality/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "background_color": "#07090F",
+  "theme_color": "#00CFA8",
+  "orientation": "portrait",
+  "lang": "en-US",
+  "dir": "ltr",
+  "categories": ["environment", "health", "weather"],
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Eco Quality Dashboard Mobile View"
+    }
+  ]
+}

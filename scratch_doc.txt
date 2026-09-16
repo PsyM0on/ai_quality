@@ -1,0 +1,838 @@
+AI-Driven Environmental Monitoring System for Urban Air Quality Assessment and Prediction
+An Undergraduate Capstone Project
+Presented to Faculty of the 
+DEPARTMENT OF INFORMATION TECHNOLOGY
+College of Computer Studies
+Eastern Samar State University
+Borongan City, Eastern Samar
+In Partial Fulfillment of the Course Requirement for the Degree
+BACHELOR OF SCIENCE IN INFORMATION TECHNOLOGY
+BAJAR, MICHAEL JOHN A.
+GUDES, RICHARD O.
+ORENDAIN, GEORGIA N.
+PAGAYANAN, AIRA GRACE E.
+RANDO, JOHNWRALPH SAIMON P.
+BSIT 3rd Year, Section B
+CHAPTER I
+INTRODUCTION
+Background and Rationale
+Air pollution remains one of the most pressing environmental and public health challenges worldwide, contributing to approximately seven million premature deaths annually according to the World Health Organization (WHO, 2024). The proliferation of urbanization and motorized transportation has intensified the concentration of harmful pollutants including particulate matter (PM2.5 and PM10), carbon monoxide (CO), nitrogen dioxide (NO₂), and sulfur dioxide (SO₂) in the ambient air of cities across both developed and developing nations. In Southeast Asia, the Philippines has been particularly affected, with air pollution identified as one of the largest environmental health hazards in the country, especially in its urban areas (Caya et al., 2018). Republic Act 8749, otherwise known as the Philippine Clean Air Act of 1999, was enacted to establish a comprehensive air quality management framework, yet implementation and monitoring remain limited in many localities outside Metro Manila and major metropolitan centers (Martillano et al., 2019).
+At the national level, the Department of Environment and Natural Resources (DENR) operates a limited number of ambient air quality monitoring stations, most of which are concentrated in highly urbanized cities. Martillano et al. (2019) noted that "limited means to conduct air quality monitoring that could determine if the standards in the National Ambient Air Quality Guidelines are met have been implemented" in many Philippine municipalities. This deficiency is even more pronounced in smaller cities and provinces such as Eastern Samar. Borongan City, the capital of Eastern Samar, is a rapidly growing urban center classified as a first-class component city. With increasing vehicular traffic, construction activities, household emissions, and the periodic burning of agricultural and solid waste, the city faces emerging air quality concerns. However, to date, no systematic air quality monitoring system or published environmental air quality assessment has been conducted specifically within Borongan City.
+Recent advances in the Internet of Things (IoT) and artificial intelligence (AI) have opened new possibilities for cost-effective and scalable environmental monitoring. IoT-based air quality monitoring platforms utilizing low-cost sensors such as the MQ-7, PMS5003, and DHT11 have been successfully deployed in Philippine urban settings to measure parameters including PM2.5, CO₂, temperature, and humidity in real time (Heyasa & Galarpe, 2017; Alarcon et al., 2020; Culpa et al., 2021). Meanwhile, machine learning techniques including Random Forest, Support Vector Machine (SVM), and deep neural networks have demonstrated high accuracy in predicting Air Quality Index (AQI) levels based on historical pollutant and meteorological data (Macatangay & Hernandez, 2020; Abdelmalek et al., 2025). The integration of IoT sensing with AI-driven prediction offers a promising framework for providing real-time air quality assessment and early warning capabilities, even in resource-limited settings.
+Despite these technological advancements, no AI-driven environmental monitoring system for urban air quality has been developed or deployed in Borongan City. This gap underscores the need for a localized, technology-driven approach to air quality monitoring that can generate baseline data, inform policy decisions, and protect public health within the city. This capstone project therefore proposes the design and development of an AI-Driven Environmental Monitoring System for Urban Air Quality Assessment and Prediction, specifically tailored for Borongan City, Eastern Samar, Philippines.
+General Objective
+To design and develop an AI-driven environmental monitoring system for real-time urban air quality assessment and pollution prediction in Sabang South, Borongan City, Eastern Samar, Philippines.
+Specific Objectives
+To develop an IoT-based air quality monitoring network capable of collecting real-time environmental data in Borongan City.
+To integrate artificial intelligence models for analyzing air quality trends and predicting pollution levels.
+To validate the system's accuracy by comparing collected data with established standards such as the Environmental Protection Agency (EPA) and the Philippine National Ambient Air Quality Guideline Values under Republic Act 8749.
+To develop a web-based and mobile application capable of presenting real-time air quality information, GIS-based monitoring locations, and pollution prediction results.
+To evaluate the developed system using the ISO/IEC 25010 Software Product Quality Model and IBM Post-Study System Usability Questionnaire (PSSUQ).
+Scope and Limitation
+The scope of this capstone project encompasses the design, development, and implementation of an AI-Driven Environmental Monitoring System for Urban Air Quality Assessment and Prediction in Sabang South Borongan City, Eastern Samar. The proposed system is designed to monitor the air quality of selected areas using IoT devices, Artificial Intelligence (AI), LoRa communication, a web-based dashboard, and a mobile application. aligned with the National Ambient Air Quality Guidelines established under Republic Act 8749, otherwise known as the Philippine Clean Air Act of 1999 (Martillano et al., 2019).
+The system includes the following features:
+A system that monitors air quality parameters such as PMS5003 (PM1.0, PM2.5, and PM10), Carbon Monoxide (CO), Carbon Dioxide (CO₂), temperature, and humidity. 
+A system that collects and sends real-time air quality data using two Arduino boards, two ESP32 microcontrollers, and LoRa communication. 
+A system that analyzes the collected data using Artificial Intelligence (AI) to predict air quality conditions. 
+A system that provides real-time monitoring through a web-based dashboard and mobile application.
+The study is limited to Sabang South, Borongan City, Eastern Samar, Philippines, where all data collection, system deployment, and field testing will be conducted. The proposed system will use IoT-based sensor nodes installed at selected locations within the barangay to monitor air quality. The monitoring sites will be chosen based on factors such as traffic flow, nearby establishments, residential areas, and other possible sources of air pollution. The system will measure air quality parameters including particulate matter (PM1.0, PM2.5, and PM10) using the PMS5003 sensor, carbon monoxide (CO), carbon dioxide (CO₂), ambient temperature, and relative humidity. The collected data will be transmitted through LoRa communication and processed using Artificial Intelligence (AI) to provide real-time air quality monitoring and prediction through a web dashboard and mobile application.
+Although the system is designed to provide reliable air quality information, the study has several limitations. Since the project is conducted only in Sabang South, Borongan City, the results may not represent the air quality conditions of other barangays or municipalities. The system uses low-cost IoT sensors, which may have lower accuracy than professional monitoring equipment used by agencies such as the Department of Environment and Natural Resources (DENR). In addition, the accuracy of the AI prediction depends on the quality and amount of data collected during the study. A stable internet connection and power supply are also necessary to ensure continuous data transmission 
+and system operation. Furthermore, the study focuses only on outdoor air quality and does not include indoor air quality monitoring. Despite these limitations, the researchers will take appropriate measures to ensure that the system provides accurate, reliable, and useful information for monitoring the air quality in Sabang South, Borongan City.
+Significance of the Study
+This study is significant to several stakeholders including communities, local institutions, and future researchers.
+Local Government of Borongan City. The system will provide the city government with the first localized, real-time air quality data and AI-driven predictive insights, enabling evidence-based environmental policy-making, urban planning, and compliance monitoring under RA 8749.
+Environmental Protection Agency (EPA) and Regulatory Bodies. The validation of system data against EPA and national standards contributes to the growing body of evidence on the viability of low-cost IoT sensor networks for environmental compliance monitoring.
+Public Health Sector. Real-time air quality information and AQI predictions can help health authorities issue timely advisories, particularly for vulnerable populations such as children, the elderly, and individuals with respiratory conditions. The correlation analysis between air quality and health outcomes may reveal patterns useful for public health intervention planning.
+Residents and Communities of Borongan City. The open-access web dashboard empowers citizens with awareness of their local air quality, enabling them to make informed decisions about outdoor activities and personal health precautions. Transparent, accessible data fosters community engagement in environmental stewardship.
+Academic and Research Community. This study contributes baseline air quality data for Borongan City where none currently exists, and demonstrates the feasibility of AI-integrated environmental monitoring in small to mid-sized Philippine cities. Future researchers can build on this dataset and system framework for longitudinal studies or expanded geographic coverage.
+Future System Developers. The architecture and methodology documented in this study may serve as a reference for developing similar IoT-AI monitoring systems in other localities with limited environmental monitoring infrastructure.
+Definition of Terms
+Air Quality Index (AQI) – A numerical scale used to communicate the level of air pollution and its associated health risks to the public. In this study, the AQI is computed based on pollutant concentration levels following guidelines set by the Environmental Protection Agency (EPA) and the Department of Environment and Natural Resources (DENR) under the Philippine Clean Air Act.
+Artificial Intelligence (AI) – A branch of computer science concerned with building systems capable of performing tasks that typically require human intelligence, such as pattern recognition, prediction, and decision-making. In this study, AI refers to machine learning algorithms used for analyzing air quality trends and predicting pollution levels.
+Cloud Computing – The delivery of computing services—including storage, processing, and analytics over the internet. In this study, collected sensor data are transmitted to a cloud platform for centralized storage, analysis, and visualization.
+Environmental Protection Agency (EPA) – A United States federal agency whose air quality standards and AQI breakpoints serve as internationally referenced benchmarks. In this study, EPA standards are used to validate the monitoring system's data accuracy.
+Field Trial – A structured testing phase in which the monitoring system is deployed and operated under real-world conditions in Borongan City to evaluate its performance, reliability, and data quality.
+IBM Post-Study System Usability Questionnaire (PSSUQ) – A 16-item standardized questionnaire developed by IBM for evaluating user satisfaction with a system, measuring three dimensions: system usefulness, information quality, and interface quality.
+Internet of Things (IoT) – A network of physical devices embedded with sensors, software, and connectivity that enables them to collect and exchange data. In this study, IoT refers to the sensor network deployed across Borongan City to gather real-time environmental data.
+ISO 25010 – An international standard used to evaluate the quality of software. In this study, it is used to assess the developed system.
+Machine Learning (ML) – A subset of artificial intelligence that enables systems to learn from data and improve predictive performance without being explicitly programmed. In this study, ML models are used to predict AQI levels and identify pollution trends.
+Open-Access Web Dashboard – A publicly accessible, web-based visual interface that displays real-time and historical air quality data, AI-generated predictions, and trend analyses in a user-friendly format.
+Particulate Matter (PM2.5 / PM10) – Tiny airborne particles or droplets with aerodynamic diameters of 2.5 micrometers or less (PM2.5) and 10 micrometers or less (PM10). These pollutants are associated with respiratory and cardiovascular diseases.
+Republic Act 8749 (Philippine Clean Air Act of 1999) –The primary law in the Philippines governing air quality management and establishing the National Ambient Air Quality Guideline Values.
+Sensor Node – A hardware unit consisting of one or more environmental sensors, a microcontroller, and a communication module, deployed at a monitoring site to collect and transmit air quality data.
+MQ-7 Sensor – A gas sensor used to detect and measure the concentration of carbon monoxide (CO) in the air.
+Arduino Uno – A microcontroller board used to collect data from the sensors and control the operation of the monitoring system.
+ESP32 – A microcontroller with built-in Wi-Fi and Bluetooth used to process sensor data and communicate with other devices in the system.
+LoRa (Long Range) – A wireless communication technology that allows data to be transmitted over long distances while using low power. In this study, it is used to send air quality data from the monitoring stations to the main system.
+DHT11 Sensor – A digital sensor used to measure the ambient temperature and humidity of the surrounding environment.
+PMS5003 Sensor – A laser-based air quality sensor used to measure the concentration of particulate matter, including PM1.0, PM2.5, and PM10.
+Socioeconomic Community – A grouping of residents or neighborhoods characterized by shared economic and social conditions. In this study, air quality data are analyzed across different socioeconomic areas within Borongan City to examine potential environmental equity disparities.
+Internet of Things (IoT) – A network of connected devices that collect, transmit, and exchange data over the internet. In this study, IoT refers to the sensors and devices used to monitor and send real-time air quality data.
+CHAPTER II
+RELATED STUDIES AND RELATED SYSTEMS
+Air pollution has become one of the most pressing environmental challenges of the modern era, affecting both global cities and local communities. Rapid urbanization, industrial activities, and the increasing number of vehicles contribute significantly to deteriorating air quality, which in turn impacts public health, economic productivity, and overall quality of life (World Health Organization, 2024). In the Philippine context, many urban centers struggle with monitoring and managing air pollution due to limited resources and the absence of comprehensive monitoring systems outside Metro Manila. Borongan City, Eastern Samar, particularly its urban barangays such as Sabang South, is experiencing growth in traffic, construction, and household emissions. These developments make localized air quality monitoring essential, as residents are increasingly exposed to pollutants that can cause respiratory illnesses and other health concerns.
+To address these challenges, researchers and practitioners worldwide have developed IoT-driven and AI-enhanced environmental monitoring systems for urban air quality assessment and prediction. These systems are designed to provide real-time data and forecasting capabilities, enabling authorities and communities to respond promptly to pollution events. By utilizing advanced algorithms and data fusion techniques, they can detect and forecast air quality trends, ensuring that communities are better informed and protected. The integration of IoT sensor modules with machine learning models enhances both the availability and validity of environmental data, making these systems valuable tools for cities and barangays struggling with air quality management.
+This chapter reviews related studies and systems, both local and international, that have explored the use of IoT modules, artificial intelligence, and web-based platforms for environmental monitoring. By examining their objectives, methodologies, strengths, and limitations, the discussion situates the proposed system within the broader body of knowledge. The synthesis at the end highlights how these existing works inform the project and explains how the present study differs by focusing specifically on Borongan City, 
+where an AI-driven environmental monitoring system will be implemented to provide localized data, predictive insights, and community engagement through a web dashboard.
+Related Studies
+A cloud-linked ambient air quality monitoring apparatus was developed for urban areas in the Philippines to address the need for accessible and practical air pollution assessment. The study focused on the use of a low-power wireless sensor node equipped with gas sensors capable of detecting carbon monoxide, nitrogen oxides, and benzene in ambient air. To support data communication, the researchers integrated a GSM module that transmitted the sensor readings to a cloud server, where the information was then processed and presented through a web application. The platform was designed not only to display real-time pollutant data but also to provide air quality index values and short-term exposure warnings, making the system useful for both technical monitoring and public health awareness. One of the notable findings of the study was that the device’s readings were comparable to those of a commercial exhaust gas analyzer, suggesting that low-cost environmental monitoring tools can still generate useful and credible results when properly designed. This study is relevant to the present research because it shows that low-cost sensors, cloud-based communication, and web visualization can be integrated into a practical real-time air quality monitoring platform suitable for Philippine urban settings (Culpa et al., 2021).
+According to Corpus (2023), an air quality monitoring system for source-receptor analysis was developed in the Philippines with the intention of identifying pollution sources and understanding the behavior of air contaminants in local settings. The system made use of multiple sensors to capture key pollutants and employed low-cost IoT-based data collection techniques, which made it more feasible for localized deployment. Beyond simply recording pollutant levels, the system also applied data processing and analytical methods to examine the relationship between emission sources and affected areas. This allowed the system to support source-receptor analysis, which is valuable for environmental planning, pollution control, and policy evaluation. The study further emphasized that localized monitoring can contribute to community awareness, health 
+impact assessment, and urban planning initiatives. This is relevant to the present research because it demonstrates that environmental monitoring systems can be designed not only for data gathering but also for analysis that supports informed local decision-making, which is one of the goals of the proposed system for Borongan City (Corpus, 2023).
+An IoT-based air quality monitoring system was developed for the City of Manila in order to support environmental improvement through real-time access to pollutant information. The project aimed to provide timely air quality data that could guide decision-making and encourage environmental action at the city level. The system used IoT sensors for data acquisition, then processed and visualized the collected readings to make them more understandable and useful for stakeholders. By presenting pollutant concentrations in a more accessible format, the system helped local authorities and other users gain a clearer picture of air quality conditions in the urban environment. The study is relevant to the present research because it demonstrates how a city-level monitoring system can generate real-time environmental information that may be adapted to a smaller local setting such as Borongan City, where localized air quality data is likewise needed for planning and public awareness (Francisco, 2024).
+In the study by De Mesa et al. (2025), ACHTECO or Air Quality Checking and Tracking for Environmental Compliance was developed as an IoT-based air quality monitoring system for Cabuyao City. The system was intended to provide continuous monitoring and reporting of local air quality conditions by measuring pollutants and environmental variables such as carbon monoxide, carbon dioxide, sulfur dioxide, nitrogen dioxide, temperature, and humidity. The collected data were transmitted to a centralized database and displayed through a web application, allowing users to access environmental information in near real time. The study reported that the system performed well in terms of accuracy and reliability, and local stakeholders responded positively to its potential as a support tool for environmental compliance and local policy enforcement. This study is relevant to the present research because it addresses the same basic gap that the proposed project seeks to fill: the lack of timely, accessible, and localized air quality information in Philippine cities outside Metro Manila (De Mesa et al., 2025),
+The performance of SPS30 PM2.5 sensors was evaluated over a six-month period through collocation with reference monitors in Metro Manila as part of an existing IoT network. The study examined how the sensors behaved under real-world conditions and found that, while the devices were generally capable of producing meaningful readings, their performance varied depending on season and placement. To improve accuracy, the researchers applied simple linear regression correction, which resulted in stronger agreement with reference instruments, with R2 values reaching as high as 0.91 and error 
+margins as low as 3 micrograms per cubic meter. This suggests that low-cost sensors can be a viable option for urban air quality monitoring when calibration and correction methods are carefully applied. The study is relevant to the present research because the proposed system will also depend on low-cost sensing technology, making calibration and reliability assessment important design considerations (Ganhinhin et al., 2024).
+A real-time indoor air quality monitoring system was developed for public utility buses in the Philippines to observe pollution conditions in a mobile public transport setting. The system used three indoor air quality nodes connected through a mesh network and linked to a gateway node, which allowed the data to be collected and displayed through a web dashboard. The field tests showed that pollutant levels changed depending on passenger occupancy and vehicle conditions: higher occupancy increased carbon dioxide and volatile organic compound concentrations, while particulate matter rose when bus doors were opened. These findings demonstrate how air quality can vary dynamically in confined public environments and how sensor-based monitoring can help capture these variations in real time. This study is relevant to the present research because it illustrates the value of mesh networking and web-based dashboards for near real-time environmental visualization, which may inform both the communication design and user interface of the proposed system (Leon et al., 2025).
+An IoT-based air quality monitoring system was developed for Libjo Mining Corporation using a combination of DHT22 sensors, MQ gas sensors, a Nova PM Dust Sensor SDS011, and a WS3 Weather Station. The system was created to provide real-time environmental monitoring while also allowing remote access to the collected data. The researchers reported that the system produced readings comparable to those of laboratory-grade instruments, although regular calibration remained necessary to maintain precision. In addition, the system was able to detect higher gas concentrations in areas exposed to construction and vehicle activity, showing its usefulness in identifying pollution hotspots. This study is relevant to the present research because it demonstrates that IoT monitoring systems can be applied to real environments where pollution conditions vary by location, and that they can provide practical data for local environmental decision-making (Felias et al., 2024).
+Magdaong et al. (2026) proposed a GIS-based heuristic method for identifying the best locations for low-cost IoT air quality sensors in urban environments, with a particular 
+focus on near-road areas in Quezon City. The researchers used a multi-criteria approach that considered factors such as street aspect ratio, traffic emissions, solar irradiance, and road proximity in order to determine sensor placement. Their results showed that the selected locations were able to cover approximately 23–24% of the city’s population in high-exposure corridors, indicating that sensor placement strategy has a strong effect on how useful the monitoring network will be. This study is relevant to the present research because it provides a practical framework for deciding where to place monitoring devices in Borongan City, especially if the goal is to capture meaningful data from areas with likely exposure to traffic-related pollution (Magdaong et al., 2026).
+Sabado (2024) conducted a systematic literature review on low-cost technologies for air quality monitoring in the Philippines, focusing on the use of microcontrollers such as Arduino and Raspberry Pi. The review examined 109 studies retrieved from Google Scholar and concluded that air quality monitoring can be implemented effectively using affordable platforms with integrated sensors. The author also noted that these systems are particularly suitable for contexts where resources are limited but environmental monitoring is still needed. As a result, the review recommended the continued use of low-cost microcontroller-based platforms for developing practical and scalable monitoring systems. This study is relevant to the present research because it supports the feasibility of using Arduino- and Raspberry Pi-based components for a localized air quality monitoring system in Borongan City (Sabado, 2024).
+According to Tolentino et al. (2025), a LoRa-based air quality monitoring system with a user interface was developed for public utility vehicles at the University of the Philippines Diliman campus. The system was mounted on electric tricycles and measured PM2.5, PM10, CO2, temperature, humidity, and VOC index. Results were displayed through a Grafana-based web application featuring time-series graphs and heat maps. Higher pollutant levels were observed near busy roads and jeepney waiting areas, while the Academic Oval recorded better air quality. This study is relevant to the present research because it demonstrates mobile monitoring with web-based visualization in a Philippine setting and provides useful guidance for both sensor deployment and dashboard design (Tolentino et al., 2025).
+The AirNow system of the U.S. Environmental Protection Agency provides real-time and forecast air quality information for more than 500 cities across the United States. 
+It uses the official U.S. Air Quality Index, a color-coded scale that makes it easier for the public to understand whether current air quality conditions are safe or unhealthy. The platform also includes interactive maps, daily forecasts, a Fire and Smoke map, and data from monitoring stations across the U.S., Canada, and Mexico. What makes AirNow especially useful is its ability to transform technical pollutant data into practical public health information that ordinary users can understand and act on. This system is relevant to the present research because it demonstrates how a centralized air quality platform can support public awareness through a user-friendly web interface, a principle that the 
+proposed system seeks to apply at the barangay level (U.S. Environmental Protection Agency, n.d.).
+IQAir’s AirVisual platform is one of the most extensive air quality data systems currently available, drawing from more than 30,000 monitoring stations in over 140 countries and 15,000 cities. It combines data from low-cost sensors and government reference monitors and applies quality assurance procedures such as validation, calibration, anomaly detection, and environmental correction. The platform also provides seven-day forecasts supported by machine learning and AI, along with health recommendations through its mobile application and enterprise dashboard. The strength of AirVisual lies in its ability to combine scale, prediction, and public accessibility in one platform. This study is relevant to the present research because it demonstrates how AI-driven forecasting and dashboard-based reporting can be integrated into a community-facing environmental monitoring system, which is the type of design the proposed project aims to localize for Borongan City (IQAir, 2025).
+In the study by Khan et al. (2025), a system combining AI algorithms with 50 low-cost IoT air quality sensor nodes was deployed across North Delhi, India. The system measured PM2.5, PM10, nitrogen dioxide, and carbon monoxide at two-minute intervals and used a Long Short-Term Memory neural network trained on three months of sensor and meteorological data to predict air quality one hour in advance. The model achieved a mean absolute error of 8.2 on the AQI scale and performed better than traditional ARIMA models, while 87% of high-AQI events were predicted at least 45 minutes before they occurred. This indicates that AI and IoT can work together effectively for short-term urban air quality forecasting. The study is relevant to the present research because it shows that
+low-cost sensor data can be used for reliable prediction, which is central to the proposed AI-driven monitoring system for Borongan City (Khan et al., 2025),
+A real-time air quality assessment and health risk prediction framework was proposed in Scientific Reports using data from fixed and mobile sensors, meteorological inputs, and satellite imagery. The system used Random Forest, Gradient Boosting, XGBoost, and LSTM networks to predict pollutant behavior, while a cloud-based architecture supported continuous data flow and live updates. The platform also generated risk maps and health advisories through a web dashboard and mobile alert system at five-minute intervals. This study is relevant to the present research because it demonstrates how an AI-driven monitoring framework can combine multiple data sources and provide community-oriented health information in a format that is accessible and actionable (Rajesh et al., 2025).
+Shahariar et al. (2025) designed a low-cost IoT-based system for real-time air quality monitoring in Cumilla, Bangladesh. The system measured PM2.5, carbon monoxide, carbon dioxide, and nitrogen dioxide using an Arduino Uno interfaced with PMS5003 and MQ sensors, and the data were transmitted to a Firebase cloud database and viewed through a custom Android application. The application allowed users to view real-time and historical pollution levels and receive alerts when unsafe conditions were detected. The system achieved 99.7% operational uptime, and its readings deviated by less than 5% from certified ground-station data. This study is relevant to the present research because it shows that low-cost IoT monitoring systems with mobile integration can deliver reliable environmental data in developing-country settings similar to the Philippines (Shahariar et al., 2025).
+A comprehensive review of machine learning models for predicting air quality in urban areas was conducted, covering advanced machine learning and deep learning techniques along with IoT-based hybrid frameworks. The review emphasized that combining meteorological parameters, pollutant concentrations, and satellite imagery with IoT-enabled sensors and neural networks provides effective solutions for real-time monitoring and forecasting. Despite significant progress, challenges of data sparsity, computational demands, and model adaptability were identified. This study is relevant to the present research because it confirms that AI-based prediction has become a central 
+approach in environmental monitoring and supports the inclusion of predictive analytics in the proposed system (El-Sayed, 2025).
+Gomathi et al. (2022) proposed a real-time air pollution monitoring and forecasting system that combined the Internet of Things with deep learning. Their study used a Long Short-Term Memory model optimized with ADAM to estimate particulate matter concentrations from time-series sensor data. The model was able to predict pollution levels one hour in advance, showing the practical value of machine learning for short-term forecasting. This study is relevant to the present research because it demonstrates how deep learning can be applied to IoT sensor data for predictive monitoring, which is an essential feature of the proposed system (Gomathi et al., 2022).
+Based on the study by Flores-Cortez et al. (2023), a mobile IoT air quality monitoring system was designed and implemented in El Salvador, a developing country with only three monitoring stations nationwide. The system measured PM1.0, PM2.5, PM10, formaldehyde, temperature, and relative humidity using ESP32 microcontrollers and PMS5003ST sensors, while Google App Services was used for cloud storage and web access. Three nodes were deployed in different cities for one month, and the results showed that air quality was generally in the good-to-moderate range. This study is relevant to the present research because it demonstrates that low-cost mobile IoT systems can be successfully used for air quality monitoring in resource-constrained settings, which is similar to the conditions in many parts of the Philippines (Flores-Cortez et al., 2023).
+An end-to-end low-cost IoT system was developed for dense particulate matter monitoring in Hyderabad, India. A total of 49 devices were deployed across a metropolitan area, calibrated for seasonal variation using a reference sensor, and data were collected over seven months. A web-based dashboard was created for real-time data visualization, and the researchers conducted spatial interpolation and event-driven spatiotemporal analysis. This study is relevant to the present research because it demonstrates that dense, low-cost IoT sensor networks can produce meaningful environmental data across a city, supporting the scalability of the proposed monitoring system (Parmar et al., 2022).
+A pollution tracking system called CityAirQ was proposed using portable IoT devices equipped with environmental sensors, a mobile application displaying real-time data with dynamic environmental maps, and a cloud-based data pipeline for ingestion, processing, and storage. The system used an ultra-compact custom PCB that enabled real-time tracking of a broader range of pollutants than many comparable mobile solutions. This study is relevant to the present research because it demonstrates how portable IoT devices with cloud integration and mobile visualization can effectively support urban air quality assessment, offering a useful design model for the proposed system is dashboard and sensor architecture (Dinica et al., 2025).
+Across the related studies, the dominant pattern is the same: air quality monitoring is becoming more useful when sensor networks, cloud storage, machine learning, and web dashboards are combined into one system. The Philippine studies in your chapter emphasize practical deployment in local settings, showing that low-cost sensors and IoT platforms can produce real-time data, support environmental compliance, and help communities interpret pollution levels more quickly. The international systems add another layer by showing how prediction models, mobile apps, and large-scale platforms can improve forecasting, public alerts, and long-term environmental planning. Taken together, these studies support the idea that an effective air quality system should not only measure pollutants, but also interpret them, visualize them clearly, and present them in a way that is usable to residents and decision-makers.
+AI-Driven Environmental Monitoring System for Urban Air Quality Assessment and Prediction differs from the existing systems in three important ways. First, it is intentionally localized to Borongan City, so it is designed around the conditions, exposure patterns, and monitoring needs of a smaller urban community rather than a national or metropolitan network. Second, it combines real-time sensing with AI-based prediction, which allows the system to move beyond observation and into short-term forecasting. Third, it emphasizes public accessibility through a web dashboard, making the output understandable for both technical users and ordinary residents. In that sense, your project sits between the low-cost Philippine deployments and the more advanced international platforms: it borrows the practicality of local systems and the predictive features of global ones, but adapts them to a city that appears to have limited published air quality infrastructure.
+CHAPTER III
+METHODOLOGY
+This chapter presents the methodological framework for the development, testing, and implementation of the AI-Driven Environmental Monitoring System for Urban Air Quality Assessment and Prediction. The methodology is aligned with the project’s stated aim “to design and develop an AI-driven environmental monitoring system for real-time urban air quality assessment and pollution prediction in Borongan City, Eastern Samar, Philippines,” and with its defined scope, which is “confined exclusively to Borongan City, Eastern Samar, Philippines.” The system monitors key environmental variables, specifically “particulate matter (PM2.5 and PM10), carbon monoxide (CO), carbon dioxide (CO₂), ambient temperature, and relative humidity,” and will be evaluated using the ISO 25010 Software Product Quality Model and the IBM Post-Study System Usability Questionnaire (PSSUQ).
+Software Development Model
+The project will employ the Agile software development model, specifically an iterative incremental approach, because Agile methodologies consistently enhance team collaboration, stakeholder engagement, and adaptability to changing requirements, especially in dynamic environments (Aleryani et al. 2025).
+Figure 1. Agile Development Model
+Agile development technique is a flexible, iterative approach to delivering functioning software rapidly and efficiently. It is appropriate for complex and rapidly changing projects, such as the payroll system. Agile stresses cooperation, communication, and frequent testing to ensure the system is always improving. Unlike traditional Waterfall or V-shaped models, Agile allows developers to adapt more easily to changing requirements and priorities. It lowers the chance of project failure by providing functional software early in the development cycle. These factors make an iterative model more suitable than a strictly linear waterfall approach, because requirements may be clarified as field deployment constraints and sensor behavior become visible during prototyping.
+The project will therefore proceed through repeated cycles of planning, design, implementation, testing, and refinement. Each cycle will produce an incrementally improved version of the system until the functional, technical, and usability requirements are satisfied.
+Planning
+The researchers define what the system must do, what quality standards it must meet, and whether the proposed solution is feasible within the available time, tools, and resources. For this capstone, planning focuses on aligning the monitoring network, AI prediction module, and web dashboard with the project’s objective “to design and develop an AI-driven environmental monitoring system for real-time urban air quality assessment and pollution prediction in Borongan City, Eastern Samar, Philippines.
+Requirements Specification
+During this step, researchers must define the various system requirements. This can be performed by assessing the proposed system's operational, technical, and scheduling viability. 
+Operational Feasibility
+Operational feasibility assesses a proposed system's ability to resolve identified challenges and opportunities while achieving the requirements set during the system development process. It determines how well the system functions in real-world scenarios and whether it can be maintained by the company. The study looks at the organization's willingness to support and implement the proposed system.  
+Figure 2. Fishbone Diagram
+The fishbone diagram was utilized in this study to systematically identify and analyze the factors affecting the operational feasibility of the proposed AI-Driven Environmental Monitoring System for air quality assessment and prediction in Borongan City. Using the 4Ps framework—People, Process, Platform, and Policy—the diagram was employed to determine the underlying causes that may influence the system’s implementation, such as technical limitations, user readiness, infrastructure constraints, and regulatory considerations. Through this approach, the researchers were able to organize and evaluate potential operational issues, providing a structured basis for improving system design, ensuring effective deployment, and supporting sustainable system operation.
+People
+Community awareness and trained personnel play an important role in air quality monitoring. However, limited public awareness about air pollution and the lack of trained personnel make it difficult to monitor environmental conditions and respond effectively to air quality concerns.
+Technology
+The absence of modern technologies such as IoT devices, LoRa communication, and AI-based prediction limits the collection and analysis of air quality data. Without these technologies, monitoring becomes less efficient and real-time information is difficult to obtain.
+Policy
+Environmental policies help promote proper air quality monitoring and pollution control. However, limited implementation of local environmental programs and insufficient monitoring guidelines can affect the consistency of air quality monitoring and public awareness activities.
+Process
+Air quality monitoring is often conducted manually or only during specific activities, resulting in delayed reporting and limited environmental data. Without a continuous monitoring process, it becomes difficult to detect changes in air quality and provide timely information to the community.
+Technical Feasibility
+This technical feasibility contains the hardware and software specification during development and implementation.
+Table I. Technical Requirements (During Development) 
+Hardware 
+Software 
+Aspire A315-44P
+ 
+System Type (64bit) 
+RAM (16.00 GB) 
+Processor (AMD Ryzen 7 5700U) 
+Android Studio Quail 2
+Visual Studio
+Arduino Ide
+Table II: Technical Requirements (During Implementation) 
+Hardware 
+Clients Technical Specification 
+Compatibility 
+Aspire A315-44P
+ 
+None 
+None 
+Table III. Software Specification (During Implementation)
+Software 
+Clients Technical Specification 
+Compatibility 
+Operating System 
+Windows 11
+Yes 
+System Type 
+64bit 
+Yes 
+RAM 
+16.00GB 
+Yes 
+Processor 
+Processor (AMD Ryzen 7 5700U)
+Yes 
+Android Studio
+None 
+Yes 
+Arduino Ide
+None 
+Yes 
+Visual Studio Quail 2
+None
+Yes
+Software
+System Requirements
+Operating System
+Windows 10/11
+Backend Language
+PHP 8+
+Web Server
+XAMPP (Apache)
+Mobile App Language
+Kotlin/Java
+Mobile App IDE
+Android Studio
+Database
+MySQL (phpMyAdmin)
+Frontend
+HTML + CSS + JavaScript
+IoT Programming
+Arduino IDE + VS Code
+AI Development
+Python 3.10+ with scikit-learn
+Schedule Feasibility 
+Schedule feasibility examines a project's chances of completion within the time limit specified. Schedule feasibility is defined as the likelihood of completing a project by the desired deadline. To examine the project's schedule viability, the researchers created a Gantt chart that visually represented the project activities that would be completed over time. Table 1 depicts the project Gantt chart as well as the activities/tasks' projected completion times. 
+Gantt Chart  
+A Gantt Chart is a horizontal bar chart designed in 1917 by Henry L. Gannt, an American engineer and social scientist, to aid in production control. A Gannt Chart, commonly used in project management, is a graphical representation of a timeline that supports in the planning, coordination, and tracking of specific project tasks.
+  
+Figure Definition       Description 
+ 
+ Represent series of activities to be 
+done in the system improvement 
+ 
+schema. 
+ Vertical Line 
+ Represent the number of months for 
+ Horizontal Line the completion of the project. 
+ 
+ Shows the completion of the activity. 
+ 
+ 
+Blue Box 
+ 
+Shows ongoing process.
+Green Box
+Activities 
+Dates 
+Feb 
+Mar 
+Apr 
+May 
+Jun 
+Jul 
+Aug 
+Sep 
+Oct 
+Nov 
+Dec 
+Plan 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Design  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Develop 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+test 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Deploy 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Review 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Launch 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Months 
+1 
+2 
+3 
+4 
+5 
+6 
+7 
+8 
+9 
+10 
+11 
+Table IV. Gantt Chart 
+Plan Phase 
+ The researcher works to specify the goals, deliverables, requirements, and scope of the project. In addition, we create a project schedule, specify team roles and responsibilities, and project the cost and resource requirements. The planning stage creates the framework for the project and makes sure that everyone is aware of what has to be done.
+Design
+This section presents the design blueprint of the proposed AI-Driven Environmental Monitoring System for Urban Air Quality Assessment and Prediction. It includes the planned structure and layout of key system components, highlighting how users will interact with the platform.
+The proposed system integrates multiple machine learning and statistical techniques to analyze environmental data, generate predictions, and provide intelligent decision support. The system utilizes a hybrid approach combining supervised learning, unsupervised learning, and statistical analysis to ensure accurate and interpretable results.
+The system employs a supervised machine learning model using Linear Regression to predict Air Quality Index (AQI) values based on environmental parameters including temperature, humidity, MQ135 gas sensor readings, and PM2.5 concentration. Linear regression was selected due to its computational efficiency, interpretability, and suitability for real-time IoT-based applications with limited datasets.
+To predict future air quality conditions, the system applies timestamp-based linear regression using Unix epoch time as the independent variable. This approach allows the system to handle irregular time intervals in sensor data collection. The model generates short-term forecasts for AQI values at 1-hour, 2-hour, and 3-hour intervals ahead.
+The system utilizes K-Means clustering (K=3) to classify environmental conditions into distinct groups. Input features include temperature, humidity, MQ135 readings, and PM2.5 levels. The clusters are automatically labeled based on average AQI values into three categories:
+Clean
+Moderate
+Polluted
+This unsupervised learning approach enables the system to identify environmental patterns without requiring labeled datasets.
+A Z-score statistical method is used to detect anomalies in sensor readings. Each incoming data point is compared against historical data to determine deviation from the mean. A threshold of ±2.5 standard deviations is used to flag anomalies, while values exceeding ±4.0 are classified as critical. This allows the system to detect unusual environmental conditions or potential sensor malfunctions in real time.
+The system computes a composite health risk score (0–100) based on weighted environmental parameters:
+PM2.5 (50%)
+MQ7 gas levels (30%)
+Temperature (10%)
+Humidity (10%)
+The resulting score is mapped into risk categories (Low, Moderate, High, Critical) and is used to generate health advisories for users.
+To evaluate the performance of the AI model, the system computes several accuracy metrics:
+Mean Absolute Error (MAE)
+Root Mean Square Error (RMSE)
+Accuracy within ±10 AQI
+Accuracy within ±20 AQI
+Prediction bias
+Predicted AQI values are compared with actual measured values after a one-hour interval to validate model performance over time.
+Output and User Interface
+RECENT RECORDSRECENT RECORDSMODEL EVALUATION CHARTMODEL EVALUATION CHARTSENSOR CHARTSENSOR CHARTAI MODEL PANELAI MODEL PANELHEALTH RISK SCORE PANELHEALTH RISK SCORE PANELLIVE SENSORS READINGS PANELSLIVE SENSORS READINGS PANELSHEADERTOGGLE REFRESH EXPORTHEADERTOGGLE REFRESH EXPORTThe following figures illustrate the output and user interface design of the system. These mock-ups serve as a visual representation of how the website will appear and function user’s perspective.
+RECENT RECORDS
+RECENT RECORDS
+MODEL EVALUATION CHART
+MODEL EVALUATION CHART
+SENSOR CHART
+SENSOR CHART
+AI MODEL PANEL
+AI MODEL PANEL
+HEALTH RISK 
+SCORE PANEL
+HEALTH RISK 
+SCORE PANEL
+LIVE SENSORS READINGS PANELS
+LIVE SENSORS READINGS PANELS
+HEADERTOGGLE REFRESH EXPORT
+HEADERTOGGLE REFRESH EXPORT
+Figure 3: Open Access Web Dashboard
+Figure 3 presents the Open Access Web Dashboard of the AI-Driven Environmental Monitoring System for Urban Air Quality Assessment and Prediction, which serve as the main browsing panel. The dashboard provides information collected from DHT22, MQ135, and PM2.5 sensor with an overview visual and numerical indicators processed by AI models and statistical tools. The dashboard will display charts and visual panels of AI models. The header will contain buttons for switching between dark and light mode; quick refresh for the whole web dashboard, and exporting CSV format file from the collected data that will be stored in the database for research and analysis purposes. 
+Figure 4: Open Mobile App
+Figure 4 presents the Mobile Application Interface of the AI-Driven Environmental Monitoring System for Urban Air Quality Assessment and Prediction. The mobile application serves as a portable platform that allows users to monitor air quality anytime and anywhere using their smartphones. It displays real-time air quality information collected from the DHT11, MQ-7, and PMS5003 sensors, including temperature, humidity, carbon monoxide (CO), and particulate matter (PM1.0, PM2.5, and PM10). The application also provides a Health Risk Score, AI Prediction Panel, Sensor Charts, Recent Records, and Model Evaluation Chart to help users understand current and predicted air quality conditions. The application includes a Refresh button to update the latest sensor readings and a bottom navigation menu consisting of Dashboard, History, and Export for easy access to monitoring records and data export.
+Process Design 
+             Process design is the act of transforming an organization’s vision, goals, and available resources into a discernible, measurable means of achieving the organization’s vision. 
+Data Flow Diagram 
+  A Data Flow Diagram (DFD) is a graphical view of how data is processed in a system in terms of input and output. The Data Flow Diagram (DFD) contains some symbols for drawing the data flow diagram. 
+ Figure Definition 
+ 
+Symbols 
+ 
+ 
+ Data Flow 
+Descriptions 
+Data flow is pipeline through the pockets of information flow.
+ 
+A process or task performed by the
+system.
+ 
+ Process 
+Entity is object of the system, a source  or destination data of a system.
+ 
+Entity 
+ 
+ 
+ 
+A place where data to be stored.
+Data Store 
+ 
+Figure 5. Level 0 Context Diagram
+Figure 5 presents the Level 0 Data Flow Diagram (DFD) of the proposed AI-Driven Environmental Monitoring System for Urban Air Quality Assessment and Prediction. The diagram illustrates the overall flow of data between the system and its external entities. The entire system is represented as a single process labeled "0.0 AI-Driven Environmental Monitoring System," which serves as the central component responsible for receiving, processing, storing, and delivering environmental monitoring data.
+The primary external entity is the ESP32 LoRa Sensor Node (Arduino Uno and Sensors). This device continuously gathers environmental data, including temperature, humidity, carbon monoxide (CO), particulate matter (PM1.0, PM2.5, and PM10), location, and timestamp. The collected sensor readings are transmitted to the system through LoRa communication, where they are processed and analyzed.
+Once the data has been received, the system performs air quality analysis, generates AI-based predictions, and stores the processed information in the database. The processed results are then sent to the Web and Mobile Application Dashboard, allowing users to monitor real-time air quality conditions, Air Quality Index (AQI), AI predictions, health risk assessment, and other relevant environmental information. Users may also access historical records and charts to review previous air quality data and identify trends over time.
+To ensure that users always receive the latest information, the Web and Mobile Application Dashboard automatically synchronizes with the system whenever new sensor data becomes available. This real-time synchronization updates the dashboard without requiring manual refresh, providing users with the most recent environmental conditions recorded by the monitoring station.
+Overall, the Level 0 Data Flow Diagram shows how the proposed system converts raw sensor readings into meaningful air quality information. By combining IoT-based data collection, AI-driven analysis, and real-time data visualization, the system supports continuous environmental monitoring and helps users make informed decisions regarding air quality conditions.
+Figure 6. Level 1 Child Diagram
+In the first level, the Data Flow Diagram (DFD) illustrates how the major processes of the proposed AI-Driven Environmental Monitoring System for Urban Air Quality Assessment and Prediction work together with its external entities, namely the IoT Monitoring Node and the Web & Mobile Application Dashboard. The process starts with Collect Environmental Data, where the IoT monitoring node gathers environmental information such as temperature, humidity, carbon monoxide (CO), particulate matter (PM1.0, PM2.5, and PM10), location, and time. The collected sensor readings are then passed to the Process Air Quality Data subprocess, where the data is validated and the Air Quality Index (AQI) is calculated. 
+The processed information is forwarded to the Generate AI Prediction subprocess, which analyzes the collected data to produce air quality predictions and interpretations. Lastly, the results are sent to the Display Monitoring Information subprocess, where real-time air quality information, AI predictions, historical records, and charts are presented through the Web and Mobile Application Dashboard. This Level 1 DFD illustrates how environmental data flows through each subprocess, transforming raw sensor readings into meaningful information that supports real-time air quality monitoring and environmental awareness.
+Figure 7. Level 2 Child Diagram
+The Level 2 Data Flow Diagram (DFD) provides a more detailed view of the Process Air Quality Data subprocess presented in the Level 1 DFD. At this level, the system begins by receiving environmental data collected by the IoT Monitoring Node, including temperature, humidity, carbon monoxide (CO), PM1.0, PM2.5, PM10, location, and timestamp. The collected sensor readings are then validated to ensure that the data is complete and suitable for processing. Once validated, the system calculates the Air Quality Index (AQI), performs AI-based prediction, and generates an interpretation of the current air quality condition. The processed information is stored in the Environmental Database, where historical records are maintained for future reference. Finally, the system retrieves the processed data, historical records, and AI prediction results to display real-time air quality information, charts, and reports on the Web and Mobile Application Dashboard. This Level 2 DFD demonstrates how environmental sensor data is transformed into meaningful and reliable information that supports real-time air quality monitoring and decision-making.
+System Flow Chart 
+             Flowcharts are used in a variety of industries to analyze, create, document, or manage a process or program. 
+             In this study, a system flowchart is used as a guide to comprehend the system’s flow or transactions so that it may be operated easily. 
+Figure Definitions 
+          Symbols              Descriptions 
+        
+                              Terminator Display Process Decision Input/Output                               Terminator Display Process Decision Input/Output Show the start and stop points in a
+        
+ 
+           
+ 
+        
+ 
+Terminator
+ 
+Display
+ 
+Process
+ 
+Decision
+ 
+Input/Output
+ 
+        
+ 
+           
+ 
+        
+ 
+Terminator
+ 
+Display
+ 
+Process
+ 
+Decision
+ 
+Input/Output
+ 
+process.
+Indicates a process stop where information is displayed to a person.
+Show a process or action step.
+Indicates a question or branch in the process low.
+Indicates input to and outputs from a process.
+          On page connector Flow lines Off page connector           On page connector Flow lines Off page connector Show a jump from one point in the process flow to another. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+O
+n
+ 
+page connector
+ 
+Flow lines
+ 
+Off page connector
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+O
+n
+ 
+page connector
+ 
+Flow lines
+ 
+Off page connector
+ 
+Show continuation of a process flowchart onto another page. 
+Show the direction that the process flows. 
+ 
+ 
+   Database    Database Indicates a list of information that can be searched and sorted.
+ 
+ 
+ 
+Database
+ 
+ 
+ 
+ 
+Database
+ 
+Figure 8. Flowchart
+Figure 8 illustrates the overall process flow of the proposed AI-Driven Environmental Monitoring System for Urban Air Quality Assessment and Prediction. The process begins by initializing the IoT monitoring node, which consists of the Arduino Uno, ESP32, LoRa module, and environmental sensors. Once initialized, the sensors continuously collect environmental parameters such as temperature, humidity, carbon monoxide (CO), PM2.5, PM10, location, and timestamp.
+The collected sensor readings are transmitted through LoRa and the internet to the system, where the data is validated and used to calculate the Air Quality Index (AQI). After processing, the system performs AI-based prediction and health risk assessment to generate meaningful insights regarding current and future air quality conditions. The processed information is then stored in the environmental monitoring database for future reference and historical analysis.
+The system automatically synchronizes the processed data with the web and mobile application dashboard, allowing users to view real-time air quality information, AI predictions, historical records, charts, and health-related interpretations. Finally, the system checks whether new sensor data is available. If new readings are detected, the process repeats automatically to ensure continuous real-time monitoring and synchronization. Otherwise, the process ends.
+Data Design
+Data design refers to the process of organizing, structuring, and managing data within a system to ensure efficient storage, retrieval, and processing. In this study, it defines how environmental sensor data and AI-generated results are structured in the database, including how data is collected, stored, accessed, and used to support real-time monitoring, analysis, and decision-making.
+Entity Relationship Diagram
+An Entity Relationship Diagram (ERD) is a visual representation of the database structure that shows the entities, their attributes, and the relationships between them. In this study, it illustrates how environmental data and AI-generated predictions are organized and connected within the system’s database to support efficient data storage, retrieval, and analysis.
+Figure Definition 
+Following are the symbol definitions used in creating the ERD. 
+                 Symbols       Definitions  
+OneOne         
+One
+One
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+    
+Many Many        
+Many 
+Many 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+One and only one  One and only one              
+One and only one 
+ 
+One and only one 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Zero or One Zero or One               
+Zero or One 
+Zero or One 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+One or Many  One or Many         
+One or Many 
+ 
+One or Many 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Zero or Many Zero or Many        
+Zero or Many 
+Zero or Many 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 9. Entity Relationship Diagram
+Figure 9 shows the relationship between the air_quality and ai_predictions tables. The air_quality table stores raw sensor data and computed AQI values collected from the system, while the ai_predictions table stores AI-generated results such as predicted AQI, forecasts, and analysis outputs.
+The relationship between them is one-to-many (1:N), where one record in air_quality can be used to generate multiple records in ai_predictions. This supports the system’s ability to produce various analytical results from a single environmental data entry.
+Data Dictionary
+Field Name
+Data Type
+Field Length
+Constraint
+Description
+id
+PK
+INT
+AI
+Unique identifier for each record
+temp
+FLOAT
+Temperature reading (°C)
+hum
+FLOAT
+Humidity level (% relative humidity)
+mq135
+INT
+Gas sensor value (ppm) / Volatile Organic Carbon (VOC)
+pm25
+FLOAT
+PM2.5 concentration (µg/m³)
+aqi
+INT
+Computed Air Quality Index
+timestamp
+DATETIME
+YYYY-MM-DD HH:MM:SS
+Date and time of data recording
+Table: air_quality
+Table: ai_predictions
+System Architecture
+System architecture refers to the conceptual model that defines the structure, behavior, and more views of a system. It involves the high-level design of the system, outlining the components and their interactions, as well as the principles and guidelines governing its design and evolution. This includes hardware, software, network, and other components necessary to support the system's functionality and performance.
+Figure 10. System Architecture
+The system architecture illustrates the overall structure and interaction of components in the AI-Driven Environmental Monitoring System, from data collection to user visualization.
+The system begins with the ESP32 sensor node, which collects real-time environmental data such as temperature, humidity, MQ135 gas levels, and PM2.5 concentrations. These readings are transmitted to the backend server through HTTP requests.
+The web server (PHP-based backend) receives the sensor data via an API endpoint and performs validation, sanitization, and Air Quality Index (AQI) computation before storing the processed data in the MySQL database (air_quality).The system then utilizes an AI processing module (Python-based), which is triggered by the backend to analyze historical data. This module performs prediction, forecasting, anomaly detection, clustering, and health risk assessment. The generated results are stored in a separate database table (ai_predictions) for further use.
+The web application and dashboard retrieve both real-time and processed data from the database to present information visually to the user. This includes AQI values, trends, predictions, and alerts. Users can interact with the system by sending requests and viewing updated environmental conditions.
+Program Specifications
+The program specifications describe the overall structure and functionality of the AI-Driven Environmental Monitoring System. The system is designed to collect environmental data from sensors, process and store the data, perform AI-based analysis, and present results through a web-based dashboard. It integrates hardware (ESP32), backend processing (PHP), database management (MySQL), and AI processing (Python) to support real-time monitoring and prediction.
+Input Description
+The system accepts input data primarily from the ESP32 sensor node. These inputs include:
+Temperature (°C)
+Humidity (% relative humidity)
+MQ135 gas sensor readings (ppm)
+PM2.5 concentration (µg/m³)
+The data is transmitted to the server via HTTP requests and received by the backend script. The system performs validation and sanitization to ensure that the input values are complete, properly formatted, and within acceptable ranges before processing.
+Output Description
+The system produces both raw and processed outputs, which are displayed on the web dashboard and stored in the database. These outputs include:
+Computed Air Quality Index (AQI)
+AQI category (e.g., Good, Moderate, Unhealthy)
+Historical environmental data
+AI-generated predictions (predicted AQI and forecasts)
+Analytical results such as anomaly detection, clustering, and health risk assessment
+The outputs are presented visually using tables and charts to allow users to easily interpret environmental conditions and trends.
+Data Structure Descriptions
+The system utilizes a relational database consisting of two main tables:
+air_quality – stores raw sensor data and computed AQI values
+ai_predictions – stores AI-generated predictions and analysis results
+Each table contains structured fields such as identifiers, sensor readings, computed values, prediction results, and timestamps. The data is organized to support efficient storage, retrieval, and analysis, with a one-to-many relationship where one environmental record can generate multiple AI prediction records.
+Program Descriptions
+The system is composed of several interconnected modules:
+Data Acquisition Module – collects sensor data from the ESP32 and sends it to the server
+Data Processing Module – validates input data and computes AQI values
+Database Module – handles storage and retrieval of data in MySQL
+AI Processing Module – executes prediction and analysis using Python scripts
+Web Dashboard Module – displays real-time and historical data, as well as AI-generated insights
+Each module works together to ensure that the system operates efficiently, providing accurate environmental monitoring and intelligent data analysis.
+Programming Environment
+ESP32 Microcontroller – A hardware device used to collect environmental data such as temperature, humidity, gas levels, and PM2.5, and transmit it to the server in real time.
+PHP – A server-side scripting language used to handle data reception, validation, processing, and communication between the system and the database.
+MySQL – A relational database management system used to store environmental data (air_quality) and AI-generated predictions (ai_predictions).
+Python – A programming language used to implement artificial intelligence models for AQI prediction, forecasting, anomaly detection, and data analysis.
+HTML (HyperText Markup Language) – A standard language used to structure the content of the web-based dashboard.
+CSS (Cascading Style Sheets) – A styling language used to design and enhance the visual appearance of the web interface.
+JavaScript – A programming language used to enable interactivity, dynamic updates, and real-time data display in the dashboard.
+Chart.js – A JavaScript library used to visualize environmental data through graphs and charts.
+XAMPP – A local development environment that provides Apache server, MySQL database, and PHP support for running the system.
+Evaluation
+The developed system will be evaluated using both technical and user-centered assessment approaches to ensure its overall quality and effectiveness. The evaluation will be based on the ISO 25010 Software Product Quality Model for technical quality assessment and the IBM Post-Study System Usability Questionnaire (PSSUQ) for measuring user satisfaction.
+For the technical evaluation, the ISO 25010 model will be used to assess key quality characteristics of the system, including functionality, reliability, usability, efficiency, and maintainability. The system will be tested to determine whether it performs its intended functions correctly, processes data efficiently, and operates consistently under continuous use.
+For usability evaluation, the IBM PSSUQ will be administered to selected users after interacting with the system. The questionnaire will measure user satisfaction across three main dimensions: system usefulness, information quality, and interface quality. Users will rate their experience using a standardized Likert scale, allowing the researchers to quantify usability and identify areas for improvement.
+The results from both evaluation methods will be analyzed to determine whether the system meets acceptable standards for software quality and user satisfaction. Findings will be used to validate the effectiveness of the system and to identify potential enhancements for future development.
+Research Design
+The study will employ both alpha testing and beta testing to ensure comprehensive assessment. Alpha testing will be conducted with selected individuals from the Faculty Members of College of Computer Studies, Eastern Samar State University, who have experience in system development. These evaluators will focus on assessing the technical aspects of the system, including functionality, reliability, and performance.
+On the other hand, beta testing will be conducted in Barangay Songco, Borongan City, Eastern Samar, where selected respondents will use the system in a real-world setting. The researchers will utilize purposive sampling to select participants, including barangay officials, health workers, and residents who are relevant to the study. This ensures that the respondents can provide meaningful feedback based on actual usage and environmental context.
+The evaluators from both groups will assess the system using the ISO 25010 Software Product Quality Model for technical quality and the IBM Post-Study System Usability Questionnaire (PSSUQ) for user satisfaction, focusing on system usefulness, information quality, and interface quality.
+This research design ensures a comprehensive evaluation by combining expert-based technical assessment and real-user feedback. The use of purposive sampling further strengthens the validity of the data by selecting respondents who are capable of providing informed and relevant insights, resulting in a reliable and well-rounded assessment of the system.
+Locale
+The study will be conducted in Barangay Songco, Borongan City, Eastern Samar, which will serve as the primary site for system implementation and evaluation. The location is selected due to its accessibility to the researchers and its suitability for testing the AI-Driven Environmental Monitoring System in a real-world community setting.
+Figure 11. Research Locale
+Research Respondents
+The alpha testers will be composed of selected individuals from the selected individuals from the Faculty Members of College of Computer Studies, Eastern Samar State University, who have experience in system development. These respondents will be chosen through purposive sampling to ensure that they possess the technical expertise needed to evaluate the system’s functionality, reliability, and overall performance.
+The beta testers will be selected from Barangay Songco, Borongan City, Eastern Samar, where the system will be tested in a real-world environment. The respondents will include barangay officials, health workers, and residents who are relevant to the study. Purposive sampling will also be used to ensure that participants can provide meaningful and informed feedback based on actual usage of the system.
+Instrumentation
+The study will utilize structured evaluation instruments to assess the quality and usability of the developed system. The primary instruments will include the ISO 25010 Software Product Quality Model questionnaire, which will be used to evaluate the system’s technical aspects such as functionality, reliability, efficiency, and maintainability, and the IBM Post-Study System Usability Questionnaire (PSSUQ), which will be used to measure user satisfaction in terms of system usefulness, information quality, and interface quality.
+These instruments will be administered to selected respondents during both alpha testing (system development experts) and beta testing (Barangay Songco participants). The use of standardized questionnaires ensures consistency, reliability, and validity in the evaluation of the system.
+Data Analyst
+The assessment encompasses evaluations for Accuracy, Efficiency, Security, and Usability, serving as a criteria checklist for software developers to meet. In this section, a Five-Point Likert Scale was employed to gauge the system’s alignment with client requirements. This approach aids in collecting user feedback regarding these aspects. 
+The Five-Point Likert Scale 
+Scale 
+Range 
+Interpretation 
+5 
+4.21 – 5.00 
+Strongly Agree 
+4 
+3.41 – 4.20 
+Agree 
+3 
+2.61 – 3.40 
+Neutral 
+2 
+1.81 – 2.60 
+Disagree 
+1 
+1.00 – 1.80 
+Strongly Disagree 
+Statistical Tool Used
+Operational Parameter 
+Range 
+Interpretation 
+Functionality 
+4.21 – 5.00 
+Highly Functional 
+3.41 – 4.20 
+Functional 
+2.61 – 3.40 
+Neutral 
+1.81 – 2.60 
+Less Functional 
+1.00 – 1.80 
+Not Functional 
+Accuracy 
+4.21 – 5.00 
+Highly Accurate 
+3.41 – 4.20 
+Accurate 
+2.61 – 3.40 
+Neutral  
+1.81 – 2.60 
+Less Accurate 
+1.00 – 1.80 
+Not Accurate 
+ 
+ 
+ 
+Efficiency 
+4.21 – 5.00 
+Highly Efficient 
+3.41 – 4.20 
+Efficient 
+2.61 – 3.40 
+Neutral 
+1.81 – 2.60 
+Less Efficient 
+1.00 – 1.80 
+Not Efficient 
+ 
+ 
+ 
+Security 
+4.21 – 5.00 
+Highly Secured 
+3.41 – 4.20 
+Secured 
+2.61 – 3.40 
+Neutral 
+1.81 – 2.60 
+Less Secured 
+1.00 – 1.80 
+Not Secured 
+ 
+ 
+ 
+Usability 
+4.21 – 5.00 
+Highly Usable 
+3.41 – 4.20 
+Usable 
+2.61 – 3.40 
+Neutral 
+1.81 – 2.60 
+Less Usable 
+1.00 – 1.80 
+Not Usable 
+The researcher will use the weighted mean to evaluate the general response of survey participants regarding their agreement or disagreement with the given statements.
+The formula for computing the weighted mean will be as follows:
+​X̄ = Ns / n
+Where:
+X = weighted mean
+N = sum of all scores
+s = scale
+n = number of sample size
+The survey percentage will be determined by comparing the number of affirmative responses to the total number of responses received.
+The formula will be as follows:
+P = (n / t) x 100​
+Where:
+P = percentage
+n = number of responses
+t = total number of respondents
+BIBLIOGRAPHY
+Abdelmalek, M. M., Mahmoud, H., & Shokry, H. (2025). Prognosis of air quality index and air pollution using machine learning techniques. Scientific Reports, 15, Article 11260. https://doi.org/10.1038/s41598-025-11260-y
+Alarcon, J. C. A., Ocsina, C. J. R., & Castro, E. G. (2020). Indoor air quality monitoring system using Arduino Uno in Cainta, Rizal and Pasay City, Philippines. https://proceedings.spp-online.org/article/view/SPP-2020-2D-03
+Caya, M. V., Ballado, A., Asis, J. K. C., Halili, B., & Geronimo, K. M. R. (2018). Air quality monitoring platform with the integration of dual sensor redundancy mechanism through Internet of Things. Proceedings of the International Conference on Humanoid, Nanotechnology, Information Technology, Communication and Control, Environment and Management. https://doi.org/10.1109/HNICEM.2018.8666428
+Culpa, E. M., Mendoza, J. I., Ramirez, J., Yap, A. L., Fabian, E., & Astillo, P. V. (2021). A cloud-linked ambient air quality monitoring apparatus for gaseous pollutants in urban areas. Journal of Internet Services and Information Security, 11(1), 64–78. https://doi.org/10.22667/JISIS.2021.02.28.064
+Heyasa, B. L., & Galarpe, V. R. K. (2017). Initial development and testing of microcontroller-MQ 2 gas sensor for university air quality monitoring. https://www.researchgate.net/publication/317264310_Initial_Development_and Testing_of_Microcontroller-MQ2_Gas_Sensor_for_University_Air_Quality_Monitoring
+Macatangay, L. H., & Hernandez, R. (2020). A deep learning-based prediction and simulator of harmful air pollutants: A case from the Philippines. Proceedings of the IEEE Control and System Graduate Research Colloquium. https://doi.org/10.1109/ICSGRC49013.2020.9232528
+Martillano, D. A., Dela Cuesta, L. V. A., Mariano, K. R. V., & Mesina, V. C. Q. (2019). Multi zone-based surface air quality monitoring via Internet of Things. Journal of Communications, 14(6), 470–477. https://doi.org/10.12720/jcm.14.6.470-477
+World Health Organization. (2024). Ambient (outdoor) air pollution. https://www.who.int/news-room/fact-sheets/detail/ambient-(outdoor)-air-quality-and-health
+Abdelmalek, M. M., Mahmoud, H., & Shokry, H. (2025). Prognosis of air quality index and air pollution using machine learning techniques. Scientific Reports, 15, Article 11260. https://doi.org/10.1038/s41598-025-11260-y
+Alarcon, J. C. A., Ocsina, C. J. R., & Castro, E. G. (2020). Indoor air quality monitoring system using Arduino Uno in Cainta, Rizal and Pasay City, Philippines. https://www.researchgate.net/publication/334698594_Air_Quality_Arduino_Based_Monitoring_System
+Beig, G., et al. (2019). System of Air Quality and Weather Forecasting and Research (SAFAR). Indian Institute of Tropical Meteorology. 
+Brown, T., & Kelly, J. (2021). Australia’s Air Quality Monitoring Network: Resilience in Environmental Crises. Environmental Monitoring Journal, 45(2), 112–130.
+Caya, M. V., Ballado, A., Asis, J. K. C., Halili, B., & Geronimo, K. M. R. (2018). Air quality monitoring platform with the integration of dual sensor redundancy mechanism through Internet of Things. In Proceedings of the International Conference on Humanoid, Nanotechnology, Information Technology, Communication and Control, Environment and Management. https://doi.org/10.1109/HNICEM.2018.8666428
+Corpus, R. M. (2023). Air quality monitoring system for source-receptor analysis in the Philippines. [Details not fully provided in the uploaded chapter].
+Culpa, E. M., Mendoza, J. I., Ramirez, J., Yap, A. L., Fabian, E., & Astillo, P. V. (2021). A cloud-linked ambient air quality monitoring apparatus for gaseous pollutants in urban areas. Journal of Internet Services and Information Security, 11(1), 64–78. https://doi.org/10.22667/JISIS.2021.02.28.064
+De Mesa, L. P., Alvarez, I. K. A., Hipolito, B. X. R., Miran, J. R. B., & Valdez, R. G. R. (2025). ACHTECO (Air Quality Checking and Tracking for Environmental Compliance).
+Dinica, M., Popescu, D., Tudose, D., Dumitru, B., Ruse, L., Pitale, A., & Preda, M. (2025). CityAirQ. Sustainability.
+El-Sayed, E. (2025). A review of machine learning models for predicting air quality in urban areas.
+Environment Canada. (2020). National Air Pollution Surveillance Program (NAPS). Government of Canada.
+European Environment Agency. (2021). Air Quality e-Reporting System. European Union.
+Felias, D. J. B., Mondea, D. P., Dellosa, J. T., & Mendoza, R. N. (2024). IoT-based air quality monitoring system for Libjo Mining Corporation. [Details not fully provided in the uploaded chapter].
+Flores-Cortez, O. O., Pocasangre Jimenez, C., Ar’évalo, F., Le’on L’opez, R., Pe~na Mart’inez, D., & Rafael, O. (2023). Methodology for the design and implementation of a mobile IoT system to monitor air quality in El Salvador.
+Francisco, A. M. (2024). Development of an IoT-based air quality monitoring system for the environmental improvement of the City of Manila. [Details not fully provided in the uploaded chapter].
+Ganhinhin, J. B., Hizon, J. R., Rosales, M. D., & Magpantay, P. (2024). Performance of SPS30 PM2.5 sensors over a six-month period. [Details not fully provided in the uploaded chapter].
+Gomathi, G., Emilyn, J. J., Thamburaj, A. S., & V. D. (2022). Real-time air pollution monitoring and forecasting system using the Internet of Things and deep learning. [Details not fully provided in the uploaded chapter].
+IQAir. (2025). AirVisual Global Air Quality Platform. IQAir Research Division.
+Khan, R., Dwivedi, S., Yadav, S., Sharf, R., Maurya, S., Pandey, U., & Kumari, S. (2025). AI algorithms with low-cost IoT air quality sensor nodes across North Delhi. [Details not fully provided in the uploaded chapter].
+Kim, S., & Park, H. (2019). AirKorea: Citizen-centered air quality monitoring. Korean Journal of Environmental Studies, 27(4), 201–215.
+Leon, F., Cayanan, K. M., Virtucio, R. J., Astrologo, N., Eslit, J. J., Magpantay, P., et al. (2025). Real-time indoor air quality monitoring system for public utility buses in the Philippines. [Details not fully provided in the uploaded chapter].
+Li, X., & Zhang, Y. (2020). China’s National Air Quality Monitoring Network. Journal of Environmental Policy, 36(1), 55–72.
+Lopez, R. (2020). Community-based IoT air monitoring in San Carlos City. Philippine Local Governance Review, 9(1), 88–102.
+Macatangay, L. H., & Hernandez, R. (2020). A deep learning-based prediction and simulator of harmful air pollutants: A case from the Philippines. In Proceedings of the IEEE Control and System Graduate Research Colloquium. https://doi.org/10.1109/ICSGRC49013.2020.9232528
+Magdaong, R. M., Ang, M., Hizon, J. R. E., & Tutanes, J. M. A. (2026). GIS-based heuristic method for identifying optimal locations for low-cost IoT air quality sensors in urban environments. [Details not fully provided in the uploaded chapter].
+Martillano, D. A., Dela Cuesta, L. V. A., Mariano, K. R. V., & Mesina, V. C. Q. (2019). Multi zone-based surface air quality monitoring via Internet of Things. Journal of Communications, 14(6), 470–477. https://doi.org/10.12720/jcm.14.6.470-477
+MMDA. (2019). Metro Manila Air Quality Monitoring Project. Metropolitan Manila Development Authority.
+Parmar, A., Sara, S., Dwivedi, A., Reddy, C., Patwardhan, I., Bijjam, S. D., et al. (2022). End-to-end low-cost IoT system for dense PM monitoring in Hyderabad, India. 
+Rajesh, M., Babu, R. G., Moorthy, U., & Easwaramoorthy, S. (2025). Real-time air quality assessment and health risk prediction framework. Scientific Reports.
+Sabado, W. (2024). Systematic literature review on low-cost technologies for air quality monitoring in the Philippines.
+Shahariar, S. M., Chowdhury, S., & Chaity, T. T. (2025). Low-cost IoT-based system for real-time air quality monitoring in Cumilla, Bangladesh. [Details not fully provided in the uploaded chapter].
+Tan, K., & Lim, J. (2021). Singapore’s NEA Air Quality Monitoring System. Asian Environmental Journal, 19(2), 145–160.
+Torres, M. (2019). Boracay Environmental Monitoring System. Philippine Tourism and Environment Journal, 7(1), 23–39.
+U.S. Environmental Protection Agency. (2022). AirNow: National air quality monitoring. EPA Publications.
+U.S. Environmental Protection Agency. (n.d.). AirNow. https://www.airnow.gov/
+World Health Organization. (2024). Ambient (outdoor) air pollution. https://www.who.int/news-room/fact-sheets/detail/ambient-(outdoor)-air-quality-and-health
+Yamamoto, T. (2018). Atmospheric Environmental Regional Observation System (AEROS). Japanese Journal of Environmental Science, 22(3), 99–115.
+Aleryani, R., Alsabry, A., & Alramanda, E. (2025). Systematic Review of Agile Development Methodologies: Practices, Benefits, Implementation Challenges, and Future Directions.
+Bognyukov, A., Zorkin, D. Y., & Tarasova, I. (2025). Using project planning tools: Gantt chart and network diagram. Izvestiya SFedU. Engineering Sciences. https://doi.org/10.18522/2311-3103-2025-4-102-110
+Enrique, C., Salvador, P., Alsamrai, O., Redel-Macia, M., & Dorado, M. (2025). Real-Time Intelligent Monitoring of Outdoor Air Quality in an Urban Environment Using IoT and Machine Learning Algorithms, Applied Sciences. https://www.mdpi.com/2076-3417/15/16/9088
+M.Sobhana, S., Lingamallu, M., Devi, L., & Pali, R. (2025). IoT-Driven Air Quality Monitoring and Predictive Analysis with Explainable AI, 2025 6th International Conference on Intelligent Communication Technologies and Virtual Mobile Networks (ICICV). https://ieeexplore.ieee.org/document/11085506
+Vie, D. (200). GUIDELINES FOR PRODUCING DFDS Why They Aren ’ t Called “ Rules.
