@@ -172,11 +172,14 @@ if (isset($_GET['latest'])) {
                 <button class="info-btn" onclick="toggleTip(this)">i</button>
                 <div class="info-tip">
                     <div class="tip-title">Daily Summary</div>
-                    <div class="tip-row"><span class="tip-label">Method</span><span class="tip-val">Database aggregation &amp; comparisons</span></div>
-                    <div class="tip-row"><span class="tip-label">What it does</span><span class="tip-val">Compares today's average, minimum, and maximum readings against yesterday's.</span></div>
-                    <div class="tip-row"><span class="tip-label">Refresh</span><span class="tip-val">Every 60 seconds</span></div>
-                    <hr class="tip-divider">
-                    <div class="tip-row"><span class="tip-label">Script</span><span class="tip-val">daily_summary.py</span></div>
+                    <div style="font-size: 11px; line-height: 1.5; color: var(--text); margin-bottom: 12px;">
+                        <strong>Method:</strong> Database aggregation &amp; comparisons.<br>
+                        <strong>Function:</strong> Compares today's average, minimum, and maximum readings against yesterday's.
+                    </div>
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 10px; font-size: 11px; color: var(--muted); line-height: 1.5;">
+                        <strong style="color:var(--accent);">System Info:</strong><br>
+                        Updates every 60 seconds via <strong>daily_summary.py</strong>.
+                    </div>
                 </div>
                 <span class="panel-tag" id="daily-tag">loading…</span>
             </div>
@@ -221,12 +224,14 @@ if (isset($_GET['latest'])) {
                 <button class="info-btn" onclick="toggleTip(this)">i</button>
                 <div class="info-tip">
                     <div class="tip-title">Anomaly Detection System</div>
-                    <div class="tip-row"><span class="tip-label">Method</span><span class="tip-val">Isolation Forest + Z-Score Explainability</span></div>
-                    <div class="tip-row"><span class="tip-label">What it does</span><span class="tip-val">Isolation Forest isolates anomalies via random partitioning trees. Z-scores are then used to explain which sensors caused the anomaly.</span></div>
-                    <div class="tip-row"><span class="tip-label">Contamination</span><span class="tip-val">5% expected outliers</span></div>
-                    <div class="tip-row"><span class="tip-label">Refresh</span><span class="tip-val">Every 20 seconds</span></div>
-                    <hr class="tip-divider">
-                    <div class="tip-row"><span class="tip-label">Script</span><span class="tip-val">detect_anomaly.py</span></div>
+                    <div style="font-size: 11px; line-height: 1.5; color: var(--text); margin-bottom: 12px;">
+                        <strong>Method:</strong> Isolation Forest + Z-Score Explainability.<br>
+                        <strong>Function:</strong> Isolation Forest isolates anomalies via random partitioning trees. Z-scores are then used to explain which sensors caused the anomaly.
+                    </div>
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 10px; font-size: 11px; color: var(--muted); line-height: 1.5;">
+                        <strong style="color:var(--accent);">System Info:</strong><br>
+                        Configured for 5% expected outliers (contamination). Updates every 20 seconds via <strong>detect_anomaly.py</strong>.
+                    </div>
                 </div>
                 <span class="panel-tag" id="anomaly-tag">loading…</span>
             </div>
@@ -263,12 +268,15 @@ if (isset($_GET['latest'])) {
                 <button class="info-btn" onclick="toggleTip(this)">i</button>
                 <div class="info-tip">
                     <div class="tip-title">AQI Forecast Model</div>
-                    <div class="tip-row"><span class="tip-label">Method</span><span class="tip-val">Random Forest Regressor (Ensemble ML)</span></div>
-                    <div class="tip-row"><span class="tip-label">What it does</span><span class="tip-val">Learns non-linear relationships across ALL sensor metrics (10 features) over the last 7 days to predict +1h, +2h, +3h AQI.</span></div>
-                    <div class="tip-row"><span class="tip-label">Features</span><span class="tip-val">Temp, Hum, PM10, VOC, time-of-day, rolling averages, rates of change</span></div>
-                    <div class="tip-row"><span class="tip-label">Refresh</span><span class="tip-val">Every 30 seconds</span></div>
-                    <hr class="tip-divider">
-                    <div class="tip-row"><span class="tip-label">Script</span><span class="tip-val">rf_predictor.py</span></div>
+                    <div style="font-size: 11px; line-height: 1.5; color: var(--text); margin-bottom: 12px;">
+                        <strong>Method:</strong> Random Forest Regressor (Ensemble ML).<br>
+                        <strong>Function:</strong> Learns non-linear relationships across ALL sensor metrics (10 features) over the last 7 days to predict +1h, +2h, +3h AQI.<br>
+                        <strong>Features:</strong> Temp, Hum, PM10, VOC, time-of-day, rolling averages, rates of change.
+                    </div>
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 10px; font-size: 11px; color: var(--muted); line-height: 1.5;">
+                        <strong style="color:var(--accent);">System Info:</strong><br>
+                        Updates every 30 seconds via <strong>rf_predictor.py</strong>.
+                    </div>
                 </div>
                 <span class="panel-tag" id="trend-tag">loading…</span>
             </div>
@@ -440,7 +448,7 @@ if (isset($_GET['latest'])) {
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=5')
+        navigator.serviceWorker.register('./sw.js?update=6')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update(); // Force update check
