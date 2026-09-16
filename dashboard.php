@@ -245,10 +245,10 @@ if (isset($_GET['latest'])) {
 <!--  ROW 2 — ENVIRONMENT INTELLIGENCE (Trend, Anomaly, Daily) -->
 <!-- ═══════════════════════════════════════════════════ -->
 <span class="section-label">Advanced Analytics & Diagnostics</span>
-<div class="status-row"><!-- 📅 Daily Summary -->
+<div class="status-row"><!-- <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Daily Summary -->
     <div class="panel">
         <div class="panel-header">
-            <span class="panel-title">📅 Daily Summary</span>
+            <span class="panel-title"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Daily Summary</span>
             <div class="header-right">
                 <button class="info-btn" onclick="toggleTip(this)">i</button>
                 <div class="info-tip">
@@ -300,7 +300,7 @@ if (isset($_GET['latest'])) {
 <!-- 📊 Spike Detection -->
     <div class="panel">
         <div class="panel-header">
-            <span class="panel-title">📊 Anomaly Detection</span>
+            <span class="panel-title"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg> Anomaly Detection</span>
             <div class="header-right">
                 <button class="info-btn" onclick="toggleTip(this)">i</button>
                 <div class="info-tip">
@@ -363,7 +363,7 @@ if (isset($_GET['latest'])) {
     <!-- 📈 Trend Forecast -->
     <div class="panel">
         <div class="panel-header">
-            <span class="panel-title">📈 AQI Forecast</span>
+            <span class="panel-title"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg> AQI Forecast</span>
             <div class="header-right">
                 <button class="info-btn" onclick="toggleTip(this)">i</button>
                 <div class="info-tip">
@@ -484,10 +484,10 @@ if (isset($_GET['latest'])) {
     </div>
     <div class="menu-content">
         <a href="downloads/eco_quality.apk" class="menu-link apk-dl-btn" download onclick="closeMenu();">
-            <svg class="icon" style="width: 16px; height: 16px; margin-right: 8px; fill: currentColor; vertical-align: text-bottom;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M420.2 181.8c2.1-1.7 4.9-2.5 7.6-2.5 6.6 0 12 5.4 12 12 0 3.2-1.3 6.3-3.5 8.5l-50 49.3c58.2 30.5 98.4 89.2 101.4 157.9H88.3c3-68.7 43.3-127.4 101.4-157.9l-50-49.3c-2.2-2.2-3.5-5.3-3.5-8.5 0-6.6 5.4-12 12-12 2.7 0 5.5 .8 7.6 2.5l52 42.4c31.1-14.7 65.3-22.7 101.2-22.7s70 8 101.2 22.7l52-42.4zM224 288c-17.7 0-32 14.3-32 32s14.3 32 32 32 32-14.3 32-32-14.3-32-32-32zm128 0c-17.7 0-32 14.3-32 32s14.3 32 32 32 32-14.3 32-32-14.3-32-32-32z"/></svg> Android App
+            <svg class="icon" style="width: 16px; height: 16px; margin-right: 8px; fill: currentColor; vertical-align: text-bottom;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M420.2 181.8c2.1-1.7 4.9-2.5 7.6-2.5 6.6 0 12 5.4 12 12 0 3.2-1.3 6.3-3.5 8.5l-50 49.3c58.2 30.5 98.4 89.2 101.4 157.9H88.3c3-68.7 43.3-127.4 101.4-157.9l-50-49.3c-2.2-2.2-3.5-5.3-3.5-8.5 0-6.6 5.4-12 12-12 2.7 0 5.5 .8 7.6 2.5l52 42.4c31.1-14.7 65.3-22.7 101.2-22.7s70 8 101.2 22.7l52-42.4zM224 288c-17.7 0-32 14.3-32 32s14.3 32 32 32 32-14.3 32-32-14.3-32-32-32zm128 0c-17.7 0-32 14.3-32 32s14.3 32 32 32 32-14.3 32-32-14.3-32-32-32z"/></svg> Android
         </a>
         <button onclick="showIosInstructions(); closeMenu();" class="menu-link apk-dl-btn">
-            <svg class="icon" style="width: 14px; height: 14px; margin-right: 9px; margin-left: 1px; fill: currentColor; vertical-align: text-bottom;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 24 184.8 8 273.5q-1.9 10.9-1.9 22.5c0 71.5 26 133.9 66.5 190.7 21.6 30.2 46.2 56 79.5 56 31 0 46-19.1 82.2-19.1 36.3 0 49.3 19 82.2 19 33.7 0 57.3-25.2 79.5-56 22-29.4 34.6-60.5 40.5-66.5-1.3-.9-58.8-22.3-58.8-90.4zM245.9 83c20.3-25.7 33-61.9 29-99-31.5 1.5-68.9 21.4-89.8 46.9-17.7 21.6-32.2 58.7-27.5 94.6 34.6 2.6 67.9-16.7 88.3-42.5z"/></svg> Install on iPhone
+            <svg class="icon" style="width: 14px; height: 14px; margin-right: 9px; margin-left: 1px; fill: currentColor; vertical-align: text-bottom;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 24 184.8 8 273.5q-1.9 10.9-1.9 22.5c0 71.5 26 133.9 66.5 190.7 21.6 30.2 46.2 56 79.5 56 31 0 46-19.1 82.2-19.1 36.3 0 49.3 19 82.2 19 33.7 0 57.3-25.2 79.5-56 22-29.4 34.6-60.5 40.5-66.5-1.3-.9-58.8-22.3-58.8-90.4zM245.9 83c20.3-25.7 33-61.9 29-99-31.5 1.5-68.9 21.4-89.8 46.9-17.7 21.6-32.2 58.7-27.5 94.6 34.6 2.6 67.9-16.7 88.3-42.5z"/></svg> iOS
         </button>
         <hr class="menu-divider">
         <button onclick="nativeShare(); closeMenu();" class="menu-link">
@@ -544,11 +544,11 @@ if (isset($_GET['latest'])) {
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=19" defer></script>
+<script src="assets/js/dashboard.js?v=20" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=14')
+        navigator.serviceWorker.register('./sw.js?update=15')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update(); // Force update check
