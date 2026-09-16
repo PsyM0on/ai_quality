@@ -339,11 +339,11 @@ if (isset($_GET['latest'])) {
             
             <div id="stuck-wrap"></div>
             
-            <!-- 🤖 Pollution Source Diagnostic & Root Cause Attribution -->
+            <!-- Pollution Source Diagnostic & Root Cause Attribution -->
             <div class="source-fingerprint-box" id="source_fingerprint_wrap" style="margin-top: 15px; border-top: 1px solid var(--border); padding-top: 10px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                     <span style="font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--mono); display: flex; align-items: center; gap: 4px;">
-                        <span>🤖</span> Pollution Source Diagnostic
+                        Pollution Source Diagnostic
                     </span>
                     <span id="source_confidence_badge" style="font-size: 9.5px; padding: 2px 6px; border-radius: 4px; background: rgba(0, 207, 168, 0.1); color: var(--accent); font-family: var(--mono); font-weight: 600;">Match —</span>
                 </div>
@@ -544,11 +544,11 @@ if (isset($_GET['latest'])) {
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=16" defer></script>
+<script src="assets/js/dashboard.js?v=17" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=11')
+        navigator.serviceWorker.register('./sw.js?update=12')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update(); // Force update check
