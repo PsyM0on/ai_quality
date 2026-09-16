@@ -579,7 +579,7 @@ function loadAnomaly() {
             ifWrap.style.display = 'none';
         }
 
-        // Handle AI Source Fingerprinting & Root Cause Attribution
+        // Handle Pollution Source Diagnostics & Root Cause Attribution
         if (d.source_attribution) {
             const sa = d.source_attribution;
             const badge = document.getElementById('source_confidence_badge');

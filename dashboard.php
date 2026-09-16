@@ -217,7 +217,7 @@ if (isset($_GET['latest'])) {
         <div class="card-value skeleton" id="temp">00.0</div>
         <div class="card-unit">°C Ambient</div>
         <div id="heat-index-wrap" style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--border); font-size: 11px; font-family: var(--mono); display: flex; justify-content: space-between; align-items: center;">
-            <span style="color: var(--muted); font-size: 10px;">PAGASA HI:</span>
+            <span style="color: var(--muted); font-size: 10px;">Status:</span>
             <span id="heat_index_val" style="font-weight: 600; color: var(--accent); font-size: 11px;">—</span>
         </div>
     </div>
@@ -339,11 +339,11 @@ if (isset($_GET['latest'])) {
             
             <div id="stuck-wrap"></div>
             
-            <!-- 🤖 AI Source Fingerprint & Root Cause Attribution -->
+            <!-- 🤖 Pollution Source Diagnostic & Root Cause Attribution -->
             <div class="source-fingerprint-box" id="source_fingerprint_wrap" style="margin-top: 15px; border-top: 1px solid var(--border); padding-top: 10px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                     <span style="font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--mono); display: flex; align-items: center; gap: 4px;">
-                        <span>🤖</span> AI Source Fingerprint
+                        <span>🤖</span> Pollution Source Diagnostic
                     </span>
                     <span id="source_confidence_badge" style="font-size: 9.5px; padding: 2px 6px; border-radius: 4px; background: rgba(0, 207, 168, 0.1); color: var(--accent); font-family: var(--mono); font-weight: 600;">Match —</span>
                 </div>
@@ -403,7 +403,7 @@ if (isset($_GET['latest'])) {
             <div class="trend-msg" id="trend_msg">—</div>
             
             <div class="feature-importance-wrapper" style="margin-top: 15px; border-top: 1px solid var(--border); padding-top: 10px; display: none;" id="feat_wrap">
-                <div style="font-size: 0.75rem; color: var(--muted); margin-bottom: 8px;">Key Prediction Drivers (Feature Importance)</div>
+                <div style="font-size: 0.75rem; color: var(--muted); margin-bottom: 8px;">Key Prediction Drivers</div>
                 <div id="feat_list" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
             </div>
             
@@ -544,11 +544,11 @@ if (isset($_GET['latest'])) {
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=12" defer></script>
+<script src="assets/js/dashboard.js?v=13" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=7')
+        navigator.serviceWorker.register('./sw.js?update=8')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update(); // Force update check
