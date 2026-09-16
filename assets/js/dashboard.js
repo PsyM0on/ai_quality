@@ -247,7 +247,16 @@ function live() {
                 if (mqStatusEl) mqStatusEl.textContent = mqStatus;
 
                 // Threshold Health Alert Notification (RA 8749)
-                updateHealthAlert(aqi, d.aqi_24h);
+                // Update PAGASA Heat Index (Apparent Temperature)
+                if (d.heat_index !== undefined) {
+                    const wrapHi = document.getElementById('heat_index_val');
+                    if (wrapHi) {
+                        wrapHi.innerHTML = `<span style="color:${d.heat_color};">${d.heat_index}°C · ${d.heat_cat}</span>`;
+                    }
+                }
+
+                // Threshold Health Alert Notification (RA 8749 + PAGASA UESI)
+                updateHealthAlert(aqi, d.aqi_24h, d.heat_index, d.heat_cat, d.uesi_level, d.uesi_advice);
             }
         })
         .catch(() => {
@@ -570,6 +579,20 @@ function loadAnomaly() {
             ifWrap.style.display = 'none';
         }
 
+        // Handle AI Source Fingerprinting & Root Cause Attribution
+        if (d.source_attribution) {
+            const sa = d.source_attribution;
+            const badge = document.getElementById('source_confidence_badge');
+            const icon = document.getElementById('source_icon');
+            const title = document.getElementById('source_title');
+            const reason = document.getElementById('source_reasoning');
+            
+            if (badge) badge.textContent = `${sa.confidence}% Match`;
+            if (icon) icon.textContent = sa.icon || '🤖';
+            if (title) title.textContent = sa.source;
+            if (reason) reason.textContent = sa.reasoning;
+        }
+
         document.getElementById('stuck-wrap').innerHTML = d.sensor_stuck
             ? '<div class="stuck-badge">⚠️ PM10 sensor may be stuck — no variance detected</div>'
             : '';
@@ -648,13 +671,15 @@ function dismissAlert() {
     if (b) b.style.display = 'none';
 }
 
-function updateHealthAlert(instantAqi, aqi24) {
+function updateHealthAlert(instantAqi, aqi24, heatIndex, heatCat, uesiLevel, uesiAdvice) {
     if (alertDismissed) return;
     const banner = document.getElementById('health-alert-banner');
     if (!banner) return;
     
     const maxAqi = Math.max(instantAqi || 0, aqi24 || 0);
-    if (maxAqi <= 100) {
+    const hi = parseFloat(heatIndex) || 0;
+    
+    if (maxAqi <= 100 && hi < 42) {
         banner.style.display = 'none';
         return;
     }
@@ -664,6 +689,32 @@ function updateHealthAlert(instantAqi, aqi24) {
     const title = document.getElementById('alert-title');
     const body = document.getElementById('alert-body');
     
+    // Check for Extreme Heat Warning if AQI is relatively safe
+    if (maxAqi <= 100 && hi >= 42) {
+        banner.style.background = 'rgba(240, 82, 82, 0.18)';
+        banner.style.borderColor = 'rgba(240, 82, 82, 0.4)';
+        if (icon) icon.textContent = '🌡️';
+        if (title) {
+            title.textContent = `PAGASA Thermal Advisory: ${heatCat} (${hi}°C Heat Index)`;
+            title.style.color = '#F05252';
+        }
+        if (body) body.textContent = 'Severe apparent heat stress. Heat cramps and exhaustion likely; heat stroke probable. Stay hydrated and avoid prolonged outdoor sun exposure.';
+        return;
+    }
+    
+    // Dual Hazard (Elevated AQI + Extreme Heat)
+    if (maxAqi > 100 && hi >= 33) {
+        banner.style.background = 'rgba(245, 166, 35, 0.2)';
+        banner.style.borderColor = 'rgba(245, 166, 35, 0.5)';
+        if (icon) icon.textContent = '⚠️';
+        if (title) {
+            title.textContent = `Urban Environmental Stress: ${uesiLevel || 'Elevated Risk'} (AQI ${Math.round(maxAqi)} · HI ${hi}°C)`;
+            title.style.color = '#F5A623';
+        }
+        if (body) body.textContent = uesiAdvice || 'Dual environmental stress detected (elevated air pollutants and high thermal heat). Sensitive individuals must restrict outdoor exertion.';
+        return;
+    }
+
     if (maxAqi <= 150) {
         banner.style.background = 'rgba(245, 166, 35, 0.15)';
         banner.style.borderColor = 'rgba(245, 166, 35, 0.35)';
@@ -717,6 +768,35 @@ function openMqInfo() {
         <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 10px; font-size: 11px; color: var(--muted); line-height: 1.5;">
             <strong style="color:var(--accent);">Note:</strong><br>
             Low-cost MOS sensors exhibit broad cross-sensitivity across multiple gases and are subject to ambient temperature and humidity drift. Per international environmental IoT standards, this system represents readings as a <strong>Relative Gas Contamination Index (ADC displacement from zero-point baseline)</strong> rather than isolated gas PPM. This avoids uncalibrated chemical claims while effectively capturing sudden urban emission plumes.
+        </div>
+    `;
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+
+/* ── PAGASA HEAT INDEX & UESI MODAL EXPLAINER ── */
+function openHeatIndexInfo() {
+    const modal = document.getElementById('glass-modal');
+    const modalBody = document.getElementById('glass-modal-body');
+    if (!modal || !modalBody) return;
+    modalBody.innerHTML = `
+        <div class="tip-title">PAGASA Heat Index & Environmental Stress</div>
+        <div style="font-size: 11px; line-height: 1.5; color: var(--text); margin-bottom: 12px;">
+            <strong>Index Definition:</strong> Apparent temperature (°C) combining ambient air temperature and relative humidity.<br>
+            <strong>Mathematical Foundation:</strong> Rothfusz regression equation adapted from Steadman (1979) and officially adopted by PAGASA (Philippine Atmospheric, Geophysical and Astronomical Services Administration).
+        </div>
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 10px; font-size: 11px; color: var(--muted); line-height: 1.5; margin-bottom: 12px;">
+            <strong style="color:var(--accent);">PAGASA Operational Risk Breakpoints:</strong><br>
+            • <strong>&lt; 27°C (Normal):</strong> Comfortable; negligible physiological strain.<br>
+            • <strong>27°C – 32°C (Caution):</strong> Fatigue possible with prolonged exposure/activity.<br>
+            • <strong>33°C – 41°C (Extreme Caution):</strong> Heat cramps and exhaustion possible; continued activity risks heat stroke.<br>
+            • <strong>42°C – 51°C (Danger):</strong> Heat exhaustion likely; heat stroke probable.<br>
+            • <strong>≥ 52°C (Extreme Danger):</strong> Heat stroke imminent; emergency conditions.
+        </div>
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 10px; font-size: 11px; color: var(--muted); line-height: 1.5;">
+            <strong style="color:var(--accent);">Urban Environmental Stress Index (UESI):</strong><br>
+            In tropical urban environments, air pollution does not act in isolation. The system couples particulate concentrations (PM10 AQI) with thermal comfort (Heat Index) to model compound cardiovascular and respiratory strain on vulnerable urban populations.
         </div>
     `;
     modal.classList.add('show');

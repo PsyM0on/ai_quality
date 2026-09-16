@@ -52,6 +52,80 @@ if (isset($_GET['latest'])) {
         $latest['pm10_24h'] = $pm10_24h;
         $latest['aqi_24h'] = $aqi_24h;
         $latest['count_24h'] = $avg_row ? intval($avg_row['count_24h']) : 0;
+
+        // ─────────────────────────────────────────────────────────────
+        // PAGASA Heat Index Calculation (Philippine Atmospheric, Geophysical 
+        // and Astronomical Services Administration)
+        // ─────────────────────────────────────────────────────────────
+        $T_c = floatval($latest['temp']);
+        $RH = floatval($latest['hum']);
+        $T_f = ($T_c * 9/5) + 32;
+        
+        if ($T_f < 80) {
+            $HI_f = 0.5 * ($T_f + 61.0 + (($T_f - 68.0) * 1.2) + ($RH * 0.094));
+        } else {
+            $HI_f = -42.379 + (2.04901523 * $T_f) + (10.14333127 * $RH) 
+                    - (0.22475541 * $T_f * $RH) - (0.00683783 * $T_f * $T_f) 
+                    - (0.05481717 * $RH * $RH) + (0.00122874 * $T_f * $T_f * $RH) 
+                    + (0.00085282 * $T_f * $RH * $RH) - (0.00000199 * $T_f * $T_f * $RH * $RH);
+                    
+            if ($RH < 13 && $T_f >= 80 && $T_f <= 112) {
+                $adj = ((13 - $RH) / 4) * sqrt((17 - abs($T_f - 95)) / 17);
+                $HI_f -= $adj;
+            } elseif ($RH > 85 && $T_f >= 80 && $T_f <= 87) {
+                $adj = (($RH - 85) / 10) * ((87 - $T_f) / 5);
+                $HI_f += $adj;
+            }
+        }
+        
+        $HI_c = round(($HI_f - 32) * 5/9, 1);
+        
+        if ($HI_c < 27) {
+            $hi_cat = "Normal";
+            $hi_color = "#00CFA8";
+            $hi_desc = "Minimal thermal stress.";
+        } elseif ($HI_c <= 32) {
+            $hi_cat = "Caution";
+            $hi_color = "#4C9EEB";
+            $hi_desc = "Fatigue possible with prolonged exposure.";
+        } elseif ($HI_c <= 41) {
+            $hi_cat = "Extreme Caution";
+            $hi_color = "#F5A623";
+            $hi_desc = "Heat cramps and heat exhaustion possible.";
+        } elseif ($HI_c <= 51) {
+            $hi_cat = "Danger";
+            $hi_color = "#F05252";
+            $hi_desc = "Heat exhaustion likely; heat stroke probable.";
+        } else {
+            $hi_cat = "Extreme Danger";
+            $hi_color = "#C084FC";
+            $hi_desc = "Heat stroke imminent with continued exposure.";
+        }
+        
+        $latest['heat_index'] = $HI_c;
+        $latest['heat_cat'] = $hi_cat;
+        $latest['heat_color'] = $hi_color;
+        $latest['heat_desc'] = $hi_desc;
+
+        // Urban Environmental Stress Index (UESI)
+        $inst_aqi = floatval($latest['aqi']);
+        $max_aqi_val = max($inst_aqi, $aqi_24h);
+        if ($max_aqi_val > 150 || $HI_c >= 42) {
+            $uesi_level = "High Environmental Stress";
+            $uesi_color = "#F05252";
+            $uesi_advice = "Dual hazard: High pollution and severe thermal heat. Vulnerable individuals avoid outdoor exertion.";
+        } elseif ($max_aqi_val > 100 || $HI_c >= 33) {
+            $uesi_level = "Moderate Environmental Stress";
+            $uesi_color = "#F5A623";
+            $uesi_advice = "Elevated environmental factor detected. Stay hydrated and limit prolonged roadside exertion.";
+        } else {
+            $uesi_level = "Optimal Urban Conditions";
+            $uesi_color = "#00CFA8";
+            $uesi_advice = "Normal atmospheric dispersion and comfortable thermal conditions.";
+        }
+        $latest['uesi_level'] = $uesi_level;
+        $latest['uesi_color'] = $uesi_color;
+        $latest['uesi_advice'] = $uesi_advice;
     }
     
     echo json_encode($latest);
@@ -135,10 +209,17 @@ if (isset($_GET['latest'])) {
             <span id="aqi_24h_val" style="font-weight: 600; color: var(--accent); font-size: 11px;">—</span>
         </div>
     </div>
-    <div class="card">
-        <div class="card-label">Temperature</div>
+    <div class="card" id="temp-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+            <div class="card-label" style="margin-bottom: 0;">Temperature</div>
+            <button type="button" class="info-btn" onclick="openHeatIndexInfo()" style="width: 14px; height: 14px; font-size: 9px; line-height: 12px; cursor: pointer;" title="PAGASA Heat Index Scope">i</button>
+        </div>
         <div class="card-value skeleton" id="temp">00.0</div>
-        <div class="card-unit">°C</div>
+        <div class="card-unit">°C Ambient</div>
+        <div id="heat-index-wrap" style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--border); font-size: 11px; font-family: var(--mono); display: flex; justify-content: space-between; align-items: center;">
+            <span style="color: var(--muted); font-size: 10px;">PAGASA HI:</span>
+            <span id="heat_index_val" style="font-weight: 600; color: var(--accent); font-size: 11px;">—</span>
+        </div>
     </div>
     <div class="card">
         <div class="card-label">Humidity</div>
@@ -257,6 +338,25 @@ if (isset($_GET['latest'])) {
             </div>
             
             <div id="stuck-wrap"></div>
+            
+            <!-- 🤖 AI Source Fingerprint & Root Cause Attribution -->
+            <div class="source-fingerprint-box" id="source_fingerprint_wrap" style="margin-top: 15px; border-top: 1px solid var(--border); padding-top: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <span style="font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--mono); display: flex; align-items: center; gap: 4px;">
+                        <span>🤖</span> AI Source Fingerprint
+                    </span>
+                    <span id="source_confidence_badge" style="font-size: 9.5px; padding: 2px 6px; border-radius: 4px; background: rgba(0, 207, 168, 0.1); color: var(--accent); font-family: var(--mono); font-weight: 600;">Match —</span>
+                </div>
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                        <span id="source_icon" style="font-size: 1.1rem;">🍃</span>
+                        <strong id="source_title" style="font-size: 11.5px; color: var(--text); font-family: var(--sans);">Assessing…</strong>
+                    </div>
+                    <div id="source_reasoning" style="font-size: 10.5px; color: var(--muted); line-height: 1.4; font-family: var(--mono);">
+                        Analyzing multi-sensor covariance, emission rate of change, and diurnal cycles…
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -444,11 +544,11 @@ if (isset($_GET['latest'])) {
     </div>
 </div>
 
-<script src="assets/js/dashboard.js" defer></script>
+<script src="assets/js/dashboard.js?v=12" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=6')
+        navigator.serviceWorker.register('./sw.js?update=7')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update(); // Force update check
