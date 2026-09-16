@@ -12,4 +12,5 @@ command_result_*.txt
 Thumbs.db
 
 *.joblib
-ai/models/*.joblib
+ai/models/*
+!ai/models/.gitkeep
