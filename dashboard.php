@@ -24,7 +24,37 @@ if (isset($_GET['latest'])) {
     header("Pragma: no-cache");
     header("Content-Type: application/json");
     $result = $conn->query("SELECT *, UNIX_TIMESTAMP(timestamp) as ts_unix, UNIX_TIMESTAMP() as now_unix FROM telemetry_raw ORDER BY id DESC LIMIT 1");
-    echo json_encode($result->fetch_assoc());
+    $latest = $result ? $result->fetch_assoc() : null;
+    
+    if ($latest) {
+        // Compute 24-Hour Rolling Average for PM10 (RA 8749 Compliance Standard)
+        $avg_res = $conn->query("SELECT AVG(pm10) as pm10_24h, COUNT(*) as count_24h FROM telemetry_raw WHERE `timestamp` >= NOW() - INTERVAL 24 HOUR");
+        $avg_row = $avg_res ? $avg_res->fetch_assoc() : null;
+        $pm10_24h = ($avg_row && $avg_row['pm10_24h'] !== null) ? round(floatval($avg_row['pm10_24h']), 1) : floatval($latest['pm10']);
+        
+        // Philippine DENR EMB Breakpoints for PM10 (ug/m3, 24-hr avg, DAO 2000-81)
+        $bp = [
+            [0, 54, 0, 50],
+            [55, 154, 51, 100],
+            [155, 254, 101, 150],
+            [255, 354, 151, 200],
+            [355, 424, 201, 300],
+            [425, 604, 301, 500]
+        ];
+        $aqi_24h = 500;
+        foreach ($bp as $b) {
+            list($cl, $ch, $il, $ih) = $b;
+            if ($pm10_24h >= $cl && $pm10_24h <= $ch) {
+                $aqi_24h = round((($ih - $il) / ($ch - $cl)) * ($pm10_24h - $cl) + $il);
+                break;
+            }
+        }
+        $latest['pm10_24h'] = $pm10_24h;
+        $latest['aqi_24h'] = $aqi_24h;
+        $latest['count_24h'] = $avg_row ? intval($avg_row['count_24h']) : 0;
+    }
+    
+    echo json_encode($latest);
     exit;
 }
 ?>
@@ -74,6 +104,18 @@ if (isset($_GET['latest'])) {
 </header>
 </div>
 
+<!-- 🚨 RA 8749 PUBLIC HEALTH ALERT BANNER -->
+<div id="health-alert-banner" class="health-alert-banner" style="display: none;">
+    <div class="alert-content">
+        <span class="alert-icon" id="alert-icon">⚠️</span>
+        <div class="alert-text">
+            <strong id="alert-title">AIR QUALITY ADVISORY (RA 8749)</strong>
+            <span id="alert-body">Air pollution levels require attention.</span>
+        </div>
+    </div>
+    <button class="alert-close" onclick="dismissAlert()">&times;</button>
+</div>
+
 <main class="main">
 
 <!-- ═══════════════════════════════════════════════════ -->
@@ -82,9 +124,16 @@ if (isset($_GET['latest'])) {
 <span class="section-label">Live Readings</span>
 <div class="cards">
     <div class="card" id="aqi-card">
-        <div class="card-label">Air Quality Index</div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+            <div class="card-label" style="margin-bottom: 0;">Air Quality Index</div>
+            <span id="aqi-mode-badge" style="font-size: 8.5px; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.06); font-family: var(--mono); color: var(--muted); text-transform: uppercase;">Real-Time NowCast</span>
+        </div>
         <div class="card-value skeleton" id="aqi">000</div>
         <div class="card-unit skeleton" id="aqi-label">Loading Data</div>
+        <div id="aqi-compliance-wrap" style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--border); font-size: 11px; font-family: var(--mono); display: flex; justify-content: space-between; align-items: center;">
+            <span style="color: var(--muted); font-size: 10px;">24-hr RA 8749:</span>
+            <span id="aqi_24h_val" style="font-weight: 600; color: var(--accent); font-size: 11px;">—</span>
+        </div>
     </div>
     <div class="card">
         <div class="card-label">Temperature</div>
@@ -96,10 +145,13 @@ if (isset($_GET['latest'])) {
         <div class="card-value skeleton" id="hum">00.0</div>
         <div class="card-unit">%</div>
     </div>
-    <div class="card">
-        <div class="card-label">MQ135 / VOC</div>
+    <div class="card" id="mq-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+            <div class="card-label" style="margin-bottom: 0;">Gas Contaminants</div>
+            <button type="button" class="info-btn" onclick="openMqInfo()" style="width: 14px; height: 14px; font-size: 9px; line-height: 12px; cursor: pointer;" title="MQ-135 Sensor Scope">i</button>
+        </div>
         <div class="card-value skeleton" id="mq">000</div>
-        <div class="card-unit">raw</div>
+        <div class="card-unit" id="mq-status-label">Relative ADC Index</div>
     </div>
     <div class="card">
         <div class="card-label">PM10</div>
@@ -243,8 +295,45 @@ if (isset($_GET['latest'])) {
             <div class="trend-msg" id="trend_msg">—</div>
             
             <div class="feature-importance-wrapper" style="margin-top: 15px; border-top: 1px solid var(--border); padding-top: 10px; display: none;" id="feat_wrap">
-                <div style="font-size: 0.75rem; color: var(--muted); margin-bottom: 5px;">Model Drivers (Top 3)</div>
+                <div style="font-size: 0.75rem; color: var(--muted); margin-bottom: 8px;">Key Prediction Drivers (Feature Importance)</div>
                 <div id="feat_list" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+            </div>
+            
+            <!-- Model Validation Benchmark (Academic Defense Component) -->
+            <div class="model-benchmark-box" id="model-benchmark-box" style="margin-top: 15px; border-top: 1px solid var(--border); padding-top: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <span style="font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--mono);">Model Evaluation (7-Day Benchmark)</span>
+                    <span id="bm-r2" style="font-size: 0.75rem; color: var(--accent); font-family: var(--mono); font-weight: bold;">R²: —</span>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="benchmark-mini-table">
+                        <thead>
+                            <tr>
+                                <th>Architecture</th>
+                                <th>MAE</th>
+                                <th>R² Score</th>
+                                <th>Metric</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="rf-row">
+                                <td><strong>Random Forest (100 Trees)</strong></td>
+                                <td id="bm-rf-mae">—</td>
+                                <td id="bm-rf-r2">—</td>
+                                <td><span class="bm-badge active">Selected</span></td>
+                            </tr>
+                            <tr class="lr-row">
+                                <td>Linear Regression (Baseline)</td>
+                                <td id="bm-lr-mae">—</td>
+                                <td id="bm-lr-r2">Baseline</td>
+                                <td><span class="bm-badge baseline">Reference</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="bm-summary" style="font-size: 10px; color: var(--muted); font-family: var(--mono); margin-top: 6px;">
+                    Ensemble ML achieves <span id="bm-imp" style="color: var(--accent); font-weight: bold;">—%</span> error reduction over baseline.
+                </div>
             </div>
         </div>
     </div>
@@ -351,7 +440,7 @@ if (isset($_GET['latest'])) {
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=4')
+        navigator.serviceWorker.register('./sw.js?update=5')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update(); // Force update check
