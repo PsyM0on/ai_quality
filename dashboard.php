@@ -210,15 +210,15 @@ if (isset($_GET['latest'])) {
         </div>
     </div>
     <div class="card" id="temp-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
-            <div class="card-label" style="margin-bottom: 0;">Temperature</div>
-            <button type="button" class="info-btn" onclick="openHeatIndexInfo()" style="width: 14px; height: 14px; font-size: 9px; line-height: 12px; cursor: pointer;" title="PAGASA Heat Index Scope">i</button>
-        </div>
+        <div class="card-label">Temperature</div>
         <div class="card-value skeleton" id="temp">00.0</div>
         <div class="card-unit">°C Ambient</div>
         <div id="heat-index-wrap" style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--border); font-size: 11px; font-family: var(--mono); display: flex; justify-content: space-between; align-items: center;">
-            <span style="color: var(--muted); font-size: 10px;">Heat Index:</span>
-            <span id="heat_index_val" style="font-weight: 600; color: var(--accent); font-size: 11px;">—</span>
+            <div style="display: flex; align-items: center; gap: 5px;">
+                <span style="color: var(--muted); font-size: 10px;">Heat Index:</span>
+                <button type="button" class="info-btn" onclick="openHeatIndexInfo()" style="width: 12px; height: 12px; font-size: 8px; line-height: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center;" title="PAGASA Heat Index Scope">i</button>
+            </div>
+            <span id="heat_index_val" style="font-weight: 600; color: var(--accent); font-size: 11px;">-</span>
         </div>
     </div>
     <div class="card">
@@ -235,7 +235,10 @@ if (isset($_GET['latest'])) {
         <div class="card-unit" id="mq-status-label">Relative ADC Index</div>
     </div>
     <div class="card">
-        <div class="card-label">PM10</div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+            <div class="card-label" style="margin-bottom: 0;">PM10</div>
+            <button type="button" class="info-btn" onclick="openPmInfo()" style="width: 14px; height: 14px; font-size: 9px; line-height: 12px; cursor: pointer;" title="PM10 Scope">i</button>
+        </div>
         <div class="card-value skeleton" id="pm">00.0</div>
         <div class="card-unit">µg/m³</div>
     </div>

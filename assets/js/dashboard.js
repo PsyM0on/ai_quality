@@ -745,7 +745,26 @@ function updateHealthAlert(instantAqi, aqi24, heatIndex, heatCat, uesiLevel, ues
     }
 }
 
-/* ── MQ-135 MODAL EXPLAINER ── */
+/* 🔥 PM10 MODAL EXPLAINER 🔥 */
+function openPmInfo() {
+    const modal = document.getElementById('glass-modal');
+    const modalBody = document.getElementById('glass-modal-body');
+    if (!modal || !modalBody) return;
+    modalBody.innerHTML = `
+        <div class="tip-title">PM10 (Particulate Matter)</div>
+        <div style="font-size: 11px; line-height: 1.5; color: var(--text); margin-bottom: 12px;">
+            <strong>Sensor Principle:</strong> Laser scattering (PMS5003).<br>
+            <strong>Definition:</strong> Inhalable particles with diameters that are generally 10 micrometers and smaller. Sources include dust, pollen, and mold.
+        </div>
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 10px; font-size: 11px; color: var(--muted); line-height: 1.5;">
+            <strong style="color:var(--accent);">Regulatory Standard:</strong><br>
+            The system computes a strict <strong>24-Hour Rolling Average</strong> for PM10 AQI classification, fully compliant with the <strong>Philippine Clean Air Act (RA 8749)</strong> and DENR DAO 2000-81. Short-term spikes will not drastically alter the official AQI unless sustained.
+        </div>
+    `;
+    modal.classList.add('show');
+}
+
+/* 🔥 MQ-135 MODAL EXPLAINER 🔥 */
 function openMqInfo() {
     const modal = document.getElementById('glass-modal');
     const modalBody = document.getElementById('glass-modal-body');
