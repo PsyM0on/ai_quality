@@ -1077,3 +1077,175 @@ body.light .citizen-notice {
 .citizen-meta strong {
     color: var(--accent);
 }
+
+
+/* ── TOP SENSOR HERO + 2x2 QUAD GRID LAYOUT ── */
+.sensor-layout-wrap {
+    display: grid;
+    grid-template-columns: 1.1fr 1.9fr;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.card-hero {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: linear-gradient(145deg, rgba(23, 27, 42, 0.9), rgba(17, 20, 32, 0.8));
+    border-color: rgba(35, 48, 77, 0.8);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+body.light .card-hero {
+    background: linear-gradient(145deg, #ffffff, #f4f7fb);
+}
+.sensor-quad-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+.uesi-bar-wrap {
+    margin-top: 14px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border);
+    font-family: var(--mono);
+}
+.uesi-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10px;
+    color: var(--muted);
+    margin-bottom: 6px;
+}
+.uesi-track {
+    width: 100%;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 3px;
+    overflow: hidden;
+    display: flex;
+}
+body.light .uesi-track {
+    background: rgba(0, 0, 0, 0.06);
+}
+.uesi-fill {
+    height: 100%;
+    width: 25%;
+    background: var(--accent);
+    border-radius: 3px;
+    transition: width 0.5s ease, background 0.3s ease;
+}
+
+/* ── ML SECTION HEADER ROW ── */
+.section-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.section-engine-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+}
+
+/* ── CHART RAW CSV BUTTON ── */
+.btn-raw-csv {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 11px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+.btn-raw-csv:hover {
+    background: var(--surface);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* ── PWA & APK INSTALL CARD ── */
+.pwa-download-card {
+    margin-top: 24px;
+    padding: 16px 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+.pwa-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.pwa-info-text strong {
+    display: block;
+    font-size: 13px;
+    color: var(--text);
+    margin-bottom: 2px;
+}
+.pwa-info-text span {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: var(--mono);
+}
+.pwa-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.btn-pwa-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-family: var(--mono);
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-pwa-primary {
+    background: var(--accent);
+    color: #0B0F19;
+    border: 1px solid var(--accent);
+}
+.btn-pwa-primary:hover {
+    background: var(--accent-d);
+}
+.btn-pwa-secondary {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+.btn-pwa-secondary:hover {
+    border-color: var(--border2);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 900px) {
+    .sensor-layout-wrap {
+        grid-template-columns: 1fr;
+    }
+    .sensor-quad-grid {
+        grid-template-columns: 1fr;
+    }
+    .pwa-download-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
