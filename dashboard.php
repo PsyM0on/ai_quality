@@ -195,110 +195,62 @@ if (isset($_GET['latest'])) {
 <!-- ═══════════════════════════════════════════════════ -->
 <!--  ROW 1 — LIVE SENSOR CARDS                        -->
 <!-- ═══════════════════════════════════════════════════ -->
-<span class="section-label">Live Ambient Telemetry</span>
-<div class="sensor-layout-wrap">
-    <!-- Hero AQI Card -->
-    <div class="card card-hero" id="aqi-card">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
-            <div>
-                <div class="card-label" style="margin-bottom: 0;">Air Quality Index</div>
-                <span style="font-size: 9.5px; color: var(--muted); font-family: var(--mono);">RA 8749 / DAO 2000-81 Standard</span>
-            </div>
-            <span id="aqi-mode-badge" style="font-size: 8.5px; padding: 2px 7px; border-radius: 4px; background: rgba(0, 207, 168, 0.12); color: var(--accent); border: 1px solid rgba(0, 207, 168, 0.25); font-family: var(--mono); text-transform: uppercase; font-weight: 600;">NowCast Validated</span>
+<span class="section-label">Live Readings</span>
+<div class="cards">
+    <div class="card" id="aqi-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+            <div class="card-label" style="margin-bottom: 0;">Air Quality Index</div>
+            <span id="aqi-mode-badge" style="font-size: 8.5px; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.06); font-family: var(--mono); color: var(--muted); text-transform: uppercase;">Real-Time NowCast</span>
         </div>
-        
-        <div style="margin: 12px 0 6px;">
-            <div class="card-value skeleton" id="aqi" style="font-size: 46px; line-height: 1; letter-spacing: -0.02em;">000</div>
-            <div class="card-unit skeleton" id="aqi-label" style="margin-top: 4px; font-size: 13px; font-weight: 600;">Loading Data</div>
-        </div>
-
+        <div class="card-value skeleton" id="aqi">000</div>
+        <div class="card-unit skeleton" id="aqi-label">Loading Data</div>
         <div id="aqi-compliance-wrap" style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--border); font-size: 11px; font-family: var(--mono); display: flex; justify-content: space-between; align-items: center;">
-            <span style="color: var(--muted); font-size: 10px;">24-hr Rolling Standard:</span>
+            <span style="color: var(--muted); font-size: 10px;">24-hr RA 8749:</span>
             <span id="aqi_24h_val" style="font-weight: 600; color: var(--accent); font-size: 11px;">—</span>
         </div>
-
-        <!-- Urban Environmental Stress Index (UESI) -->
-        <div class="uesi-bar-wrap">
-            <div class="uesi-header">
-                <span>Environmental Stress (UESI):</span>
-                <span id="uesi-val" style="color: var(--accent); font-weight: 600;">Optimal</span>
+    </div>
+    <div class="card" id="temp-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+            <div class="card-label" style="margin-bottom: 0;">Temperature</div>
+            <button type="button" class="info-btn" onclick="openTempInfo()" style="width: 14px; height: 14px; font-size: 9px; line-height: 12px; cursor: pointer;" title="Temperature Info">i</button>
+        </div>
+        <div class="card-value skeleton" id="temp">00.0</div>
+        <div class="card-unit">°C Ambient</div>
+        <div id="heat-index-wrap" style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--border); font-size: 11px; font-family: var(--mono); display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 5px;">
+                <span style="color: var(--muted); font-size: 10px;">Feels Like:</span>
+                <button type="button" class="info-btn" onclick="openHeatIndexInfo()" style="width: 12px; height: 12px; font-size: 8px; line-height: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center;" title="Apparent Temperature Info">i</button>
             </div>
-            <div class="uesi-track">
-                <div id="uesi-bar" class="uesi-fill"></div>
-            </div>
-            <div id="uesi-advice" style="font-size: 9.5px; color: var(--muted); margin-top: 4px; line-height: 1.3;">
-                Thermal &amp; particulate strain baseline.
-            </div>
+            <span id="heat_index_val" style="font-weight: 600; color: var(--accent); font-size: 11px;">-</span>
         </div>
     </div>
-
-    <!-- 2x2 Sensor Quad Grid -->
-    <div class="sensor-quad-grid">
-        <!-- Ambient Temperature -->
-        <div class="card" id="temp-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
-                <div class="card-label" style="margin-bottom: 0;">Ambient Temp</div>
-                <button type="button" class="info-btn" onclick="openTempInfo()" style="width: 14px; height: 14px; font-size: 9px; line-height: 12px; cursor: pointer;" title="Temperature Info">i</button>
-            </div>
-            <div class="card-value skeleton" id="temp">00.0</div>
-            <div class="card-unit">°C Ambient</div>
-            <div id="heat-index-wrap" style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed var(--border); font-size: 11px; font-family: var(--mono); display: flex; justify-content: space-between; align-items: center;">
-                <div style="display: flex; align-items: center; gap: 5px;">
-                    <span style="color: var(--muted); font-size: 10px;">Feels Like:</span>
-                    <button type="button" class="info-btn" onclick="openHeatIndexInfo()" style="width: 12px; height: 12px; font-size: 8px; line-height: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center;" title="Apparent Temperature Info">i</button>
-                </div>
-                <span id="heat_index_val" style="font-weight: 600; color: var(--accent); font-size: 11px;">-</span>
-            </div>
+    <div class="card">
+        <div class="card-label">Humidity</div>
+        <div class="card-value skeleton" id="hum">00.0</div>
+        <div class="card-unit">%</div>
+    </div>
+    <div class="card" id="mq-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+            <div class="card-label" style="margin-bottom: 0;">Gas Contaminants</div>
+            <button type="button" class="info-btn" onclick="openMqInfo()" style="width: 14px; height: 14px; font-size: 9px; line-height: 12px; cursor: pointer;" title="MQ-135 Sensor Scope">i</button>
         </div>
-
-        <!-- Humidity -->
-        <div class="card">
-            <div class="card-label">Humidity</div>
-            <div class="card-value skeleton" id="hum">00.0</div>
-            <div class="card-unit">% Relative</div>
-            <div style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed var(--border); font-size: 10px; font-family: var(--mono); color: var(--muted); display: flex; justify-content: space-between;">
-                <span>Comfort Status:</span>
-                <span id="hum-comfort" style="color: var(--text);">Normal</span>
-            </div>
+        <div class="card-value skeleton" id="mq">000</div>
+        <div class="card-unit" id="mq-status-label">Relative ADC Index</div>
+    </div>
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+            <div class="card-label" style="margin-bottom: 0;">PM10</div>
+            <button type="button" class="info-btn" onclick="openPmInfo()" style="width: 14px; height: 14px; font-size: 9px; line-height: 12px; cursor: pointer;" title="PM10 Scope">i</button>
         </div>
-
-        <!-- PM10 Coarse -->
-        <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
-                <div class="card-label" style="margin-bottom: 0;">PM10 Coarse</div>
-                <button type="button" class="info-btn" onclick="openPmInfo()" style="width: 14px; height: 14px; font-size: 9px; line-height: 12px; cursor: pointer;" title="PM10 Scope">i</button>
-            </div>
-            <div class="card-value skeleton" id="pm">00.0</div>
-            <div class="card-unit">µg/m³</div>
-            <div style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed var(--border); font-size: 10px; font-family: var(--mono); color: var(--muted); display: flex; justify-content: space-between;">
-                <span>DAO 2000-81 Limit:</span>
-                <span>150 µg/m³</span>
-            </div>
-        </div>
-
-        <!-- Multi-Gas Index (MQ-135) -->
-        <div class="card" id="mq-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
-                <div class="card-label" style="margin-bottom: 0;">Multi-Gas (MQ-135)</div>
-                <button type="button" class="info-btn" onclick="openMqInfo()" style="width: 14px; height: 14px; font-size: 9px; line-height: 12px; cursor: pointer;" title="MQ-135 Sensor Scope">i</button>
-            </div>
-            <div class="card-value skeleton" id="mq">000</div>
-            <div class="card-unit" id="mq-status-label">Relative ADC Index</div>
-            <div style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed var(--border); font-size: 10px; font-family: var(--mono); color: var(--muted); display: flex; justify-content: space-between;">
-                <span>Detectable:</span>
-                <span>VOCs, CO, NOx</span>
-            </div>
-        </div>
+        <div class="card-value skeleton" id="pm">00.0</div>
+        <div class="card-unit">µg/m³</div>
     </div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════ -->
 <!--  ROW 2 — ENVIRONMENT INTELLIGENCE (Trend, Anomaly, Daily) -->
 <!-- ═══════════════════════════════════════════════════ -->
-<div class="section-header-row">
-    <span class="section-label" style="margin-bottom: 0;">Predictive &amp; Machine Learning Telemetry</span>
-    <span class="section-engine-tag">Engine: Random Forest + Isolation Forest</span>
-</div>
+<span class="section-label">Advanced Analytics & Diagnostics</span>
 <div class="status-row"><!-- <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Daily Summary -->
     <div class="panel">
         <div class="panel-header">
@@ -511,31 +463,13 @@ if (isset($_GET['latest'])) {
     <!-- Sensor History Chart -->
     <div class="panel">
         <div class="panel-header">
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <span class="panel-title">Sensor History</span>
-                <span class="panel-tag" id="row-count">—</span>
-            </div>
-            <a href="export.php" class="btn-raw-csv" title="Download historical readings"><span>↓</span> Raw CSV</a>
+            <span class="panel-title">Sensor History</span>
+            <span class="panel-tag" id="row-count">—</span>
         </div>
         <div class="chart-wrap"><canvas id="chart"></canvas></div>
     </div>
 
 </div><!-- /content-row -->
-
-    <!-- 📱 PWA & MOBILE APP INSTALL CARD -->
-    <div class="pwa-download-card">
-        <div class="pwa-info">
-            <span style="font-size: 24px;">📲</span>
-            <div class="pwa-info-text">
-                <strong>Install Eco Quality Telemetry</strong>
-                <span>Instant, offline-capable live environmental monitor for residents &amp; researchers.</span>
-            </div>
-        </div>
-        <div class="pwa-actions">
-            <button id="btn-pwa-install-bottom" class="btn-pwa-action btn-pwa-primary" onclick="if(window.deferredPrompt){window.deferredPrompt.prompt();}else{openMenu();}">Install Web App</button>
-            <a href="downloads/eco_quality.apk" class="btn-pwa-action btn-pwa-secondary" download>Offline Android APK</a>
-        </div>
-    </div>
 
     <!-- 🏛️ CITIZEN ENVIRONMENTAL TELEMETRY NOTICE -->
     <footer class="citizen-footer">
@@ -622,11 +556,11 @@ if (isset($_GET['latest'])) {
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=23" defer></script>
+<script src="assets/js/dashboard.js?v=24" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=18')
+        navigator.serviceWorker.register('./sw.js?update=19')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update(); // Force update check

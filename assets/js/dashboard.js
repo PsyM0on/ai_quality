@@ -251,37 +251,6 @@ function live() {
                     }
                 }
 
-                // Update Urban Environmental Stress Index (UESI)
-                const uesiVal = document.getElementById('uesi-val');
-                const uesiBar = document.getElementById('uesi-bar');
-                const uesiAdv = document.getElementById('uesi-advice');
-                if (d.uesi_level && uesiVal) {
-                    uesiVal.textContent = d.uesi_level;
-                    if (d.uesi_advice && uesiAdv) uesiAdv.textContent = d.uesi_advice;
-                    if (uesiBar) {
-                        const levels = {
-                            'Optimal': { w: '25%', c: 'var(--accent)' },
-                            'Low Strain': { w: '40%', c: 'var(--accent)' },
-                            'Moderate Strain': { w: '65%', c: 'var(--warn)' },
-                            'High Strain': { w: '85%', c: 'var(--danger)' },
-                            'Extreme Strain': { w: '100%', c: 'var(--danger)' }
-                        };
-                        const lvl = levels[d.uesi_level] || { w: '30%', c: 'var(--accent)' };
-                        uesiBar.style.width = lvl.w;
-                        uesiBar.style.background = lvl.c;
-                        uesiVal.style.color = lvl.c;
-                    }
-                }
-
-                // Update Humidity Comfort Status
-                const humVal = parseFloat(d.hum) || 0;
-                const humComfort = document.getElementById('hum-comfort');
-                if (humComfort) {
-                    if (humVal < 30) humComfort.textContent = 'Dry Air';
-                    else if (humVal <= 65) humComfort.textContent = 'Comfortable';
-                    else humComfort.textContent = 'Humid';
-                }
-
                 // Threshold Health Alert Notification (RA 8749 + PAGASA UESI)
                 updateHealthAlert(aqi, d.aqi_24h, d.heat_index, d.heat_cat, d.uesi_level, d.uesi_advice);
             }
