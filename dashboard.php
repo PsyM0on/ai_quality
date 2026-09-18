@@ -162,12 +162,9 @@ if (isset($_GET['latest'])) {
 <!--  TOP BAR                                           -->
 <!-- ═══════════════════════════════════════════════════ -->
 <header class="topbar">
-    <div class="topbar-left" style="display: flex; align-items: center; gap: 12px;">
-        <h1>Eco Quality Live Air</h1>
-        <div class="live-feed-pill">
-            <span class="logo-dot" style="margin: 0; position: static;"></span>
-            <span>Live Sensor Feed</span>
-        </div>
+    <div class="topbar-left">
+        <div class="logo-dot"></div>
+        <h1>Eco Quality</h1>
     </div>
     <div class="topbar-right" style="display: flex; gap: 10px; align-items: center;">
         <button class="theme-btn" onclick="toggleTheme()" style="padding: 6px 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text); border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 11px;">
@@ -195,68 +192,20 @@ if (isset($_GET['latest'])) {
 
 <main class="main">
 
-<!-- 🌐 STATION TELEMETRY META RIBBON (STITCH COMPONENT) -->
-<div class="station-ribbon">
-    <div class="station-meta-left">
-        <div class="station-badge">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent);"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/></svg>
-            <span>Central Urban Node 01</span>
-            <span class="station-tag">STN-MNL-87</span>
-        </div>
-        <span class="ribbon-sep">|</span>
-        <div class="station-coord">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-            <span>14°35'28.4"N 120°59'11.2"E</span>
-        </div>
-        <span class="ribbon-sep">|</span>
-        <div class="station-elev">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="8 18 12 14 16 18"/><polyline points="8 10 12 6 16 10"/></svg>
-            <span>Elev: <strong>16m ASL</strong></span>
-        </div>
-    </div>
-    <div class="station-meta-right">
-        <div class="station-algo">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent);"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-            <span>NowCast Algorithm: <strong>RA 8749 / DAO 2000-81</strong></span>
-        </div>
-        <div class="station-uptime">
-            <span style="color:var(--muted);">Status:</span>
-            <strong id="node-health-tag" style="color:var(--accent); font-weight:600;">Active Live</strong>
-        </div>
-    </div>
-</div>
-
 <!-- ═══════════════════════════════════════════════════ -->
 <!--  ROW 1 — LIVE SENSOR CARDS                        -->
 <!-- ═══════════════════════════════════════════════════ -->
 <span class="section-label">Live Readings</span>
 <div class="cards">
-    <div class="card card-hero" id="aqi-card">
-        <div class="hero-top">
-            <div>
-                <div class="card-label" style="margin-bottom: 0;">Air Quality Index</div>
-                <div class="hero-sublabel">DOMINANT POLLUTANT: <span style="color:var(--accent); font-weight:600;">PM10</span></div>
-            </div>
-            <span id="aqi-mode-badge" class="badge-nowcast">NowCast Validated</span>
+    <div class="card" id="aqi-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+            <div class="card-label" style="margin-bottom: 0;">Air Quality Index</div>
+            <span id="aqi-mode-badge" style="font-size: 8.5px; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.06); font-family: var(--mono); color: var(--muted); text-transform: uppercase;">Real-Time NowCast</span>
         </div>
-        <div class="hero-body">
-            <div class="hero-val-wrap">
-                <div class="card-value skeleton" id="aqi">000</div>
-                <div class="card-unit skeleton" id="aqi-label">Loading Data</div>
-            </div>
-            <div class="hero-gauge-wrap">
-                <svg class="gauge-svg" viewBox="0 0 100 100">
-                    <circle class="gauge-bg" cx="50" cy="50" r="40"></circle>
-                    <circle id="aqi-gauge-circle" class="gauge-bar" cx="50" cy="50" r="40"></circle>
-                </svg>
-                <div class="gauge-center">
-                    <span id="gauge-ratio" class="gauge-num">-- / 500</span>
-                    <span id="gauge-category" class="gauge-cat">AQI</span>
-                </div>
-            </div>
-        </div>
-        <div id="aqi-compliance-wrap" style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border); font-size: 11px; font-family: var(--mono); display: flex; justify-content: space-between; align-items: center;">
-            <span style="color: var(--muted); font-size: 10px;">24-hr RA 8749 Standard:</span>
+        <div class="card-value skeleton" id="aqi">000</div>
+        <div class="card-unit skeleton" id="aqi-label">Loading Data</div>
+        <div id="aqi-compliance-wrap" style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--border); font-size: 11px; font-family: var(--mono); display: flex; justify-content: space-between; align-items: center;">
+            <span style="color: var(--muted); font-size: 10px;">24-hr RA 8749:</span>
             <span id="aqi_24h_val" style="font-weight: 600; color: var(--accent); font-size: 11px;">—</span>
         </div>
     </div>
@@ -295,15 +244,6 @@ if (isset($_GET['latest'])) {
         </div>
         <div class="card-value skeleton" id="pm">00.0</div>
         <div class="card-unit">µg/m³</div>
-        <div class="pm10-threshold-wrap">
-            <div class="pm10-threshold-header">
-                <span>DAO 2000-81 (150 µg/m³)</span>
-                <span id="pm10-pct" style="color:var(--accent); font-weight:600;">--%</span>
-            </div>
-            <div class="pm10-progress-bg">
-                <div id="pm10-progress" class="pm10-progress-bar"></div>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -531,7 +471,7 @@ if (isset($_GET['latest'])) {
 
 </div><!-- /content-row -->
 
-    <!-- 🏛️ CITIZEN ENVIRONMENTAL TELEMETRY NOTICE (STITCH COMPONENT) -->
+    <!-- 🏛️ CITIZEN ENVIRONMENTAL TELEMETRY NOTICE -->
     <footer class="citizen-footer">
         <div class="citizen-footer-content">
             <div class="citizen-notice">
@@ -616,11 +556,11 @@ if (isset($_GET['latest'])) {
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=21" defer></script>
+<script src="assets/js/dashboard.js?v=22" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=16')
+        navigator.serviceWorker.register('./sw.js?update=17')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update(); // Force update check
