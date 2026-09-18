@@ -107,9 +107,8 @@ if (isset($_GET['latest'])) {
         $latest['heat_color'] = $hi_color;
         $latest['heat_desc'] = $hi_desc;
 
-        // Urban Environmental Stress Index (UESI)
-        $inst_aqi = floatval($latest['aqi']);
-        $max_aqi_val = max($inst_aqi, $aqi_24h);
+        // Urban Environmental Stress Index (UESI) - anchored to sustained 24h AQI
+        $max_aqi_val = $aqi_24h;
         if ($max_aqi_val > 150 || $HI_c >= 42) {
             $uesi_level = "High Environmental Stress";
             $uesi_color = "#F05252";
@@ -228,7 +227,7 @@ if (isset($_GET['latest'])) {
         <div class="diag-unit skeleton" id="aqi-label">Loading Data</div>
         <div class="diag-meta-box" id="aqi-compliance-wrap">
             <div class="diag-meta-row">
-                <span>24-HR RA 8749:</span>
+                <span>24-HOUR AVERAGE:</span>
                 <span id="aqi_24h_val" style="font-weight: 600; color: #00FF88;">—</span>
             </div>
             <div class="diag-meta-row">
@@ -257,10 +256,6 @@ if (isset($_GET['latest'])) {
                 </div>
                 <span id="heat_index_val" style="font-weight: 600; color: #00E3FD;">—</span>
             </div>
-            <div class="diag-meta-row">
-                <span>INDEX:</span>
-                <strong>PAGASA Thermal</strong>
-            </div>
         </div>
     </div>
 
@@ -276,10 +271,6 @@ if (isset($_GET['latest'])) {
         <div class="diag-val skeleton" id="hum">00.0</div>
         <div class="diag-unit">% Relative Humidity</div>
         <div class="diag-meta-box">
-            <div class="diag-meta-row">
-                <span>AIR MASS:</span>
-                <strong>Water Vapor</strong>
-            </div>
             <div class="diag-meta-row">
                 <span>COMFORT:</span>
                 <strong id="hum-comfort-label">Standard Range</strong>
@@ -302,10 +293,6 @@ if (isset($_GET['latest'])) {
             <div class="diag-meta-row">
                 <span>TARGET GASES:</span>
                 <strong>CO, NH3, Smoke</strong>
-            </div>
-            <div class="diag-meta-row">
-                <span>DETECTION:</span>
-                <strong>Electrochemical</strong>
             </div>
         </div>
     </div>
@@ -651,7 +638,7 @@ if (isset($_GET['latest'])) {
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=29" defer></script>
+<script src="assets/js/dashboard.js?v=30" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
