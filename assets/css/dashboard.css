@@ -25,7 +25,8 @@
 
 /* â”€â”€ LIGHT MODE TOKENS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 /*   All values pass WCAG AA (4.5:1) on their backgrounds */
-body.light {
+body.light,
+html.light {
     --bg:      #EAEFF5; /* Cooler, slightly darker grey-blue for depth */
     --surface: #FFFFFF;
     --card:    #FFFFFF;

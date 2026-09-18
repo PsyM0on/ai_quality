@@ -148,6 +148,22 @@ if (isset($_GET['latest'])) {
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link href="assets/css/dashboard.css?v=28" rel="stylesheet">
+<script>
+    // System Validation: Early Device Theme Detection (Anti-FOUC)
+    (function() {
+        try {
+            var saved = localStorage.getItem('aq-theme');
+            var prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+            var isLight = (saved === 'light' || saved === 'dark') ? (saved === 'light') : prefersLight;
+            if (isLight) {
+                document.documentElement.classList.add('light');
+                document.addEventListener('DOMContentLoaded', function() {
+                    if (document.body) document.body.classList.add('light');
+                });
+            }
+        } catch (e) {}
+    })();
+</script>
 </head>
 <body>
 
@@ -657,11 +673,11 @@ if (isset($_GET['latest'])) {
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=27" defer></script>
+<script src="assets/js/dashboard.js?v=28" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=22')
+        navigator.serviceWorker.register('./sw.js?update=23')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update(); // Force update check

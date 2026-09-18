@@ -382,9 +382,15 @@ $msg = $_GET['msg'] ?? '';
 </div>
 
 <script>
-    if (localStorage.getItem('aq-theme') === 'light') {
-        document.body.classList.add('light');
-    }
+    // System Validation: Device Theme Detection
+    (function() {
+        const saved = localStorage.getItem('aq-theme');
+        const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+        const isLight = (saved === 'light' || saved === 'dark') ? (saved === 'light') : prefersLight;
+        if (isLight) {
+            document.body.classList.add('light');
+        }
+    })();
 
     const fromEl = document.getElementById('from');
     const toEl   = document.getElementById('to');

@@ -118,7 +118,7 @@ if (isIos() && !isInStandaloneMode()) {
     }, 3000);
 }
 
-/* ── THEME ── */
+/* ── THEME & DEVICE SYSTEM VALIDATION ── */
 let chart    = null;
 let accChart = null;
 
@@ -131,23 +131,85 @@ const LIGHT_CHART = {
     border: '#C5CBDB', body: '#0C1220', legend: '#3D4768'
 };
 
-let isLight = localStorage.getItem('aq-theme') === 'light';
+/**
+ * System Validation: Query the user's device/OS hardware preference
+ * Returns: 'light' or 'dark'
+ */
+function getDeviceSystemTheme() {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+        return 'light';
+    }
+    return 'dark'; // Fallback default
+}
+
+/**
+ * Validates initial theme with precedence:
+ * 1. Explicit user choice previously stored in localStorage ('aq-theme')
+ * 2. Hardware/OS device system theme validation ('prefers-color-scheme')
+ */
+function validateInitialTheme() {
+    const saved = localStorage.getItem('aq-theme');
+    if (saved === 'light' || saved === 'dark') {
+        return saved === 'light';
+    }
+    
+    // No explicit manual choice recorded — perform system validation on device
+    const deviceTheme = getDeviceSystemTheme();
+    console.info(`[System Validation] No manual theme override found. Detected device system theme: ${deviceTheme.toUpperCase()} mode.`);
+    return deviceTheme === 'light';
+}
+
+let isLight = validateInitialTheme();
 
 function applyTheme(light) {
     document.body.classList.toggle('light', light);
-    document.getElementById('theme-icon').textContent  = light ? '☼' : '☾';
-    document.getElementById('theme-label').textContent = light ? 'Light' : 'Dark';
+    document.documentElement.classList.toggle('light', light);
+    
+    const iconEl = document.getElementById('theme-icon');
+    if (iconEl) iconEl.textContent = light ? '☼' : '☾';
+    
+    const labelEl = document.getElementById('theme-label');
+    if (labelEl) labelEl.textContent = light ? 'Light' : 'Dark';
+    
+    const themeBtn = document.querySelector('.btn-dash-action[onclick="toggleTheme()"]');
+    if (themeBtn) {
+        const sourceDesc = localStorage.getItem('aq-theme') ? 'Manual' : 'Device System Default';
+        themeBtn.setAttribute('title', `Theme: ${light ? 'Light' : 'Dark'} (${sourceDesc}) — Click to toggle`);
+    }
+
+    // Sync browser UI status bar (iOS Safari / Android Chrome)
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', light ? '#FFFFFF' : '#0D1320');
+    }
+
     updateChartTheme(light ? LIGHT_CHART : DARK_CHART);
 }
-
-// Apply the saved theme immediately on page load
-applyTheme(isLight);
 
 function toggleTheme() {
     isLight = !isLight;
     localStorage.setItem('aq-theme', isLight ? 'light' : 'dark');
     applyTheme(isLight);
 }
+
+// Active real-time listener: Adapts automatically if the user changes their OS theme in device settings
+if (window.matchMedia) {
+    const sysThemeQuery = window.matchMedia('(prefers-color-scheme: light)');
+    const handleSystemThemeChange = (e) => {
+        // Only dynamically change if the user has NOT set a manual override
+        if (!localStorage.getItem('aq-theme')) {
+            isLight = e.matches;
+            console.info(`[System Validation] Real-time device theme shift detected: ${isLight ? 'LIGHT' : 'DARK'} mode.`);
+            applyTheme(isLight);
+        }
+    };
+    if (sysThemeQuery.addEventListener) {
+        sysThemeQuery.addEventListener('change', handleSystemThemeChange);
+    } else if (sysThemeQuery.addListener) {
+        sysThemeQuery.addListener(handleSystemThemeChange);
+    }
+}
+
 function updateChartTheme(t) {
     [chart, accChart].forEach(c => {
         if (!c) return;
@@ -163,6 +225,8 @@ function updateChartTheme(t) {
         c.update();
     });
 }
+
+// Apply resolved theme immediately
 applyTheme(isLight);
 
 /* ── AQI LEVELS (PHILIPPINE CLEAN AIR ACT RA 8749 / DENR EMB) ── */
