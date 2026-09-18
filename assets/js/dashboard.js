@@ -691,7 +691,7 @@ function updateHealthAlert(instantAqi, aqi24, heatIndex, heatCat, uesiLevel, ues
         banner.style.borderColor = 'rgba(240, 82, 82, 0.4)';
         if (icon) icon.textContent = '🌡️';
         if (title) {
-            title.textContent = `PAGASA Thermal Advisory: ${heatCat} (${hi}°C Heat Index)`;
+            title.textContent = `Thermal Advisory: ${heatCat} (${hi}°C Feels Like)`;
             title.style.color = '#F05252';
         }
         if (body) body.textContent = 'Severe apparent heat stress. Heat cramps and exhaustion likely; heat stroke probable. Stay hydrated and avoid prolonged outdoor sun exposure.';
@@ -790,7 +790,7 @@ function openMqInfo() {
 }
 
 
-/* 🔥 PAGASA HEAT INDEX DYNAMIC MODAL 🔥 */
+/* 🔥 APPARENT TEMPERATURE DYNAMIC MODAL 🔥 */
 function openHeatIndexInfo() {
     const modal = document.getElementById('glass-modal');
     const modalBody = document.getElementById('glass-modal-body');
@@ -802,9 +802,9 @@ function openHeatIndexInfo() {
     const color = window.currentHeatColor || "#00CFA8";
 
     modalBody.innerHTML = `
-        <div class="tip-title">PAGASA Heat Index</div>
+        <div class="tip-title">Apparent Temperature</div>
         <div style="font-size: 11px; line-height: 1.5; color: var(--text); margin-bottom: 12px;">
-            <strong>Current Heat Index:</strong> ${hi}°C<br>
+            <strong>Feels Like:</strong> ${hi}°C<br>
             <strong>Risk Level:</strong> <span style="color:${color}; font-weight:bold;">${cat}</span>
         </div>
         <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 10px; font-size: 11px; color: var(--muted); line-height: 1.5; margin-bottom: 12px;">

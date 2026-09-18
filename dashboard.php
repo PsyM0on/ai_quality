@@ -218,8 +218,8 @@ if (isset($_GET['latest'])) {
         <div class="card-unit">°C Ambient</div>
         <div id="heat-index-wrap" style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--border); font-size: 11px; font-family: var(--mono); display: flex; justify-content: space-between; align-items: center;">
             <div style="display: flex; align-items: center; gap: 5px;">
-                <span style="color: var(--muted); font-size: 10px;">Heat Index:</span>
-                <button type="button" class="info-btn" onclick="openHeatIndexInfo()" style="width: 12px; height: 12px; font-size: 8px; line-height: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center;" title="PAGASA Heat Index Scope">i</button>
+                <span style="color: var(--muted); font-size: 10px;">Feels Like:</span>
+                <button type="button" class="info-btn" onclick="openHeatIndexInfo()" style="width: 12px; height: 12px; font-size: 8px; line-height: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center;" title="Apparent Temperature Info">i</button>
             </div>
             <span id="heat_index_val" style="font-weight: 600; color: var(--accent); font-size: 11px;">-</span>
         </div>
