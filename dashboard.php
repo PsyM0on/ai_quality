@@ -147,7 +147,7 @@ if (isset($_GET['latest'])) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="assets/css/dashboard.css?v=27" rel="stylesheet">
+<link href="assets/css/dashboard.css?v=28" rel="stylesheet">
 </head>
 <body>
 
@@ -206,7 +206,10 @@ if (isset($_GET['latest'])) {
         <span class="corner c-bl">&#x25E2;</span>
         <span class="corner c-br">&#x25E3;</span>
         <div class="diag-top">
-            <span class="diag-title">AIR QUALITY INDEX</span>
+            <span class="diag-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg>
+                AIR QUALITY INDEX
+            </span>
             <span id="aqi-mode-badge" class="badge-pill">NOWCAST</span>
         </div>
         <div class="diag-val skeleton" id="aqi">000</div>
@@ -230,7 +233,10 @@ if (isset($_GET['latest'])) {
         <span class="corner c-bl">&#x25E2;</span>
         <span class="corner c-br">&#x25E3;</span>
         <div class="diag-top">
-            <span class="diag-title">TEMPERATURE</span>
+            <span class="diag-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--danger);"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+                TEMPERATURE
+            </span>
             <button type="button" class="info-btn" onclick="openTempInfo()" title="Temperature Info">i</button>
         </div>
         <div class="diag-val skeleton" id="temp">00.0</div>
@@ -257,7 +263,10 @@ if (isset($_GET['latest'])) {
         <span class="corner c-bl">&#x25E2;</span>
         <span class="corner c-br">&#x25E3;</span>
         <div class="diag-top">
-            <span class="diag-title">HUMIDITY</span>
+            <span class="diag-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--cyan);"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+                HUMIDITY
+            </span>
             <span class="badge-pill" style="color: #00E3FD;">DHT22</span>
         </div>
         <div class="diag-val skeleton" id="hum">00.0</div>
@@ -281,7 +290,10 @@ if (isset($_GET['latest'])) {
         <span class="corner c-bl">&#x25E2;</span>
         <span class="corner c-br">&#x25E3;</span>
         <div class="diag-top">
-            <span class="diag-title">GAS CONTAMINANTS</span>
+            <span class="diag-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--warn);"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+                GAS CONTAMINANTS
+            </span>
             <button type="button" class="info-btn" onclick="openMqInfo()" title="MQ-135 Sensor Scope">i</button>
         </div>
         <div class="diag-val skeleton" id="mq">000</div>
@@ -305,7 +317,10 @@ if (isset($_GET['latest'])) {
         <span class="corner c-bl">&#x25E2;</span>
         <span class="corner c-br">&#x25E3;</span>
         <div class="diag-top">
-            <span class="diag-title">PARTICULATE PM10</span>
+            <span class="diag-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                PARTICULATE PM10
+            </span>
             <button type="button" class="info-btn" onclick="openPmInfo()" title="PM10 Scope">i</button>
         </div>
         <div class="diag-val skeleton" id="pm">00.0</div>

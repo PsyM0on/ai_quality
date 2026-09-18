@@ -1254,11 +1254,17 @@ body.light .citizen-notice {
     margin-bottom: 8px;
 }
 .diag-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     font-family: var(--mono);
     font-size: 9.5px;
     color: #849585;
     text-transform: uppercase;
     letter-spacing: 0.08em;
+}
+.diag-title svg {
+    flex-shrink: 0;
 }
 .badge-pill {
     background: #151B29;
