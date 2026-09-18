@@ -147,7 +147,7 @@ if (isset($_GET['latest'])) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="assets/css/dashboard.css" rel="stylesheet">
+<link href="assets/css/dashboard.css?v=25" rel="stylesheet">
 </head>
 <body>
 
@@ -161,17 +161,28 @@ if (isset($_GET['latest'])) {
 <!-- ═══════════════════════════════════════════════════ -->
 <!--  TOP BAR                                           -->
 <!-- ═══════════════════════════════════════════════════ -->
-<header class="topbar">
-    <div class="topbar-left">
-        <div class="logo-dot"></div>
-        <h1>Eco Quality</h1>
+<header class="c2-topbar">
+    <div class="c2-brand">
+        <div class="c2-pulse-dot logo-dot"></div>
+        <div>
+            <div class="c2-title">Eco Quality</div>
+            <div class="c2-sub">PUBLIC ENVIRONMENTAL TELEMETRY // AMBIENT AIR MONITORING</div>
+        </div>
     </div>
-    <div class="topbar-right" style="display: flex; gap: 10px; align-items: center;">
-        <button class="theme-btn" onclick="toggleTheme()" style="padding: 6px 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text); border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 11px;">
+    <div class="c2-top-right">
+        <div class="operator-pill">
+            <span>STATION:</span>
+            <strong>ONLINE</strong>
+            <span style="color: #00E3FD;">[DEVICE 1]</span>
+        </div>
+        <button class="btn-dash-action" onclick="toggleTheme()" title="Toggle Theme">
             <span id="theme-icon">☾</span>
-            <span id="theme-label">Dark</span>
+            <span id="theme-label" style="display: none;">Dark</span>
         </button>
-        <button class="theme-btn" onclick="openMenu()" title="Menu" style="font-size: 16px; line-height: 1;">
+        <a href="admin.php" class="btn-c2-link" title="Hardware Admin Console">
+            CONSOLE &rarr;
+        </a>
+        <button class="btn-dash-action" onclick="openMenu()" title="Navigation Menu" style="font-size: 15px; padding: 5px 10px;">
             ☰
         </button>
     </div>
@@ -192,58 +203,128 @@ if (isset($_GET['latest'])) {
 
 <main class="main">
 
+    <!-- ACTIVE MONITORING NODE CHASSIS -->
+    <div class="node-control-card">
+        <div class="node-select-wrap">
+            <span class="node-label">Active Monitoring Station:</span>
+            <span style="font-family: var(--mono); font-size: 11px; font-weight: 600; color: #00FF88;">Device 1 &bull; Urban Baseline Station</span>
+        </div>
+        <div class="node-specs-pill">
+            <span style="color: #00FF88;">&#x25CF;</span>
+            <span>ESP32-WROOM-32D</span>
+            <span style="color: #3B4B5D;">|</span>
+            <span>PMS5003 + MQ135 + DHT22</span>
+            <span style="color: #3B4B5D;">|</span>
+            <span style="color: #00E3FD;">RA 8749 PHILIPPINES</span>
+        </div>
+    </div>
+
 <!-- ═══════════════════════════════════════════════════ -->
 <!--  ROW 1 — LIVE SENSOR CARDS                        -->
 <!-- ═══════════════════════════════════════════════════ -->
-<span class="section-label">Live Readings</span>
+<span class="section-label">Live Telemetry Readings</span>
 <div class="cards">
-    <div class="card" id="aqi-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
-            <div class="card-label" style="margin-bottom: 0;">Air Quality Index</div>
-            <span id="aqi-mode-badge" style="font-size: 8.5px; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.06); font-family: var(--mono); color: var(--muted); text-transform: uppercase;">Real-Time NowCast</span>
+    <!-- AQI Card -->
+    <div class="card diag-card" id="aqi-card">
+        <div class="diag-top">
+            <span class="diag-title">AIR QUALITY INDEX</span>
+            <span id="aqi-mode-badge" class="badge-pill">NOWCAST</span>
         </div>
-        <div class="card-value skeleton" id="aqi">000</div>
-        <div class="card-unit skeleton" id="aqi-label">Loading Data</div>
-        <div id="aqi-compliance-wrap" style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--border); font-size: 11px; font-family: var(--mono); display: flex; justify-content: space-between; align-items: center;">
-            <span style="color: var(--muted); font-size: 10px;">24-hr RA 8749:</span>
-            <span id="aqi_24h_val" style="font-weight: 600; color: var(--accent); font-size: 11px;">—</span>
-        </div>
-    </div>
-    <div class="card" id="temp-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
-            <div class="card-label" style="margin-bottom: 0;">Temperature</div>
-            <button type="button" class="info-btn" onclick="openTempInfo()" style="width: 14px; height: 14px; font-size: 9px; line-height: 12px; cursor: pointer;" title="Temperature Info">i</button>
-        </div>
-        <div class="card-value skeleton" id="temp">00.0</div>
-        <div class="card-unit">°C Ambient</div>
-        <div id="heat-index-wrap" style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--border); font-size: 11px; font-family: var(--mono); display: flex; justify-content: space-between; align-items: center;">
-            <div style="display: flex; align-items: center; gap: 5px;">
-                <span style="color: var(--muted); font-size: 10px;">Feels Like:</span>
-                <button type="button" class="info-btn" onclick="openHeatIndexInfo()" style="width: 12px; height: 12px; font-size: 8px; line-height: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center;" title="Apparent Temperature Info">i</button>
+        <div class="diag-val skeleton" id="aqi">000</div>
+        <div class="diag-unit skeleton" id="aqi-label">Loading Data</div>
+        <div class="diag-meta-box" id="aqi-compliance-wrap">
+            <div class="diag-meta-row">
+                <span>24-HR RA 8749:</span>
+                <span id="aqi_24h_val" style="font-weight: 600; color: #00FF88;">—</span>
             </div>
-            <span id="heat_index_val" style="font-weight: 600; color: var(--accent); font-size: 11px;">-</span>
+            <div class="diag-meta-row">
+                <span>STANDARD:</span>
+                <strong>DENR DAO 2000-81</strong>
+            </div>
         </div>
     </div>
-    <div class="card">
-        <div class="card-label">Humidity</div>
-        <div class="card-value skeleton" id="hum">00.0</div>
-        <div class="card-unit">%</div>
-    </div>
-    <div class="card" id="mq-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
-            <div class="card-label" style="margin-bottom: 0;">Gas Contaminants</div>
-            <button type="button" class="info-btn" onclick="openMqInfo()" style="width: 14px; height: 14px; font-size: 9px; line-height: 12px; cursor: pointer;" title="MQ-135 Sensor Scope">i</button>
+
+    <!-- Temperature Card -->
+    <div class="card diag-card" id="temp-card">
+        <div class="diag-top">
+            <span class="diag-title">TEMPERATURE</span>
+            <button type="button" class="info-btn" onclick="openTempInfo()" title="Temperature Info" style="width: 16px; height: 16px; font-size: 9px;">i</button>
         </div>
-        <div class="card-value skeleton" id="mq">000</div>
-        <div class="card-unit" id="mq-status-label">Relative ADC Index</div>
-    </div>
-    <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
-            <div class="card-label" style="margin-bottom: 0;">PM10</div>
-            <button type="button" class="info-btn" onclick="openPmInfo()" style="width: 14px; height: 14px; font-size: 9px; line-height: 12px; cursor: pointer;" title="PM10 Scope">i</button>
+        <div class="diag-val skeleton" id="temp">00.0</div>
+        <div class="diag-unit">°C Ambient</div>
+        <div class="diag-meta-box" id="heat-index-wrap">
+            <div class="diag-meta-row">
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <span>FEELS LIKE:</span>
+                    <button type="button" class="info-btn" onclick="openHeatIndexInfo()" title="Apparent Temperature Info" style="width: 12px; height: 12px; font-size: 8px; line-height: 10px;">i</button>
+                </div>
+                <span id="heat_index_val" style="font-weight: 600; color: #00E3FD;">—</span>
+            </div>
+            <div class="diag-meta-row">
+                <span>INDEX:</span>
+                <strong>PAGASA Thermal</strong>
+            </div>
         </div>
-        <div class="card-value skeleton" id="pm">00.0</div>
-        <div class="card-unit">µg/m³</div>
+    </div>
+
+    <!-- Humidity Card -->
+    <div class="card diag-card">
+        <div class="diag-top">
+            <span class="diag-title">HUMIDITY</span>
+            <span class="badge-pill" style="color: #00E3FD;">DHT22</span>
+        </div>
+        <div class="diag-val skeleton" id="hum">00.0</div>
+        <div class="diag-unit">% Relative Humidity</div>
+        <div class="diag-meta-box">
+            <div class="diag-meta-row">
+                <span>AIR MASS:</span>
+                <strong>Water Vapor</strong>
+            </div>
+            <div class="diag-meta-row">
+                <span>SENSOR:</span>
+                <strong>Capacitive RH</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gas Contaminants Card -->
+    <div class="card diag-card" id="mq-card">
+        <div class="diag-top">
+            <span class="diag-title">GAS CONTAMINANTS</span>
+            <button type="button" class="info-btn" onclick="openMqInfo()" title="MQ-135 Sensor Scope" style="width: 16px; height: 16px; font-size: 9px;">i</button>
+        </div>
+        <div class="diag-val skeleton" id="mq">000</div>
+        <div class="diag-unit" id="mq-status-label">Relative ADC Index</div>
+        <div class="diag-meta-box">
+            <div class="diag-meta-row">
+                <span>TARGET GAS:</span>
+                <strong>CO, NH3, Smoke</strong>
+            </div>
+            <div class="diag-meta-row">
+                <span>PROBE:</span>
+                <strong>MQ-135 Sensor</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- PM10 Card -->
+    <div class="card diag-card">
+        <div class="diag-top">
+            <span class="diag-title">PARTICULATE PM10</span>
+            <button type="button" class="info-btn" onclick="openPmInfo()" title="PM10 Scope" style="width: 16px; height: 16px; font-size: 9px;">i</button>
+        </div>
+        <div class="diag-val skeleton" id="pm">00.0</div>
+        <div class="diag-unit">µg/m³ Concentration</div>
+        <div class="diag-meta-box">
+            <div class="diag-meta-row">
+                <span>DETECTION:</span>
+                <strong>Laser Scattering</strong>
+            </div>
+            <div class="diag-meta-row">
+                <span>PROBE:</span>
+                <strong>PMS5003 Sensor</strong>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -460,27 +541,42 @@ if (isset($_GET['latest'])) {
 <span class="section-label">Reading History & Telemetry</span>
 <div class="content-row">
 
-    <!-- Sensor History Chart -->
+    <!-- Sensor History Chart Deck -->
     <div class="panel">
-        <div class="panel-header">
-            <span class="panel-title">Sensor History</span>
+        <div class="term-topbar">
+            <div class="term-dots">
+                <div class="t-dot td-r"></div>
+                <div class="t-dot td-y"></div>
+                <div class="t-dot td-g"></div>
+            </div>
+            <div class="term-title-text">TELEMETRY ARCHIVE // 20-SAMPLE TIME SERIES LOG</div>
             <span class="panel-tag" id="row-count">—</span>
         </div>
-        <div class="chart-wrap"><canvas id="chart"></canvas></div>
+        <div class="chart-wrap" style="background: #050811; padding: 18px;"><canvas id="chart"></canvas></div>
     </div>
 
 </div><!-- /content-row -->
 
     <!-- 🏛️ CITIZEN ENVIRONMENTAL TELEMETRY NOTICE -->
     <footer class="citizen-footer">
-        <div class="citizen-footer-content">
-            <div class="citizen-notice">
-                <span class="citizen-label">CITIZEN NOTICE // AMBIENT ENVIRONMENTAL DATA INITIATIVE</span>
-                <p>Atmospheric telemetry, particulate concentrations (PM10), and relative gas contamination indices are monitored via publicly-deployed IoT telemetry sensing nodes. Real-time data is served for public health awareness and ambient environmental assessment under the Philippine Clean Air Act (RA 8749) and DENR DAO 2000-81.</p>
-            </div>
-            <div class="citizen-meta">
-                <span>STATION RUNTIME: <strong>CONTINUOUS 24/7</strong></span>
-                <span>&copy; <?= date('Y') ?> Eco Quality Project &bull; Philippine Ambient Air Quality Assessment</span>
+        <div class="citizen-chassis">
+            <span class="corner c-tl">&#x25E4;</span>
+            <span class="corner c-tr">&#x25E5;</span>
+            <span class="corner c-bl">&#x25E2;</span>
+            <span class="corner c-br">&#x25E3;</span>
+            <div class="citizen-footer-content">
+                <div class="citizen-notice" style="background: transparent; border: none; padding: 0;">
+                    <span class="citizen-label" style="font-family: var(--mono); font-size: 11px; font-weight: 700; color: #00FF88; letter-spacing: 0.08em;">
+                        CITIZEN NOTICE // AMBIENT ENVIRONMENTAL DATA INITIATIVE
+                    </span>
+                    <p style="font-size: 11px; color: #849585; line-height: 1.6; margin: 8px 0 16px;">
+                        Atmospheric telemetry, particulate concentrations (PM10), and relative gas contamination indices are monitored via publicly-deployed IoT telemetry sensing nodes. Real-time data is served for public health awareness and ambient environmental assessment under the Philippine Clean Air Act (RA 8749) and DENR DAO 2000-81.
+                    </p>
+                </div>
+                <div class="citizen-meta" style="border-top: 1px solid #1A202D; padding-top: 12px; font-family: var(--mono); font-size: 10px; color: #64748B;">
+                    <span>STATION RUNTIME: <strong style="color: #00FF88;">CONTINUOUS 24/7</strong></span>
+                    <span>&copy; <?= date('Y') ?> Eco Quality Project &bull; Philippine Ambient Air Quality Assessment</span>
+                </div>
             </div>
         </div>
     </footer>
@@ -556,11 +652,11 @@ if (isset($_GET['latest'])) {
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=24" defer></script>
+<script src="assets/js/dashboard.js?v=25" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=19')
+        navigator.serviceWorker.register('./sw.js?update=20')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update(); // Force update check

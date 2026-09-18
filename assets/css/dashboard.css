@@ -3,19 +3,21 @@
 
 /* â”€â”€ DESIGN TOKENS (DARK â€“ DEFAULT) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 :root {
-    --bg:       #07090F;
-    --surface:  #0D1018;
-    --card:     #111420;
-    --border:   #1C2035;
-    --border2:  #252C44;
-    --accent:   #00CFA8;
-    --accent-d: #009E82;
-    --warn:     #F5A623;
-    --danger:   #F05252;
+    --bg:       #0D1320;
+    --surface:  #080E1B;
+    --card:     #080E1B;
+    --card-inner: #151B29;
+    --border:   #1F2738;
+    --border2:  #2F3543;
+    --accent:   #00FF88;
+    --accent-d: #00CC6A;
+    --cyan:     #00E3FD;
+    --warn:     #FFBD2E;
+    --danger:   #FF5F56;
     --blue:     #4C9EEB;
     --purple:   #9B59B6;
-    --text:     #DDE1F0;
-    --muted:    #5A6180;
+    --text:     #DDE2F5;
+    --muted:    #849585;
     --soft:     #8A93B8;
     --mono:     'JetBrains Mono', monospace;
     --sans:     'Syne', sans-serif;
@@ -1076,4 +1078,327 @@ body.light .citizen-notice {
 }
 .citizen-meta strong {
     color: var(--accent);
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   ADMIN C2 INSPIRED DESIGN SYSTEM OVERRIDES & ADDITIONS
+   ══════════════════════════════════════════════════════════ */
+
+/* C2 Topbar Navigation */
+.c2-topbar {
+    height: 60px;
+    background: #080E1B;
+    border-bottom: 1px solid #1A202D;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+.c2-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.c2-pulse-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
+    background: #00FF88;
+    box-shadow: 0 0 10px #00FF88;
+    animation: pulse 2.5s infinite;
+}
+.c2-title {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #fff;
+    text-transform: uppercase;
+}
+.c2-sub {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: #00FF88;
+    letter-spacing: 0.05em;
+}
+.c2-top-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.operator-pill {
+    background: #151B29;
+    border: 1px solid #1F2738;
+    border-radius: 6px;
+    padding: 5px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: #849585;
+}
+.operator-pill strong {
+    color: #00FF88;
+}
+.btn-dash-action {
+    background: #151B29;
+    border: 1px solid #1F2738;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: #DDE2F5;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+.btn-dash-action:hover {
+    border-color: #00FF88;
+    color: #00FF88;
+    transform: translateY(-1px);
+}
+.btn-c2-link {
+    background: #151B29;
+    border: 1px solid #1F2738;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    color: #00FF88;
+    text-decoration: none;
+    letter-spacing: 0.06em;
+    transition: all 0.2s ease;
+}
+.btn-c2-link:hover {
+    background: rgba(0, 255, 136, 0.12);
+    border-color: #00FF88;
+}
+
+/* Node Control Pill Card (Station Overview Bar) */
+.node-control-card {
+    background: #080E1B;
+    border: 1px solid #1F2738;
+    border-radius: 8px;
+    padding: 12px 18px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+}
+.node-select-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.node-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: #849585;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+.node-specs-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #151B29;
+    border: 1px solid #1F2738;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: #DDE2F5;
+}
+
+/* Diag Deck & Sensor Card Overhauls */
+.diag-card {
+    background: #080E1B;
+    border: 1px solid #1F2738;
+    border-radius: 8px;
+    padding: 16px 16px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+    transition: border-color 0.25s, transform 0.2s;
+}
+.diag-card:hover {
+    border-color: #2F3543;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+.diag-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+.diag-title {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    color: #849585;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+.badge-pill {
+    background: #151B29;
+    border: 1px solid #1F2738;
+    border-radius: 4px;
+    padding: 2px 7px;
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 600;
+    color: #00FF88;
+}
+.diag-val {
+    font-family: var(--mono);
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 4px 0 2px;
+    line-height: 1;
+    color: #00FF88;
+}
+.diag-unit {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: #849585;
+    margin-bottom: 14px;
+}
+.diag-meta-box {
+    background: #151B29;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 4px;
+    padding: 6px 8px;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    color: #849585;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.diag-meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.diag-meta-row strong {
+    color: #DDE2F5;
+}
+
+/* Panel Chassis Overhauls (Analytics & Forecast) */
+.panel {
+    background: #080E1B;
+    border: 1px solid #1F2738;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+.panel-header {
+    background: #151B29;
+    border-bottom: 1px solid #1F2738;
+    border-left: none;
+    border-radius: 0;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.panel-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.panel-tag {
+    background: #080E1B;
+    border: 1px solid #1F2738;
+    color: #00FF88;
+    border-radius: 4px;
+    font-family: var(--mono);
+    font-size: 9px;
+    padding: 2px 8px;
+}
+
+/* Day & Trend boxes */
+.day-box, .day-stat, .trend-box, .anomaly-status {
+    background: #151B29 !important;
+    border: 1px solid #1F2738 !important;
+    border-radius: 6px !important;
+}
+
+/* Terminal & Chart Deck Header */
+.term-topbar {
+    background: #151B29;
+    border-bottom: 1px solid #1F2738;
+    padding: 10px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.term-dots {
+    display: flex;
+    gap: 6px;
+}
+.t-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+.td-r { background: #FF5F56; }
+.td-y { background: #FFBD2E; }
+.td-g { background: #27C93F; }
+.term-title-text {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: #00E3FD;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+/* Citizen Chassis & Tactical Corners */
+.citizen-chassis {
+    background: #080E1B;
+    border: 1px solid #1F2738;
+    border-radius: 8px;
+    padding: 20px 24px;
+    position: relative;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+}
+.corner {
+    position: absolute;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: #3B4B5D;
+    user-select: none;
+    line-height: 1;
+}
+.c-tl { top: 6px; left: 8px; }
+.c-tr { top: 6px; right: 8px; }
+.c-bl { bottom: 6px; left: 8px; }
+.c-br { bottom: 6px; right: 8px; }
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+    .c2-topbar { padding: 0 16px; }
+    .operator-pill { display: none; }
 }
