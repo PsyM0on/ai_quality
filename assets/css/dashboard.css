@@ -1547,3 +1547,32 @@ body.light .corner {
 body.light .chart-wrap {
     background: transparent !important;
 }
+
+
+/* Tactical corner brackets for Diag Cards */
+.diag-card {
+    position: relative;
+}
+.diag-card .corner {
+    position: absolute;
+    font-family: var(--mono);
+    font-size: 8.5px;
+    color: #253346;
+    user-select: none;
+    line-height: 1;
+    pointer-events: none;
+    transition: color 0.2s ease;
+}
+.diag-card .c-tl { top: 4px; left: 5px; }
+.diag-card .c-tr { top: 4px; right: 5px; }
+.diag-card .c-bl { bottom: 4px; left: 5px; }
+.diag-card .c-br { bottom: 4px; right: 5px; }
+.diag-card:hover .corner {
+    color: #3B4B5D;
+}
+body.light .diag-card .corner {
+    color: #CBD5E1;
+}
+body.light .diag-card:hover .corner {
+    color: #94A3B8;
+}
