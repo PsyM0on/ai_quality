@@ -210,7 +210,10 @@ if (isset($_GET['latest'])) {
         </div>
     </div>
     <div class="card" id="temp-card">
-        <div class="card-label">Temperature</div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+            <div class="card-label" style="margin-bottom: 0;">Temperature</div>
+            <button type="button" class="info-btn" onclick="openTempInfo()" style="width: 14px; height: 14px; font-size: 9px; line-height: 12px; cursor: pointer;" title="Temperature Info">i</button>
+        </div>
         <div class="card-value skeleton" id="temp">00.0</div>
         <div class="card-unit">°C Ambient</div>
         <div id="heat-index-wrap" style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--border); font-size: 11px; font-family: var(--mono); display: flex; justify-content: space-between; align-items: center;">

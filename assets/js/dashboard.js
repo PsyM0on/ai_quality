@@ -240,9 +240,14 @@ function live() {
                 // Threshold Health Alert Notification (RA 8749)
                 // Update PAGASA Heat Index (Apparent Temperature)
                 if (d.heat_index !== undefined) {
+                    window.currentHeatIndex = d.heat_index;
+                    window.currentHeatCat = d.heat_cat;
+                    window.currentHeatDesc = d.heat_desc;
+                    window.currentHeatColor = d.heat_color;
+                    
                     const wrapHi = document.getElementById('heat_index_val');
                     if (wrapHi) {
-                        wrapHi.innerHTML = `<span style="color:${d.heat_color};">${d.heat_index}°C · ${d.heat_cat}</span>`;
+                        wrapHi.innerHTML = `<span style="color:${d.heat_color};">${d.heat_index}°C — ${d.heat_cat}</span>`;
                     }
                 }
 
@@ -785,28 +790,45 @@ function openMqInfo() {
 }
 
 
-/* ── PAGASA HEAT INDEX & UESI MODAL EXPLAINER ── */
+/* 🔥 PAGASA HEAT INDEX DYNAMIC MODAL 🔥 */
 function openHeatIndexInfo() {
     const modal = document.getElementById('glass-modal');
     const modalBody = document.getElementById('glass-modal-body');
     if (!modal || !modalBody) return;
+    
+    const hi = window.currentHeatIndex || "-";
+    const cat = window.currentHeatCat || "Normal";
+    const desc = window.currentHeatDesc || "Comfortable; negligible physiological strain.";
+    const color = window.currentHeatColor || "#00CFA8";
+
     modalBody.innerHTML = `
-        <div class="tip-title">PAGASA Heat Index & Environmental Stress</div>
+        <div class="tip-title">PAGASA Heat Index</div>
         <div style="font-size: 11px; line-height: 1.5; color: var(--text); margin-bottom: 12px;">
-            <strong>Index Definition:</strong> Apparent temperature (°C) combining ambient air temperature and relative humidity.<br>
-            <strong>Mathematical Foundation:</strong> Rothfusz regression equation adapted from Steadman (1979) and officially adopted by PAGASA (Philippine Atmospheric, Geophysical and Astronomical Services Administration).
+            <strong>Current Heat Index:</strong> ${hi}°C<br>
+            <strong>Risk Level:</strong> <span style="color:${color}; font-weight:bold;">${cat}</span>
         </div>
         <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 10px; font-size: 11px; color: var(--muted); line-height: 1.5; margin-bottom: 12px;">
-            <strong style="color:var(--accent);">PAGASA Operational Risk Breakpoints:</strong><br>
-            • <strong>&lt; 27°C (Normal):</strong> Comfortable; negligible physiological strain.<br>
-            • <strong>27°C – 32°C (Caution):</strong> Fatigue possible with prolonged exposure/activity.<br>
-            • <strong>33°C – 41°C (Extreme Caution):</strong> Heat cramps and exhaustion possible; continued activity risks heat stroke.<br>
-            • <strong>42°C – 51°C (Danger):</strong> Heat exhaustion likely; heat stroke probable.<br>
-            • <strong>≥ 52°C (Extreme Danger):</strong> Heat stroke imminent; emergency conditions.
+            <strong style="color:var(--accent);">Health Advisory:</strong><br>
+            ${desc}
         </div>
-        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 10px; font-size: 11px; color: var(--muted); line-height: 1.5;">
-            <strong style="color:var(--accent);">Urban Environmental Stress Index (UESI):</strong><br>
-            In tropical urban environments, air pollution does not act in isolation. The system couples particulate concentrations (PM10 AQI) with thermal comfort (Heat Index) to model compound cardiovascular and respiratory strain on vulnerable urban populations.
+        <div style="font-size: 11px; color: var(--muted); line-height: 1.5;">
+            * Apparent temperature calculated using the Rothfusz regression equation (combining ambient temperature and relative humidity).
+        </div>
+    `;
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+/* 🔥 TEMPERATURE MODAL EXPLAINER 🔥 */
+function openTempInfo() {
+    const modal = document.getElementById('glass-modal');
+    const modalBody = document.getElementById('glass-modal-body');
+    if (!modal || !modalBody) return;
+    modalBody.innerHTML = `
+        <div class="tip-title">Ambient Temperature</div>
+        <div style="font-size: 11px; line-height: 1.5; color: var(--text); margin-bottom: 12px;">
+            <strong>Sensor Principle:</strong> DHT22 Thermistor.<br>
+            <strong>Definition:</strong> The actual physical temperature of the surrounding air, unadjusted for humidity or other factors.
         </div>
     `;
     modal.classList.add('show');
