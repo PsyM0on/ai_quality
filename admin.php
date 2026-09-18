@@ -243,13 +243,13 @@ if (!isset($_SESSION["admin_logged_in"])) {
             <!-- HARDENED STATUS BANNER -->
             <div class="sec-banner">
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <span class="sec-tag">SEC-LEVEL IV</span>
-                    <span style="color: #fff; font-weight: 600;">AIR-GAPPED HARDWARE GATEWAY</span>
+                    <span class="sec-tag">ADMIN ACCESS</span>
+                    <span style="color: #fff; font-weight: 600;">HARDWARE MANAGEMENT GATEWAY</span>
                     <span style="color: #64748B;">// TLS 1.3</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 6px; color: #00FF88;">
                     <span style="width: 6px; height: 6px; border-radius: 50%; background: #00FF88; box-shadow: 0 0 6px #00FF88;"></span>
-                    <span>HSM ENCLAVE ONLINE</span>
+                    <span>SYSTEM ONLINE</span>
                 </div>
             </div>
 
@@ -263,11 +263,11 @@ if (!isset($_SESSION["admin_logged_in"])) {
                 <div class="chassis-header">
                     <div>
                         <div class="chassis-title">Restricted Hardware Access</div>
-                        <div class="chassis-sub">TACTICAL GATEWAY C2 // ZERO-LATENCY CIPHER MATRIX</div>
+                        <div class="chassis-sub">SECURE HARDWARE MANAGEMENT CONSOLE</div>
                     </div>
                     <div class="tamper-badge">
                         <span class="dot"></span>
-                        <span>TAMPER ARMED</span>
+                        <span>SECURITY ACTIVE</span>
                     </div>
                 </div>
 
@@ -277,20 +277,20 @@ if (!isset($_SESSION["admin_logged_in"])) {
                     </div>
                 <?php else: ?>
                     <div class="lockout-alert" style="background: rgba(0, 227, 253, 0.06); border-color: rgba(0, 227, 253, 0.2); color: #9CF0FF;">
-                        <strong>HARDWARE PROTOCOL:</strong> 5 failed sequences trigger automated memory lockout (Zeroize EEPROM buffer).
+                        <strong>SECURITY PROTOCOL:</strong> 5 failed attempts trigger an automated 5-minute lockout.
                     </div>
                 <?php endif; ?>
 
                 <?php if ($_SESSION["lockout_time"] <= time()): ?>
                     <form method="POST">
                         <div class="cipher-box">
-                            <span class="cipher-label">CIPHER INPUT BUFFER (256-BIT ENCLAVE)</span>
+                            <span class="cipher-label">ADMIN PASSCODE</span>
                             <input type="password" name="password" class="cipher-input" placeholder="••••••••" required autofocus autocomplete="off">
                             <div style="margin-top: 10px; font-family: var(--mono); font-size: 10px; color: #64748B;">
-                                ATTEMPT <?= ($_SESSION["login_attempts"] + 1) ?> OF <?= $MAX_ATTEMPTS ?> BEFORE ZERO-FILL LOCKOUT
+                                ATTEMPT <?= ($_SESSION["login_attempts"] + 1) ?> OF <?= $MAX_ATTEMPTS ?> BEFORE SECURITY LOCKOUT
                             </div>
                         </div>
-                        <button type="submit" class="auth-submit-btn">Authenticate Cipher</button>
+                        <button type="submit" class="auth-submit-btn">Log In</button>
                     </form>
                 <?php endif; ?>
             </div>
@@ -319,25 +319,25 @@ if (isset($_POST["action"])) {
     $action = $_POST["action"];
     if ($action === "reboot") {
         file_put_contents($cmd_file, "REBOOT");
-        $_SESSION["msg"] = "WATCHDOG RESET: Reboot sequence queued for Hardware Node $sel_dev!";
+        $_SESSION["msg"] = "Reboot sequence queued for Device $sel_dev.";
     } elseif ($action === "pause") {
         file_put_contents($cmd_file, "PAUSE_60S");
-        $_SESSION["msg"] = "DIODE PRESERVATION: Sleep PMS command queued for Node $sel_dev (60s).";
+        $_SESSION["msg"] = "Sleep PMS sensor command queued for Device $sel_dev (60s).";
     } elseif ($action === "calibrate") {
         file_put_contents($cmd_file, "CALIBRATE");
-        $_SESSION["msg"] = "ANALOG CALIBRATION: Recalibration command queued for Node $sel_dev!";
+        $_SESSION["msg"] = "MQ-135 calibration queued for Device $sel_dev.";
     } elseif ($action === "cancel") {
         file_put_contents($cmd_file, "NONE");
-        $_SESSION["msg"] = "BUS INTERRUPT: Scheduled hardware command purged.";
+        $_SESSION["msg"] = "Scheduled command cancelled.";
     } elseif ($action === "clear_log") {
         file_put_contents("cloud_serial.log", "");
-        $_SESSION["msg"] = "BUFFER CLEARED: Cloud Serial terminal stream wiped.";
+        $_SESSION["msg"] = "Serial monitor buffer cleared.";
     } elseif ($action === "maint_on") {
         file_put_contents($maint_file, "ON");
-        $_SESSION["msg"] = "MAINTENANCE SHIELD ENGAGED: Public advisory banner broadcasted.";
+        $_SESSION["msg"] = "Maintenance mode enabled. Banner active on public dashboard.";
     } elseif ($action === "maint_off") {
         file_put_contents($maint_file, "OFF");
-        $_SESSION["msg"] = "MAINTENANCE SHIELD DISENGAGED: Public telemetry broadcast normal.";
+        $_SESSION["msg"] = "Maintenance mode disabled. Public dashboard broadcast normal.";
     }
     // PRG Pattern: Redirect to self to clear POST state
     header("Location: admin.php?device=" . $sel_dev);
@@ -392,7 +392,7 @@ $operator_ip = $_SESSION["admin_ip"] ?? "127.0.0.1";
     <?php if($current_cmd !== "NONE"): ?>
     <meta http-equiv="refresh" content="3">
     <?php endif; ?>
-    <title>Eco Quality - Hardware C2 Command Deck</title>
+    <title>Eco Quality - Hardware Management Console</title>
     <link rel="stylesheet" href="assets/css/dashboard.css">
     <style>
         body {
@@ -843,18 +843,18 @@ $operator_ip = $_SESSION["admin_ip"] ?? "127.0.0.1";
         <div class="c2-brand">
             <div class="c2-pulse-dot"></div>
             <div>
-                <div class="c2-title">Eco Quality Hardware C2</div>
-                <div class="c2-sub">SEC-LVL 4 // DIRECT TTY BUS</div>
+                <div class="c2-title">Eco Quality Hardware Console</div>
+                <div class="c2-sub">SYSTEM CONTROL & TELEMETRY</div>
             </div>
         </div>
         <div class="c2-top-right">
             <div class="operator-pill">
-                <span>OPERATOR:</span>
+                <span>ADMIN IP:</span>
                 <strong><?= htmlspecialchars($operator_ip) ?></strong>
                 <span style="color: #00FF88;">[TLS 1.3]</span>
             </div>
             <a href="dashboard.php" class="btn-view-dash">&larr; Live Telemetry</a>
-            <a href="?logout=1" class="btn-kill-session">Kill Session</a>
+            <a href="?logout=1" class="btn-kill-session">Log Out</a>
         </div>
     </header>
 
@@ -869,12 +869,12 @@ $operator_ip = $_SESSION["admin_ip"] ?? "127.0.0.1";
         <!-- ACTIVE TARGET MICROCONTROLLER BAR -->
         <div class="node-control-card">
             <div class="node-select-wrap">
-                <span class="node-label">Target Hardware Node:</span>
+                <span class="node-label">Target Device:</span>
                 <form method="GET" style="margin: 0;">
                     <select name="device" class="node-dropdown" onchange="this.form.submit()">
-                        <option value="1" <?= $sel_dev==1 ? 'selected' : '' ?>>Node 01: ESP32 Central Telemetry (Main Urban Station)</option>
-                        <option value="2" <?= $sel_dev==2 ? 'selected' : '' ?>>Node 02: Outdoor Field Probe (Secondary)</option>
-                        <option value="3" <?= $sel_dev==3 ? 'selected' : '' ?>>Node 03: Reference Station (Indoor Baseline)</option>
+                        <option value="1" <?= $sel_dev==1 ? 'selected' : '' ?>>Device 1</option>
+                        <option value="2" <?= $sel_dev==2 ? 'selected' : '' ?>>Device 2</option>
+                        <option value="3" <?= $sel_dev==3 ? 'selected' : '' ?>>Device 3</option>
                     </select>
                 </form>
             </div>
@@ -926,8 +926,8 @@ $operator_ip = $_SESSION["admin_ip"] ?? "127.0.0.1";
                         <strong><?= htmlspecialchars($last_ping) ?></strong>
                     </div>
                     <div class="diag-meta-row">
-                        <span>NODE TARGET:</span>
-                        <strong>DEV <?= $sel_dev ?> (ESP32)</strong>
+                        <span>TARGET:</span>
+                        <strong>Device <?= $sel_dev ?> (ESP32)</strong>
                     </div>
                 </div>
             </div>
@@ -981,9 +981,9 @@ $operator_ip = $_SESSION["admin_ip"] ?? "127.0.0.1";
         <div class="actuator-panel">
             <div class="panel-headline">
                 <div class="headline-text">
-                    <span>&#x26A1; Hardware Actuator Matrix &bull; Direct TTY Bus Dispatch</span>
+                    <span>&#x26A1; Hardware Controls &bull; Command Dispatch</span>
                 </div>
-                <span class="headline-badge">ARMED: HARDWARE ACCESS AUTHORIZED</span>
+                <span class="headline-badge">AUTHORIZED ADMIN ACCESS</span>
             </div>
 
             <form method="POST" style="margin: 0;">
@@ -995,7 +995,7 @@ $operator_ip = $_SESSION["admin_ip"] ?? "127.0.0.1";
                                 <div class="act-title" style="color: #FF5F56;">Reboot ESP32 MCU</div>
                                 <div class="act-desc">Forces hardware watchdog trip and resets internal MCU state machines and WiFi stack.</div>
                             </div>
-                            <button type="submit" name="action" value="reboot" class="btn-actuator btn-reboot">Dispatch Restart</button>
+                            <button type="submit" name="action" value="reboot" class="btn-actuator btn-reboot">Restart Device</button>
                         </div>
 
                         <!-- Sleep PMS Actuator -->
@@ -1004,7 +1004,7 @@ $operator_ip = $_SESSION["admin_ip"] ?? "127.0.0.1";
                                 <div class="act-title" style="color: #FFBD2E;">Sleep PMS Sensor (60s)</div>
                                 <div class="act-desc">Sends standby signal to PMS5003 laser/fan diode for 60s duty-cycle preservation.</div>
                             </div>
-                            <button type="submit" name="action" value="pause" class="btn-actuator btn-sleep">Send Sleep Signal</button>
+                            <button type="submit" name="action" value="pause" class="btn-actuator btn-sleep">Sleep Sensor (60s)</button>
                         </div>
 
                         <!-- Calibrate MQ135 Actuator -->
@@ -1013,7 +1013,7 @@ $operator_ip = $_SESSION["admin_ip"] ?? "127.0.0.1";
                                 <div class="act-title" style="color: #00E3FD;">Calibrate MQ-135 Baseline</div>
                                 <div class="act-desc">Re-samples baseline clean-air resistance R0 for electrochemical gas ADC sensor.</div>
                             </div>
-                            <button type="submit" name="action" value="calibrate" class="btn-actuator btn-calib">Execute Zero-Base</button>
+                            <button type="submit" name="action" value="calibrate" class="btn-actuator btn-calib">Calibrate Baseline</button>
                         </div>
                     <?php else: ?>
                         <!-- Command Abort Action -->
@@ -1022,7 +1022,7 @@ $operator_ip = $_SESSION["admin_ip"] ?? "127.0.0.1";
                                 <div class="act-title" style="color: #FF5F56;">Active Hardware Command Queued: [ <?= htmlspecialchars($current_cmd) ?> ]</div>
                                 <div class="act-desc">The hardware node will fetch and execute this command on its next 5-second polling cycle. You can abort it before execution.</div>
                             </div>
-                            <button type="submit" name="action" value="cancel" class="btn-actuator btn-cancel-act">Purge Scheduled Command</button>
+                            <button type="submit" name="action" value="cancel" class="btn-actuator btn-cancel-act">Cancel Scheduled Command</button>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -1033,18 +1033,18 @@ $operator_ip = $_SESSION["admin_ip"] ?? "127.0.0.1";
         <div class="override-card">
             <div class="override-info">
                 <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-                    <h4>Public Telemetry API Override</h4>
+                    <h4>Maintenance Mode Override</h4>
                     <span class="status-pill-maint <?= $maint_mode === 'ON' ? 'maint-active' : 'maint-inactive' ?>">
-                        <?= $maint_mode === 'ON' ? 'MAINTENANCE SHIELD ENGAGED' : 'NORMAL BROADCAST' ?>
+                        <?= $maint_mode === 'ON' ? 'MAINTENANCE MODE ACTIVE' : 'NORMAL BROADCAST' ?>
                     </span>
                 </div>
                 <p>Broadcasts a persistent maintenance advisory banner across public user dashboards during physical calibration or testing.</p>
             </div>
             <form method="POST" style="margin: 0;">
                 <?php if($maint_mode === "ON"): ?>
-                    <button type="submit" name="action" value="maint_off" class="btn-toggle-maint" style="background: #2F3543; color: #fff;">Disengage Shield</button>
+                    <button type="submit" name="action" value="maint_off" class="btn-toggle-maint" style="background: #2F3543; color: #fff;">Disable Maintenance Mode</button>
                 <?php else: ?>
-                    <button type="submit" name="action" value="maint_on" class="btn-toggle-maint" style="background: #FF5F56; color: #080E1B;">Engage Maintenance Shield</button>
+                    <button type="submit" name="action" value="maint_on" class="btn-toggle-maint" style="background: #FF5F56; color: #080E1B;">Enable Maintenance Mode</button>
                 <?php endif; ?>
             </form>
         </div>
@@ -1057,7 +1057,7 @@ $operator_ip = $_SESSION["admin_ip"] ?? "127.0.0.1";
                     <div class="t-dot td-y"></div>
                     <div class="t-dot td-g"></div>
                 </div>
-                <div class="term-title-text">TTY: /dev/ttyUSB0 (ESP32-UART0 @ 115200 baud) &bull; Cloud Serial Monitor</div>
+                <div class="term-title-text">Serial Stream: /dev/ttyUSB0 (115200 baud) &bull; Cloud Serial Monitor</div>
                 <form method="POST" style="margin: 0;">
                     <button type="submit" name="action" value="clear_log" style="background: none; border: 1px solid #2F3543; color: #849585; font-family: var(--mono); font-size: 10px; border-radius: 4px; padding: 4px 10px; cursor: pointer;">Clear Stream</button>
                 </form>
