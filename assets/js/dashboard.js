@@ -217,7 +217,41 @@ function live() {
                 const info = aqiInfo(aqi);
                 document.getElementById('aqi').textContent       = aqi;
                 document.getElementById('aqi-label').textContent = info.label;
-                document.getElementById('aqi-card').className    = 'card ' + info.card;
+                document.getElementById('aqi-card').className    = 'card card-hero ' + info.card;
+
+                // Animate Stitch Circular AQI Radial Gauge
+                const circle = document.getElementById('aqi-gauge-circle');
+                if (circle) {
+                    const clampedAqi = Math.min(Math.max(aqi, 0), 500);
+                    const offset = 251.2 * (1 - clampedAqi / 500);
+                    circle.style.strokeDashoffset = offset;
+                    circle.style.stroke = info.color || 'var(--accent)';
+                }
+                const gaugeRatio = document.getElementById('gauge-ratio');
+                if (gaugeRatio) gaugeRatio.textContent = `${Math.round(aqi)} / 500`;
+                const gaugeCat = document.getElementById('gauge-category');
+                if (gaugeCat) {
+                    gaugeCat.textContent = (info.label || '').toUpperCase();
+                    gaugeCat.style.color = info.color || 'var(--accent)';
+                }
+
+                // Update PM10 Guideline Progress Bar (DAO 2000-81 150 ug/m3)
+                const pm10Val = parseFloat(d.pm10) || 0;
+                const pm10Pct = Math.min(Math.round((pm10Val / 150) * 100), 100);
+                const pm10PctEl = document.getElementById('pm10-pct');
+                const pm10BarEl = document.getElementById('pm10-progress');
+                if (pm10PctEl) pm10PctEl.textContent = `${pm10Pct}%`;
+                if (pm10BarEl) {
+                    pm10BarEl.style.width = `${pm10Pct}%`;
+                    pm10BarEl.style.background = pm10Pct > 100 ? 'var(--danger)' : (pm10Pct > 66 ? 'var(--warn)' : 'var(--accent)');
+                }
+
+                // Update Station Ribbon Health Status
+                const nodeHealth = document.getElementById('node-health-tag');
+                if (nodeHealth) {
+                    nodeHealth.textContent = diff > 60 ? 'Offline' : 'Active Live';
+                    nodeHealth.style.color = diff > 60 ? 'var(--danger)' : 'var(--accent)';
+                }
 
                 // Update 24-hr Rolling Average (RA 8749 Regulatory Compliance Standard)
                 if (d.aqi_24h !== undefined) {
@@ -270,7 +304,18 @@ function blankValues(statusMsg = 'Offline') {
     document.getElementById('pm').textContent   = '—';
     document.getElementById('aqi').textContent  = '—';
     document.getElementById('aqi-label').textContent = statusMsg;
-    document.getElementById('aqi-card').className = 'card';
+    document.getElementById('aqi-card').className = 'card card-hero';
+    const circle = document.getElementById('aqi-gauge-circle');
+    if (circle) circle.style.strokeDashoffset = 251.2;
+    const gaugeRatio = document.getElementById('gauge-ratio');
+    if (gaugeRatio) gaugeRatio.textContent = '-- / 500';
+    const gaugeCat = document.getElementById('gauge-category');
+    if (gaugeCat) gaugeCat.textContent = statusMsg.toUpperCase();
+    const nodeHealth = document.getElementById('node-health-tag');
+    if (nodeHealth) {
+        nodeHealth.textContent = statusMsg;
+        nodeHealth.style.color = 'var(--danger)';
+    }
 }
 
 /* ── SENSOR HISTORY ───────────────────────────────────── */
