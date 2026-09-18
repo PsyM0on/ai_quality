@@ -902,7 +902,7 @@ $operator_ip = $_SESSION["admin_ip"] ?? "127.0.0.1";
                 <div class="diag-meta-box">
                     <div class="diag-meta-row">
                         <span>HOST ARCH:</span>
-                        <strong>Oracle Cloud ARM64</strong>
+                        <strong><?= (PHP_OS_FAMILY === 'Windows') ? 'Local XAMPP (' . php_uname('m') . ')' : 'Oracle Cloud (' . php_uname('m') . ')' ?></strong>
                     </div>
                     <div class="diag-meta-row">
                         <span>MYSQL DB:</span>
@@ -926,8 +926,8 @@ $operator_ip = $_SESSION["admin_ip"] ?? "127.0.0.1";
                         <strong><?= htmlspecialchars($last_ping) ?></strong>
                     </div>
                     <div class="diag-meta-row">
-                        <span>TARGET:</span>
-                        <strong>Device <?= $sel_dev ?> (ESP32)</strong>
+                        <span>INTERVAL:</span>
+                        <strong>5s Telemetry</strong>
                     </div>
                 </div>
             </div>

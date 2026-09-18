@@ -982,6 +982,28 @@ body.light .smart-banner { background: rgba(244, 247, 249, 0.85); }
     color: var(--text);
 }
 
+/* ── DEFENSE BENCHMARK ACCORDION ── */
+details.defense-benchmark-details summary {
+    list-style: none;
+    transition: color 0.2s ease;
+}
+details.defense-benchmark-details summary::-webkit-details-marker {
+    display: none;
+}
+details.defense-benchmark-details summary:hover {
+    color: var(--text) !important;
+}
+details.defense-benchmark-details summary::after {
+    content: "▸";
+    font-size: 11px;
+    margin-left: 6px;
+    transition: transform 0.2s ease;
+    display: inline-block;
+}
+details.defense-benchmark-details[open] summary::after {
+    transform: rotate(90deg);
+}
+
 /* ── MODEL VALIDATION BENCHMARK MINI-TABLE ── */
 .benchmark-mini-table {
     width: 100%;

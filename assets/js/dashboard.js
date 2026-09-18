@@ -274,6 +274,13 @@ function live() {
 
                 document.getElementById('temp').textContent = d.temp  ?? '—';
                 document.getElementById('hum').textContent  = d.hum   ?? '—';
+                const humVal = parseFloat(d.hum);
+                const humComfortEl = document.getElementById('hum-comfort-label');
+                if (humComfortEl && !isNaN(humVal)) {
+                    if (humVal < 30) humComfortEl.textContent = 'Dry (<30%)';
+                    else if (humVal <= 60) humComfortEl.textContent = 'Comfort (30–60%)';
+                    else humComfortEl.textContent = 'Humid (>60%)';
+                }
                 document.getElementById('mq').textContent   = d.mq135 ?? '—';
                 document.getElementById('pm').textContent   = d.pm10  ?? '—';
 
@@ -694,34 +701,6 @@ function closeMenu() {
 }
 
 
-
-/* -- SMART APP BANNER -- */
-setTimeout(() => { 
-    const ua = navigator.userAgent || navigator.vendor || window.opera; 
-    const banner = document.getElementById('smart-banner'); 
-    const btn = document.getElementById('sb-btn'); 
-    const sub = document.getElementById('sb-sub'); 
-    
-    // Check if running as standalone PWA
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone || document.referrer.includes('android-app://');
-    
-    if (window.innerWidth > 700 || !banner || isStandalone) return; 
-    
-    if (/android/i.test(ua)) { 
-        sub.textContent = 'Get the Android APK'; 
-        btn.href = 'downloads/eco_quality.apk'; 
-        btn.download = ''; 
-        banner.classList.add('show'); 
-    } else if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) { 
-        sub.textContent = 'Add to iPhone Home Screen'; 
-        btn.href = '#'; 
-        btn.onclick = (e) => { e.preventDefault(); showIosInstructions(); }; 
-        banner.classList.add('show'); 
-    } 
-}, 2500);
-
-/* Suppress Chrome Native PWA Prompt */
-window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); window.deferredPrompt = e; });
 
 /* ── PUBLIC HEALTH ALERT LOGIC (RA 8749 COMPLIANCE) ── */
 let alertDismissed = false;

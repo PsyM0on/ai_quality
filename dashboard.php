@@ -147,7 +147,7 @@ if (isset($_GET['latest'])) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="assets/css/dashboard.css?v=28" rel="stylesheet">
+<link href="assets/css/dashboard.css?v=29" rel="stylesheet">
 <script>
     // System Validation: Early Device Theme Detection (Anti-FOUC)
     (function() {
@@ -217,10 +217,6 @@ if (isset($_GET['latest'])) {
 <div class="cards">
     <!-- AQI Card -->
     <div class="card diag-card" id="aqi-card">
-        <span class="corner c-tl">&#x25E4;</span>
-        <span class="corner c-tr">&#x25E5;</span>
-        <span class="corner c-bl">&#x25E2;</span>
-        <span class="corner c-br">&#x25E3;</span>
         <div class="diag-top">
             <span class="diag-title">
                 <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg>
@@ -244,10 +240,6 @@ if (isset($_GET['latest'])) {
 
     <!-- Temperature Card -->
     <div class="card diag-card" id="temp-card">
-        <span class="corner c-tl">&#x25E4;</span>
-        <span class="corner c-tr">&#x25E5;</span>
-        <span class="corner c-bl">&#x25E2;</span>
-        <span class="corner c-br">&#x25E3;</span>
         <div class="diag-top">
             <span class="diag-title">
                 <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--danger);"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
@@ -259,7 +251,7 @@ if (isset($_GET['latest'])) {
         <div class="diag-unit">°C Ambient</div>
         <div class="diag-meta-box" id="heat-index-wrap">
             <div class="diag-meta-row">
-                <div style="display: flex; align-items: center; gap: 4px;">
+                <div style="flex: 1; display: flex; align-items: center; gap: 4px;">
                     <span>FEELS LIKE:</span>
                     <button type="button" class="info-btn" onclick="openHeatIndexInfo()" title="Apparent Temperature Info">i</button>
                 </div>
@@ -274,10 +266,6 @@ if (isset($_GET['latest'])) {
 
     <!-- Humidity Card -->
     <div class="card diag-card">
-        <span class="corner c-tl">&#x25E4;</span>
-        <span class="corner c-tr">&#x25E5;</span>
-        <span class="corner c-bl">&#x25E2;</span>
-        <span class="corner c-br">&#x25E3;</span>
         <div class="diag-top">
             <span class="diag-title">
                 <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--cyan);"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
@@ -293,18 +281,14 @@ if (isset($_GET['latest'])) {
                 <strong>Water Vapor</strong>
             </div>
             <div class="diag-meta-row">
-                <span>SENSOR:</span>
-                <strong>Capacitive RH</strong>
+                <span>COMFORT:</span>
+                <strong id="hum-comfort-label">Standard Range</strong>
             </div>
         </div>
     </div>
 
     <!-- Gas Contaminants Card -->
     <div class="card diag-card" id="mq-card">
-        <span class="corner c-tl">&#x25E4;</span>
-        <span class="corner c-tr">&#x25E5;</span>
-        <span class="corner c-bl">&#x25E2;</span>
-        <span class="corner c-br">&#x25E3;</span>
         <div class="diag-top">
             <span class="diag-title">
                 <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--warn);"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
@@ -316,22 +300,18 @@ if (isset($_GET['latest'])) {
         <div class="diag-unit" id="mq-status-label">Relative ADC Index</div>
         <div class="diag-meta-box">
             <div class="diag-meta-row">
-                <span>TARGET GAS:</span>
+                <span>TARGET GASES:</span>
                 <strong>CO, NH3, Smoke</strong>
             </div>
             <div class="diag-meta-row">
-                <span>PROBE:</span>
-                <strong>MQ-135 Sensor</strong>
+                <span>DETECTION:</span>
+                <strong>Electrochemical</strong>
             </div>
         </div>
     </div>
 
     <!-- PM10 Card -->
     <div class="card diag-card">
-        <span class="corner c-tl">&#x25E4;</span>
-        <span class="corner c-tr">&#x25E5;</span>
-        <span class="corner c-bl">&#x25E2;</span>
-        <span class="corner c-br">&#x25E3;</span>
         <div class="diag-top">
             <span class="diag-title">
                 <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
@@ -343,12 +323,12 @@ if (isset($_GET['latest'])) {
         <div class="diag-unit">µg/m³ Concentration</div>
         <div class="diag-meta-box">
             <div class="diag-meta-row">
-                <span>DETECTION:</span>
-                <strong>Laser Scattering</strong>
+                <span>PARTICLE:</span>
+                <strong>Coarse Dust (≤10µm)</strong>
             </div>
             <div class="diag-meta-row">
-                <span>PROBE:</span>
-                <strong>PMS5003 Sensor</strong>
+                <span>DETECTION:</span>
+                <strong>Laser Scattering</strong>
             </div>
         </div>
     </div>
@@ -371,8 +351,8 @@ if (isset($_GET['latest'])) {
                         <strong>Function:</strong> Compares today's average, minimum, and maximum readings against yesterday's.
                     </div>
                     <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 10px; font-size: 11px; color: var(--muted); line-height: 1.5;">
-                        <strong style="color:var(--accent);">System Info:</strong><br>
-                        Updates every 60 seconds via <strong>daily_summary.py</strong>.
+                        <strong style="color:var(--accent);">Update Cadence:</strong><br>
+                        Aggregated and refreshed automatically every 60 seconds.
                     </div>
                 </div>
                 <span class="panel-tag" id="daily-tag">loading…</span>
@@ -423,8 +403,8 @@ if (isset($_GET['latest'])) {
                         <strong>Function:</strong> Isolation Forest isolates anomalies via random partitioning trees. Z-scores are then used to explain which sensors caused the anomaly.
                     </div>
                     <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 10px; font-size: 11px; color: var(--muted); line-height: 1.5;">
-                        <strong style="color:var(--accent);">System Info:</strong><br>
-                        Configured for 5% expected outliers (contamination). Updates every 20 seconds via <strong>detect_anomaly.py</strong>.
+                        <strong style="color:var(--accent);">System Configuration:</strong><br>
+                        Configured for 5% baseline outlier sensitivity. Evaluated continuously every 20 seconds.
                     </div>
                 </div>
                 <span class="panel-tag" id="anomaly-tag">loading…</span>
@@ -487,8 +467,8 @@ if (isset($_GET['latest'])) {
                         <strong>Features:</strong> Temp, Hum, PM10, VOC, time-of-day, rolling averages, rates of change.
                     </div>
                     <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 10px; font-size: 11px; color: var(--muted); line-height: 1.5;">
-                        <strong style="color:var(--accent);">System Info:</strong><br>
-                        Updates every 30 seconds via <strong>rf_predictor.py</strong>.
+                        <strong style="color:var(--accent);">Forecast Cadence:</strong><br>
+                        Continuous multi-step predictions calibrated and refreshed every 30 seconds.
                     </div>
                 </div>
                 <span class="panel-tag" id="trend-tag">loading…</span>
@@ -521,41 +501,43 @@ if (isset($_GET['latest'])) {
             </div>
             
             <!-- Model Validation Benchmark (Academic Defense Component) -->
-            <div class="model-benchmark-box" id="model-benchmark-box" style="margin-top: 15px; border-top: 1px solid var(--border); padding-top: 10px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                    <span style="font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--mono);">Model Evaluation (7-Day Benchmark)</span>
+            <details class="defense-benchmark-details" style="margin-top: 15px; border-top: 1px solid var(--border); padding-top: 10px;">
+                <summary style="cursor: pointer; font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--mono); display: flex; justify-content: space-between; align-items: center; user-select: none;">
+                    <span>📊 Model Evaluation (Defense Benchmark)</span>
                     <span id="bm-r2" style="font-size: 0.75rem; color: var(--accent); font-family: var(--mono); font-weight: bold;">R²: —</span>
+                </summary>
+                <div class="model-benchmark-box" id="model-benchmark-box" style="margin-top: 10px;">
+                    <div style="overflow-x: auto;">
+                        <table class="benchmark-mini-table">
+                            <thead>
+                                <tr>
+                                    <th>Architecture</th>
+                                    <th>MAE</th>
+                                    <th>R² Score</th>
+                                    <th>Metric</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="rf-row">
+                                    <td><strong>Random Forest (100 Trees)</strong></td>
+                                    <td id="bm-rf-mae">—</td>
+                                    <td id="bm-rf-r2">—</td>
+                                    <td><span class="bm-badge active">Selected</span></td>
+                                </tr>
+                                <tr class="lr-row">
+                                    <td>Linear Regression (Baseline)</td>
+                                    <td id="bm-lr-mae">—</td>
+                                    <td id="bm-lr-r2">Baseline</td>
+                                    <td><span class="bm-badge baseline">Reference</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="bm-summary" style="font-size: 10px; color: var(--muted); font-family: var(--mono); margin-top: 6px;">
+                        Ensemble ML achieves <span id="bm-imp" style="color: var(--accent); font-weight: bold;">—%</span> error reduction over baseline.
+                    </div>
                 </div>
-                <div style="overflow-x: auto;">
-                    <table class="benchmark-mini-table">
-                        <thead>
-                            <tr>
-                                <th>Architecture</th>
-                                <th>MAE</th>
-                                <th>R² Score</th>
-                                <th>Metric</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="rf-row">
-                                <td><strong>Random Forest (100 Trees)</strong></td>
-                                <td id="bm-rf-mae">—</td>
-                                <td id="bm-rf-r2">—</td>
-                                <td><span class="bm-badge active">Selected</span></td>
-                            </tr>
-                            <tr class="lr-row">
-                                <td>Linear Regression (Baseline)</td>
-                                <td id="bm-lr-mae">—</td>
-                                <td id="bm-lr-r2">Baseline</td>
-                                <td><span class="bm-badge baseline">Reference</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div id="bm-summary" style="font-size: 10px; color: var(--muted); font-family: var(--mono); margin-top: 6px;">
-                    Ensemble ML achieves <span id="bm-imp" style="color: var(--accent); font-weight: bold;">—%</span> error reduction over baseline.
-                </div>
-            </div>
+            </details>
         </div>
     </div>
 
@@ -581,10 +563,6 @@ if (isset($_GET['latest'])) {
     <!-- 🏛️ CITIZEN ENVIRONMENTAL TELEMETRY NOTICE -->
     <footer class="citizen-footer">
         <div class="citizen-chassis">
-            <span class="corner c-tl">&#x25E4;</span>
-            <span class="corner c-tr">&#x25E5;</span>
-            <span class="corner c-bl">&#x25E2;</span>
-            <span class="corner c-br">&#x25E3;</span>
             <div class="citizen-footer-content">
                 <div class="citizen-notice" style="background: transparent; border: none; padding: 0;">
                     <span class="citizen-label" style="font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--accent); letter-spacing: 0.08em;">
@@ -673,11 +651,11 @@ if (isset($_GET['latest'])) {
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=28" defer></script>
+<script src="assets/js/dashboard.js?v=29" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=23')
+        navigator.serviceWorker.register('./sw.js?update=24')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update(); // Force update check
@@ -686,15 +664,6 @@ if ('serviceWorker' in navigator) {
     });
 }
 </script>
-<!-- Smart App Banner -->
-<div id="smart-banner" class="smart-banner">
-    <div class="sb-text">
-        <div class="sb-title">Eco Quality</div>
-        <div id="sb-sub" class="sb-sub">Download the mobile app</div>
-    </div>
-    <a id="sb-btn" href="#" class="sb-btn">Install</a>
-    <button class="sb-close" onclick="document.getElementById('smart-banner').classList.remove('show')">&times;</button>
-</div>
 
 </body>
 </html>
