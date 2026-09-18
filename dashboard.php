@@ -206,7 +206,7 @@ if (isset($_GET['latest'])) {
         <span class="corner c-bl">&#x25E2;</span>
         <span class="corner c-br">&#x25E3;</span>
         <div class="diag-top">
-            <span class="diag-title"><span style="color: #00FF88;">&#x25CF;</span> AIR QUALITY INDEX</span>
+            <span class="diag-title">AIR QUALITY INDEX</span>
             <span id="aqi-mode-badge" class="badge-pill">NOWCAST</span>
         </div>
         <div class="diag-val skeleton" id="aqi">000</div>
@@ -230,8 +230,8 @@ if (isset($_GET['latest'])) {
         <span class="corner c-bl">&#x25E2;</span>
         <span class="corner c-br">&#x25E3;</span>
         <div class="diag-top">
-            <span class="diag-title"><span style="color: #FF5F56;">&#x25C8;</span> TEMPERATURE</span>
-            <button type="button" class="info-btn" onclick="openTempInfo()" title="Temperature Info" style="width: 16px; height: 16px; font-size: 9px;">i</button>
+            <span class="diag-title">TEMPERATURE</span>
+            <button type="button" class="info-btn" onclick="openTempInfo()" title="Temperature Info">i</button>
         </div>
         <div class="diag-val skeleton" id="temp">00.0</div>
         <div class="diag-unit">°C Ambient</div>
@@ -239,7 +239,7 @@ if (isset($_GET['latest'])) {
             <div class="diag-meta-row">
                 <div style="display: flex; align-items: center; gap: 4px;">
                     <span>FEELS LIKE:</span>
-                    <button type="button" class="info-btn" onclick="openHeatIndexInfo()" title="Apparent Temperature Info" style="width: 12px; height: 12px; font-size: 8px; line-height: 10px;">i</button>
+                    <button type="button" class="info-btn" onclick="openHeatIndexInfo()" title="Apparent Temperature Info">i</button>
                 </div>
                 <span id="heat_index_val" style="font-weight: 600; color: #00E3FD;">—</span>
             </div>
@@ -257,7 +257,7 @@ if (isset($_GET['latest'])) {
         <span class="corner c-bl">&#x25E2;</span>
         <span class="corner c-br">&#x25E3;</span>
         <div class="diag-top">
-            <span class="diag-title"><span style="color: #00E3FD;">&#x25CB;</span> HUMIDITY</span>
+            <span class="diag-title">HUMIDITY</span>
             <span class="badge-pill" style="color: #00E3FD;">DHT22</span>
         </div>
         <div class="diag-val skeleton" id="hum">00.0</div>
@@ -281,8 +281,8 @@ if (isset($_GET['latest'])) {
         <span class="corner c-bl">&#x25E2;</span>
         <span class="corner c-br">&#x25E3;</span>
         <div class="diag-top">
-            <span class="diag-title"><span style="color: #FFBD2E;">&#x25C7;</span> GAS CONTAMINANTS</span>
-            <button type="button" class="info-btn" onclick="openMqInfo()" title="MQ-135 Sensor Scope" style="width: 16px; height: 16px; font-size: 9px;">i</button>
+            <span class="diag-title">GAS CONTAMINANTS</span>
+            <button type="button" class="info-btn" onclick="openMqInfo()" title="MQ-135 Sensor Scope">i</button>
         </div>
         <div class="diag-val skeleton" id="mq">000</div>
         <div class="diag-unit" id="mq-status-label">Relative ADC Index</div>
@@ -305,8 +305,8 @@ if (isset($_GET['latest'])) {
         <span class="corner c-bl">&#x25E2;</span>
         <span class="corner c-br">&#x25E3;</span>
         <div class="diag-top">
-            <span class="diag-title"><span style="color: #00FF88;">&#x2235;</span> PARTICULATE PM10</span>
-            <button type="button" class="info-btn" onclick="openPmInfo()" title="PM10 Scope" style="width: 16px; height: 16px; font-size: 9px;">i</button>
+            <span class="diag-title">PARTICULATE PM10</span>
+            <button type="button" class="info-btn" onclick="openPmInfo()" title="PM10 Scope">i</button>
         </div>
         <div class="diag-val skeleton" id="pm">00.0</div>
         <div class="diag-unit">µg/m³ Concentration</div>
@@ -330,7 +330,7 @@ if (isset($_GET['latest'])) {
 <div class="status-row"><!-- <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Daily Summary -->
     <div class="panel">
         <div class="panel-header">
-            <span class="panel-title"><span style="color: #00FF88; font-size: 13px;">&#x25A4;</span> Daily Summary</span>
+            <span class="panel-title"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Daily Summary</span>
             <div class="header-right">
                 <button class="info-btn" onclick="toggleTip(this)">i</button>
                 <div class="info-tip">
@@ -382,7 +382,7 @@ if (isset($_GET['latest'])) {
 <!-- 📊 Spike Detection -->
     <div class="panel">
         <div class="panel-header">
-            <span class="panel-title"><span style="color: #FFBD2E; font-size: 13px;">&#x26A1;</span> Anomaly Detection</span>
+            <span class="panel-title"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg> Anomaly Detection</span>
             <div class="header-right">
                 <button class="info-btn" onclick="toggleTip(this)">i</button>
                 <div class="info-tip">
@@ -445,7 +445,7 @@ if (isset($_GET['latest'])) {
     <!-- 📈 Trend Forecast -->
     <div class="panel">
         <div class="panel-header">
-            <span class="panel-title"><span style="color: #00E3FD; font-size: 13px;">&#x2197;</span> AQI Forecast</span>
+            <span class="panel-title"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg> AQI Forecast</span>
             <div class="header-right">
                 <button class="info-btn" onclick="toggleTip(this)">i</button>
                 <div class="info-tip">
@@ -539,7 +539,7 @@ if (isset($_GET['latest'])) {
     <!-- Sensor History Chart -->
     <div class="panel">
         <div class="panel-header">
-            <span class="panel-title"><span style="color: #00FF88; font-size: 13px;">&#x25A6;</span> Sensor History</span>
+            <span class="panel-title">Sensor History</span>
             <span class="panel-tag" id="row-count">—</span>
         </div>
         <div class="chart-wrap"><canvas id="chart"></canvas></div>
@@ -556,10 +556,10 @@ if (isset($_GET['latest'])) {
             <span class="corner c-br">&#x25E3;</span>
             <div class="citizen-footer-content">
                 <div class="citizen-notice" style="background: transparent; border: none; padding: 0;">
-                    <span class="citizen-label" style="font-family: var(--mono); font-size: 11px; font-weight: 700; color: #00FF88; letter-spacing: 0.08em;">
+                    <span class="citizen-label" style="font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--accent); letter-spacing: 0.08em;">
                         CITIZEN NOTICE // AMBIENT ENVIRONMENTAL DATA INITIATIVE
                     </span>
-                    <p style="font-size: 11px; color: #849585; line-height: 1.6; margin: 8px 0 16px;">
+                    <p style="font-size: 11px; color: var(--muted); line-height: 1.6; margin: 8px 0 16px;">
                         Atmospheric telemetry, particulate concentrations (PM10), and relative gas contamination indices are monitored via publicly-deployed IoT telemetry sensing nodes. Real-time data is served for public health awareness and ambient environmental assessment under the Philippine Clean Air Act (RA 8749) and DENR DAO 2000-81.
                     </p>
                 </div>
