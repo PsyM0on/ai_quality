@@ -147,7 +147,7 @@ if (isset($_GET['latest'])) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="assets/css/dashboard.css?v=25" rel="stylesheet">
+<link href="assets/css/dashboard.css?v=26" rel="stylesheet">
 </head>
 <body>
 
@@ -170,18 +170,10 @@ if (isset($_GET['latest'])) {
         </div>
     </div>
     <div class="c2-top-right">
-        <div class="operator-pill">
-            <span>STATION:</span>
-            <strong>ONLINE</strong>
-            <span style="color: #00E3FD;">[DEVICE 1]</span>
-        </div>
         <button class="btn-dash-action" onclick="toggleTheme()" title="Toggle Theme">
             <span id="theme-icon">☾</span>
             <span id="theme-label" style="display: none;">Dark</span>
         </button>
-        <a href="admin.php" class="btn-c2-link" title="Hardware Admin Console">
-            CONSOLE &rarr;
-        </a>
         <button class="btn-dash-action" onclick="openMenu()" title="Navigation Menu" style="font-size: 15px; padding: 5px 10px;">
             ☰
         </button>
@@ -202,22 +194,6 @@ if (isset($_GET['latest'])) {
 </div>
 
 <main class="main">
-
-    <!-- ACTIVE MONITORING NODE CHASSIS -->
-    <div class="node-control-card">
-        <div class="node-select-wrap">
-            <span class="node-label">Active Monitoring Station:</span>
-            <span style="font-family: var(--mono); font-size: 11px; font-weight: 600; color: #00FF88;">Device 1 &bull; Urban Baseline Station</span>
-        </div>
-        <div class="node-specs-pill">
-            <span style="color: #00FF88;">&#x25CF;</span>
-            <span>ESP32-WROOM-32D</span>
-            <span style="color: #3B4B5D;">|</span>
-            <span>PMS5003 + MQ135 + DHT22</span>
-            <span style="color: #3B4B5D;">|</span>
-            <span style="color: #00E3FD;">RA 8749 PHILIPPINES</span>
-        </div>
-    </div>
 
 <!-- ═══════════════════════════════════════════════════ -->
 <!--  ROW 1 — LIVE SENSOR CARDS                        -->
@@ -541,18 +517,13 @@ if (isset($_GET['latest'])) {
 <span class="section-label">Reading History & Telemetry</span>
 <div class="content-row">
 
-    <!-- Sensor History Chart Deck -->
+    <!-- Sensor History Chart -->
     <div class="panel">
-        <div class="term-topbar">
-            <div class="term-dots">
-                <div class="t-dot td-r"></div>
-                <div class="t-dot td-y"></div>
-                <div class="t-dot td-g"></div>
-            </div>
-            <div class="term-title-text">TELEMETRY ARCHIVE // 20-SAMPLE TIME SERIES LOG</div>
+        <div class="panel-header">
+            <span class="panel-title">Sensor History</span>
             <span class="panel-tag" id="row-count">—</span>
         </div>
-        <div class="chart-wrap" style="background: #050811; padding: 18px;"><canvas id="chart"></canvas></div>
+        <div class="chart-wrap"><canvas id="chart"></canvas></div>
     </div>
 
 </div><!-- /content-row -->
@@ -573,9 +544,9 @@ if (isset($_GET['latest'])) {
                         Atmospheric telemetry, particulate concentrations (PM10), and relative gas contamination indices are monitored via publicly-deployed IoT telemetry sensing nodes. Real-time data is served for public health awareness and ambient environmental assessment under the Philippine Clean Air Act (RA 8749) and DENR DAO 2000-81.
                     </p>
                 </div>
-                <div class="citizen-meta" style="border-top: 1px solid #1A202D; padding-top: 12px; font-family: var(--mono); font-size: 10px; color: #64748B;">
-                    <span>STATION RUNTIME: <strong style="color: #00FF88;">CONTINUOUS 24/7</strong></span>
-                    <span>&copy; <?= date('Y') ?> Eco Quality Project &bull; Philippine Ambient Air Quality Assessment</span>
+                <div class="citizen-meta" style="border-top: 1px solid var(--border); padding-top: 12px; font-family: var(--mono); font-size: 10px; color: var(--muted);">
+                    <span>STATION RUNTIME: <strong style="color: var(--accent);">CONTINUOUS 24/7</strong></span>
+                    <span>&copy; <?= date('Y') ?> Eco Quality Project &bull; Philippine Ambient Air Quality Assessment &bull; <a href="admin.php" class="subtle-console-link" title="Console">Admin</a></span>
                 </div>
             </div>
         </div>
@@ -652,11 +623,11 @@ if (isset($_GET['latest'])) {
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=25" defer></script>
+<script src="assets/js/dashboard.js?v=26" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=20')
+        navigator.serviceWorker.register('./sw.js?update=21')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update(); // Force update check

@@ -1402,3 +1402,148 @@ body.light .citizen-notice {
     .c2-topbar { padding: 0 16px; }
     .operator-pill { display: none; }
 }
+
+
+/* ══════════════════════════════════════════════════════════
+   LIGHT MODE COMPREHENSIVE COMPATIBILITY & SUBTLE LINK
+   ══════════════════════════════════════════════════════════ */
+
+/* Subtle Console Link in Footer */
+.subtle-console-link {
+    color: var(--muted);
+    text-decoration: none;
+    opacity: 0.35;
+    font-size: 9.5px;
+    font-family: var(--mono);
+    transition: opacity 0.2s, color 0.2s;
+    cursor: default;
+}
+.subtle-console-link:hover {
+    opacity: 0.85;
+    color: var(--accent);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/* Light Mode Overrides for C2 Topbar & Cards */
+body.light .c2-topbar {
+    background: rgba(255, 255, 255, 0.92);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 6px rgba(12, 18, 32, 0.05);
+}
+body.light .c2-title {
+    color: var(--text);
+}
+body.light .c2-sub {
+    color: var(--accent);
+}
+body.light .btn-dash-action {
+    background: #F1F5F9;
+    border-color: var(--border);
+    color: var(--text);
+}
+body.light .btn-dash-action:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: #E2E8F0;
+}
+
+/* Light Mode for Diag Deck / Sensor Cards */
+body.light .diag-card {
+    background: #FFFFFF;
+    border-color: var(--border);
+    box-shadow: 0 2px 8px rgba(12, 18, 32, 0.04);
+}
+body.light .diag-card:hover {
+    border-color: var(--border2);
+    box-shadow: 0 6px 18px rgba(12, 18, 32, 0.08);
+}
+body.light .diag-title {
+    color: var(--muted);
+}
+body.light .diag-unit {
+    color: var(--muted);
+}
+body.light .diag-val {
+    color: var(--accent);
+}
+body.light .badge-pill {
+    background: #F1F5F9;
+    border-color: var(--border);
+    color: var(--accent);
+}
+body.light .diag-meta-box {
+    background: #F8FAFC;
+    border: 1px solid var(--border);
+    color: var(--muted);
+}
+body.light .diag-meta-row strong {
+    color: var(--text);
+}
+
+/* Light Mode for Analytics Panels */
+body.light .panel {
+    background: #FFFFFF;
+    border-color: var(--border);
+    box-shadow: 0 2px 8px rgba(12, 18, 32, 0.04);
+}
+body.light .panel-header {
+    background: #F8FAFC;
+    border-bottom: 1px solid var(--border);
+}
+body.light .panel-title {
+    color: var(--text);
+}
+body.light .panel-tag {
+    background: #F1F5F9;
+    border-color: var(--border);
+    color: var(--accent);
+}
+
+/* Day stats, trend boxes & anomaly status in Light Mode */
+body.light .day-box, 
+body.light .day-stat, 
+body.light .trend-box, 
+body.light .anomaly-status {
+    background: #F8FAFC !important;
+    border: 1px solid var(--border) !important;
+}
+body.light .day-box-label, 
+body.light .day-stat-lbl, 
+body.light .trend-hour {
+    color: var(--muted) !important;
+}
+body.light .day-stat-val, 
+body.light .anomaly-label {
+    color: var(--text) !important;
+}
+body.light .day-aqi-cat, 
+body.light .trend-cat, 
+body.light .anomaly-msg {
+    color: var(--muted) !important;
+}
+
+/* Light Mode for Citizen Footer Chassis */
+body.light .citizen-chassis {
+    background: #FFFFFF;
+    border-color: var(--border);
+    box-shadow: 0 2px 8px rgba(12, 18, 32, 0.04);
+}
+body.light .citizen-label {
+    color: var(--accent);
+}
+body.light .citizen-notice p {
+    color: var(--muted);
+}
+body.light .citizen-meta {
+    border-top-color: var(--border) !important;
+    color: var(--muted);
+}
+body.light .corner {
+    color: #CBD5E1;
+}
+
+/* History Chart container in Light Mode */
+body.light .chart-wrap {
+    background: transparent !important;
+}
