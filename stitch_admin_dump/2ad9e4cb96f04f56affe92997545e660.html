@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "surface-dim": "#0d1320",
+          "on-secondary": "#00363d",
+          "on-primary-fixed": "#00210c",
+          "inverse-on-surface": "#2a303e",
+          "error-container": "#93000a",
+          "surface": "#0d1320",
+          "tertiary": "#fffaf8",
+          "on-surface-variant": "#b9cbb9",
+          "on-tertiary": "#452b00",
+          "surface-container-lowest": "#080e1b",
+          "primary-container": "#00ff88",
+          "error": "#ffb4ab",
+          "secondary-container": "#00e3fd",
+          "on-surface": "#dde2f5",
+          "on-primary-fixed-variant": "#005228",
+          "on-tertiary-fixed-variant": "#633f00",
+          "primary-fixed-dim": "#00e479",
+          "surface-container-highest": "#2f3543",
+          "outline": "#849585",
+          "outline-variant": "#3b4b3d",
+          "inverse-surface": "#dde2f5",
+          "surface-container-low": "#151b29",
+          "on-secondary-fixed-variant": "#004f58",
+          "inverse-primary": "#006d37",
+          "primary-fixed": "#60ff99",
+          "on-error-container": "#ffdad6",
+          "on-primary": "#003919",
+          "surface-container": "#1a202d",
+          "on-secondary-fixed": "#001f24",
+          "primary": "#f1ffef",
+          "tertiary-fixed": "#ffddb4",
+          "surface-tint": "#00e479",
+          "surface-bright": "#333947",
+          "on-tertiary-fixed": "#291800",
+          "on-primary-container": "#007139",
+          "on-background": "#dde2f5",
+          "on-secondary-container": "#00616d",
+          "background": "#0d1320",
+          "tertiary-fixed-dim": "#ffb952",
+          "secondary-fixed": "#9cf0ff",
+          "on-tertiary-container": "#875800",
+          "secondary": "#bdf4ff",
+          "secondary-fixed-dim": "#00daf3",
+          "tertiary-container": "#ffd8a7",
+          "on-error": "#690005",
+          "surface-container-high": "#242a38",
+          "surface-variant": "#2f3543"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "margin": "0.75rem",
+          "space-xl": "1rem",
+          "space-sm": "0.25rem",
+          "space-md": "0.5rem",
+          "space-xs": "0.125rem",
+          "gutter": "0.5rem",
+          "space-lg": "0.75rem"
+        },
+        "fontFamily": {
+          "mono-micro": ["JetBrains Mono"],
+          "mono-md": ["JetBrains Mono"],
+          "body-lg": ["Inter"],
+          "display-lg-mobile": ["Space Grotesk"],
+          "body-sm": ["Inter"],
+          "headline-md": ["Space Grotesk"],
+          "mono-sm": ["JetBrains Mono"],
+          "display-lg": ["Space Grotesk"],
+          "label-caps": ["Space Grotesk"],
+          "headline-sm": ["Space Grotesk"],
+          "mono-lg": ["JetBrains Mono"]
+        },
+        "fontSize": {
+          "mono-micro": ["9px", {"lineHeight": "12px", "letterSpacing": "0.06em", "fontWeight": "600"}],
+          "mono-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0em", "fontWeight": "500"}],
+          "body-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "400"}],
+          "display-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+          "body-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0em", "fontWeight": "400"}],
+          "headline-md": ["20px", {"lineHeight": "28px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+          "mono-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "400"}],
+          "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+          "label-caps": ["11px", {"lineHeight": "14px", "letterSpacing": "0.1em", "fontWeight": "700"}],
+          "headline-sm": ["16px", {"lineHeight": "24px", "letterSpacing": "0.04em", "fontWeight": "600"}],
+          "mono-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+        }
+      }
+    }
+  }</script></head><body class="bg-background font-body-sm text-on-surface antialiased select-none"><header class="fixed top-0 left-0 right-0 h-16 bg-surface-container-lowest/95 backdrop-blur-md z-50 flex items-center justify-between px-margin shadow-[0_1px_8px_rgba(0,0,0,0.4)]"><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-md"><div class="w-2.5 h-2.5 bg-primary-container shadow-[0_0_8px_#00ff88]"></div><div class="flex flex-col"><span class="font-label-caps text-label-caps uppercase text-on-surface tracking-wider">ECO QUALITY</span><span class="font-mono-micro text-mono-micro text-primary-fixed-dim uppercase">HARDWARE C2 // SEC-LVL 4</span></div></div><div class="h-6 w-px bg-surface-container-highest"></div><div class="flex items-center gap-space-sm bg-surface-container-low px-space-md py-space-xs rounded"><div class="w-1.5 h-1.5 rounded-full bg-primary-container animate-ping"></div><span class="font-mono-micro text-mono-micro text-on-surface-variant uppercase">CLUSTER NODE:</span><select class="bg-transparent font-mono-sm text-mono-sm text-secondary focus:outline-none cursor-pointer pr-space-xs"><option class="bg-surface-container-lowest text-on-surface" value="NODE-US-EAST-01">US-E01 // PROD-RACK-A (0.8ms)</option><option class="bg-surface-container-lowest text-on-surface" value="NODE-US-EAST-02">US-E02 // PROD-RACK-B (1.2ms)</option><option class="bg-surface-container-lowest text-on-surface" value="NODE-EU-CENT-01">EU-C01 // STANDBY-01 (14.2ms)</option></select></div></div><div class="flex items-center gap-space-lg"><div class="hidden xl:flex items-center gap-space-lg bg-surface-container-low px-space-lg py-space-xs rounded"><div class="flex flex-col text-right"><span class="font-mono-micro text-mono-micro text-on-surface-variant uppercase">OPERATOR BINDING</span><span class="font-mono-micro text-mono-micro text-on-surface font-semibold">192.168.1.104 <span class="text-outline">|</span> TLS 1.3</span></div><div class="flex flex-col text-left"><span class="font-mono-micro text-mono-micro text-on-surface-variant uppercase">SESSION HASH</span><span class="font-mono-micro text-mono-micro text-secondary font-semibold">SHA256:7e8a..c019</span></div></div><div class="flex items-center gap-space-md bg-surface-container-low px-space-md py-space-xs rounded"><div class="w-2 h-2 rounded-full bg-primary-container shadow-[0_0_6px_#00ff88]"></div><div class="flex flex-col"><span class="font-mono-micro text-mono-micro text-on-surface-variant uppercase">UTC MASTER CLOCK</span><span class="font-mono-sm text-mono-sm text-on-surface font-semibold tabular-nums">13:42:59.042 Z</span></div></div><button class="flex items-center gap-space-sm bg-surface-container-high hover:bg-error-container text-on-surface hover:text-on-error px-space-md py-space-xs rounded transition-colors duration-150"><span class="material-symbols-outlined text-[16px]">power_settings_new</span><span class="font-label-caps text-label-caps uppercase">KILL SESSION</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><aside class="fixed left-0 top-16 bottom-7 w-64 bg-surface-container-lowest z-40 flex flex-col justify-between py-space-md shadow-[1px_0_8px_rgba(0,0,0,0.3)]"><div class="flex flex-col gap-space-md px-space-md"><div class="px-space-md py-space-xs font-mono-micro text-mono-micro text-on-surface-variant uppercase tracking-widest">BUS TELEMETRY MODULES</div><nav class="flex flex-col gap-space-xs" data-active-classes="bg-surface-container-high text-primary-fixed-dim font-semibold rounded"><a aria-current="page" class="px-space-md py-space-sm flex items-center justify-between transition-colors bg-surface-container-high text-primary-fixed-dim font-semibold rounded" data-path="telemetry-overview" href="#"><span>&gt; TELEMETRY_OVERVIEW</span><span class="font-mono-micro text-mono-micro text-primary-container">240Hz</span></a><a class="px-space-md py-space-sm rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface font-mono-sm text-mono-sm flex items-center justify-between transition-colors" data-path="hardware-bus-matrix" href="#"><span>&gt; BUS_MATRIX_ROUTING</span><span class="font-mono-micro text-mono-micro text-on-surface-variant">SYNC</span></a><a class="px-space-md py-space-sm rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface font-mono-sm text-mono-sm flex items-center justify-between transition-colors" data-path="sensor-stream-actuators" href="#"><span>&gt; SENSORS_ACTUATORS</span><span class="font-mono-micro text-mono-micro text-secondary">LIVE</span></a><a class="px-space-md py-space-sm rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface font-mono-sm text-mono-sm flex items-center justify-between transition-colors" data-path="power-thermal-envelope" href="#"><span>&gt; POWER_THERMAL_ENV</span><span class="font-mono-micro text-mono-micro text-primary-container">NOMINAL</span></a><a class="px-space-md py-space-sm rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface font-mono-sm text-mono-sm flex items-center justify-between transition-colors" data-path="secure-command-terminal" href="#"><span>&gt; SECURE_TERMINAL_TTY</span><span class="font-mono-micro text-mono-micro text-outline">115200</span></a><a class="px-space-md py-space-sm rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface font-mono-sm text-mono-sm flex items-center justify-between transition-colors" data-path="firmware-crypto-registry" href="#"><span>&gt; FIRMWARE_REGISTRY</span><span class="font-mono-micro text-mono-micro text-on-surface-variant">v4.19</span></a></nav></div><div class="px-space-md"><div class="bg-surface-container-low p-space-md rounded flex flex-col gap-space-xs"><div class="flex justify-between items-center"><span class="font-mono-micro text-mono-micro text-on-surface-variant uppercase">BUS LATENCY</span><span class="font-mono-micro text-mono-micro text-primary-container font-semibold">0.42 ms</span></div><div class="w-full bg-surface-container h-1 rounded overflow-hidden"><div class="bg-primary-container h-full w-1/4"></div></div><div class="flex justify-between items-center text-mono-micro font-mono-micro text-on-surface-variant"><span>RING BUFF: 12%</span><span>PACKET LOSS: 0.00%</span></div></div></div></aside><div class="pl-64"><main class="w-full pt-16 pb-7 bg-background min-h-screen px-margin"><div class="flex flex-col w-full text-on-surface select-none pb-12">
+<!-- TOP HARDWARE SELECTOR & OPERATOR BAR -->
+<section class="w-full bg-surface-container-lowest p-space-md rounded-lg shadow-xl mb-space-lg">
+<div class="flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-space-md">
+<!-- Left: Node Selector Dropdown & Telemetry Pill -->
+<div class="flex flex-wrap items-center gap-space-md">
+<div class="flex items-center gap-space-xs px-space-md py-space-xs bg-surface-container-high rounded">
+<span class="font-mono-micro text-mono-micro text-on-surface-variant uppercase tracking-wider">ACTIVE NODE</span>
+<span class="text-outline text-mono-micro">•</span>
+<div class="relative">
+<select class="bg-surface-container-low text-primary-fixed-dim font-mono-sm text-mono-sm py-space-xs pl-space-sm pr-space-xl rounded focus:outline-none cursor-pointer appearance-none" id="hardwareNodeSelect">
+<option selected="" value="NODE_01">Node 01: ESP32 Central Telemetry (Online • 12s ping • RSSI -62dBm • MAC: 24:6F:28:B4:A1:0C)</option>
+<option value="NODE_02">Node 02: Auxiliary Outdoor Probe (Standby • Last ping 4m ago)</option>
+<option value="NODE_03">Node 03: Calibrated Reference Node (Inactive / Maintenance)</option>
+</select>
+<span class="material-symbols-outlined absolute right-space-xs top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant text-[16px]">expand_more</span>
+</div>
+</div>
+<!-- Hardware specs chip -->
+<div class="flex items-center gap-space-sm bg-surface-container-low px-space-md py-space-xs rounded">
+<span class="w-2 h-2 rounded-full bg-primary-container shadow-[0_0_8px_#00ff88]"></span>
+<span class="font-mono-micro text-mono-micro text-on-surface font-semibold tracking-wide">ESP32-WROOM-32D</span>
+<span class="text-outline text-mono-micro">|</span>
+<span class="font-mono-micro text-mono-micro text-secondary">PMS5003 + MQ135</span>
+<span class="text-outline text-mono-micro">|</span>
+<span class="font-mono-micro text-mono-micro text-primary-fixed-dim">FW: v4.19-SEC</span>
+</div>
+</div>
+<!-- Right: Operator Badge, Security Session & Master Lockout Button -->
+<div class="flex flex-wrap items-center gap-space-md justify-between xl:justify-end">
+<div class="flex items-center gap-space-md bg-surface-container-low px-space-md py-space-xs rounded">
+<div class="w-2 h-2 rounded bg-secondary-container shadow-[0_0_6px_#00e3fd]"></div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-mono-micro text-mono-micro text-primary-container font-semibold">OP: ENG-4092 (LEAD_FIRMWARE)</span>
+<span class="font-mono-micro text-mono-micro text-outline">[YUBIKEY HW-VAL]</span>
+</div>
+<span class="font-mono-micro text-mono-micro text-on-surface-variant">10.240.12.88 <span class="text-outline">/</span> TLS 1.3 HW-CIPHER</span>
+</div>
+</div>
+<button class="flex items-center gap-space-xs bg-error-container hover:bg-error text-on-error-container hover:text-on-error px-space-md py-space-xs rounded shadow-md transition-all active:scale-95 group" id="masterLockoutBtn">
+<span class="material-symbols-outlined text-[16px] text-error group-hover:text-on-error transition-colors">lock_open</span>
+<span class="font-label-caps text-label-caps uppercase tracking-wider">KILL SESSION</span>
+</button>
+</div>
+</div>
+</section>
+<!-- HARDWARE & CLOUD DIAGNOSTICS DECK (4 Stat Blocks with Optical LEDs) -->
+<section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-gutter mb-space-lg">
+<!-- Stat 1: Cloud Server Health -->
+<div class="bg-surface-container-lowest p-space-md rounded-lg shadow-md flex flex-col justify-between relative overflow-hidden group hover:bg-surface-container-low transition-colors">
+<div class="flex items-center justify-between mb-space-sm">
+<span class="font-mono-micro text-mono-micro text-on-surface-variant uppercase tracking-widest">CLOUD TELEMETRY ROUTER</span>
+<div class="flex items-center gap-space-xs">
+<span class="font-mono-micro text-mono-micro text-primary-container font-semibold">SYS_NOMINAL</span>
+<span class="w-2 h-2 rounded-full bg-primary-container shadow-[0_0_8px_#00ff88]"></span>
+</div>
+</div>
+<div class="flex items-baseline gap-space-xs my-space-xs">
+<span class="font-display-lg text-display-lg text-on-surface tracking-tight font-bold">0.18</span>
+<span class="font-mono-micro text-mono-micro text-on-surface-variant">LOAD AVG (1m)</span>
+</div>
+<div class="space-y-space-xs pt-space-xs bg-surface-container-low/50 px-space-sm py-space-xs rounded font-mono-micro text-mono-micro text-on-surface-variant">
+<div class="flex justify-between">
+<span>HOST ARCH:</span>
+<span class="text-on-surface font-semibold">OCI ARM64 (4 vCPU / 24GB)</span>
+</div>
+<div class="flex justify-between">
+<span>POSTGRESQL TS-DB:</span>
+<span class="text-secondary font-semibold">9.2 ms LATENCY</span>
+</div>
+<div class="flex justify-between items-center">
+<span>LOAD SPREAD:</span>
+<span class="text-on-surface">0.18 • 0.22 • 0.15</span>
+</div>
+</div>
+</div>
+<!-- Stat 2: Field Transmitter Link -->
+<div class="bg-surface-container-lowest p-space-md rounded-lg shadow-md flex flex-col justify-between relative overflow-hidden group hover:bg-surface-container-low transition-colors">
+<div class="flex items-center justify-between mb-space-sm">
+<span class="font-mono-micro text-mono-micro text-on-surface-variant uppercase tracking-widest">FIELD LINK (802.11 b/g/n)</span>
+<div class="flex items-center gap-space-xs">
+<span class="font-mono-micro text-mono-micro text-primary-container font-semibold">LINK_STABLE</span>
+<span class="w-2 h-2 rounded-full bg-primary-container shadow-[0_0_8px_#00ff88]"></span>
+</div>
+</div>
+<div class="flex items-baseline gap-space-xs my-space-xs">
+<span class="font-display-lg text-display-lg text-secondary tracking-tight font-bold">-62</span>
+<span class="font-headline-sm text-headline-sm text-on-surface-variant font-medium">dBm</span>
+<span class="font-mono-micro text-mono-micro text-primary-container ml-auto">[OPTIMAL]</span>
+</div>
+<div class="space-y-space-xs pt-space-xs bg-surface-container-low/50 px-space-sm py-space-xs rounded font-mono-micro text-mono-micro text-on-surface-variant">
+<div class="flex justify-between">
+<span>DELIVERY RATIO:</span>
+<span class="text-primary-container font-semibold">99.84% (42,190/42,258)</span>
+</div>
+<div class="flex justify-between">
+<span>FRAME DROP:</span>
+<span class="text-on-surface font-semibold">68 PKTS (&lt;0.16%)</span>
+</div>
+<div class="flex justify-between">
+<span>LAST RX TICK:</span>
+<span class="text-secondary font-semibold">2.4s AGO (SYNC OK)</span>
+</div>
+</div>
+</div>
+<!-- Stat 3: Queued Hardware Command -->
+<div class="bg-surface-container-lowest p-space-md rounded-lg shadow-md flex flex-col justify-between relative overflow-hidden group hover:bg-surface-container-low transition-colors">
+<div class="flex items-center justify-between mb-space-sm">
+<span class="font-mono-micro text-mono-micro text-on-surface-variant uppercase tracking-widest">COMMAND DISPATCH BUFFER</span>
+<div class="flex items-center gap-space-xs">
+<span class="font-mono-micro text-mono-micro text-secondary font-semibold">FIFO_CLEAR</span>
+<span class="w-2 h-2 rounded-full bg-secondary-container shadow-[0_0_8px_#00e3fd]"></span>
+</div>
+</div>
+<div class="flex items-baseline gap-space-xs my-space-xs">
+<span class="font-headline-md text-headline-md text-primary font-bold tracking-tight">IDLE_STANDBY</span>
+</div>
+<div class="space-y-space-xs pt-space-xs bg-surface-container-low/50 px-space-sm py-space-xs rounded font-mono-micro text-mono-micro text-on-surface-variant">
+<div class="flex justify-between">
+<span>EEPROM SLUSH ADDR:</span>
+<span class="text-on-surface font-semibold font-mono-sm text-mono-sm">0x003F (PAGE 0)</span>
+</div>
+<div class="flex justify-between">
+<span>QUEUED INSTRUCTIONS:</span>
+<span class="text-secondary font-semibold">0 IN-FLIGHT</span>
+</div>
+<div class="flex justify-between">
+<span>NEXT SENSOR POLL:</span>
+<span class="text-primary-container font-semibold">T-MINUS 00:00:28</span>
+</div>
+</div>
+</div>
+<!-- Stat 4: Last Execution Return -->
+<div class="bg-surface-container-lowest p-space-md rounded-lg shadow-md flex flex-col justify-between relative overflow-hidden group hover:bg-surface-container-low transition-colors">
+<div class="flex items-center justify-between mb-space-sm">
+<span class="font-mono-micro text-mono-micro text-on-surface-variant uppercase tracking-widest">LAST EXECUTION RETURN</span>
+<div class="flex items-center gap-space-xs">
+<span class="font-mono-micro text-mono-micro text-primary-container font-semibold">CRC32_MATCH</span>
+<span class="w-2 h-2 rounded-full bg-primary-container shadow-[0_0_8px_#00ff88]"></span>
+</div>
+</div>
+<div class="flex items-baseline gap-space-xs my-space-xs truncate">
+<span class="font-mono-lg text-mono-lg text-primary-container font-bold tracking-tight">0x06 ACK_CRC_OK</span>
+</div>
+<div class="space-y-space-xs pt-space-xs bg-surface-container-low/50 px-space-sm py-space-xs rounded font-mono-micro text-mono-micro text-on-surface-variant">
+<div class="flex justify-between">
+<span>TARGET OP:</span>
+<span class="text-on-surface font-semibold">SYS_PMS_WAKEUP</span>
+</div>
+<div class="flex justify-between">
+<span>ROUNDTRIP LATENCY:</span>
+<span class="text-secondary font-semibold">142 ms</span>
+</div>
+<div class="flex justify-between">
+<span>FIRMWARE RETURN DIGEST:</span>
+<span class="text-primary-fixed-dim font-semibold">HASH: 0x8F92A</span>
+</div>
+</div>
+</div>
+</section>
+<!-- LIVE SENSOR TELEMETRY GAUGES -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-gutter mb-space-lg">
+<!-- Laser Dust Particle Array (PMS5003) -->
+<div class="lg:col-span-8 bg-surface-container-lowest p-space-md rounded-lg shadow-md flex flex-col justify-between">
+<div class="flex items-center justify-between border-b-0 pb-space-xs mb-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-secondary text-[20px]">air</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">PMS5003 • OPTICAL LASER PARTICULATE ARRAY</span>
+<span class="font-mono-micro text-mono-micro text-on-surface-variant">SCATTERING ANGLE 90° • LASER DIODE STATUS: ACTIVE • AIR SPEED 1.8 L/MIN</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm bg-surface-container-low px-space-sm py-space-xs rounded">
+<span class="font-mono-micro text-mono-micro text-primary-container font-bold">CALIBRATED NIST-04</span>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-gutter mb-space-md">
+<!-- PM1.0 Ultra-fine -->
+<div class="bg-surface-container-low p-space-sm rounded">
+<div class="flex justify-between items-center mb-space-xs">
+<span class="font-mono-micro text-mono-micro text-on-surface-variant">PM1.0 ULTRA-FINE</span>
+<span class="font-mono-micro text-mono-micro text-primary-container">GOOD</span>
+</div>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-display-lg text-display-lg text-primary font-bold tabular-nums" id="valPm1">4.2</span>
+<span class="font-mono-sm text-mono-sm text-on-surface-variant">µg/m³</span>
+</div>
+<!-- Sparkline representation -->
+<div class="mt-space-xs h-6 w-full flex items-end gap-[2px]">
+<div class="bg-primary-container/30 hover:bg-primary-container w-full h-[30%] rounded-none transition-all"></div>
+<div class="bg-primary-container/30 hover:bg-primary-container w-full h-[45%] rounded-none transition-all"></div>
+<div class="bg-primary-container/30 hover:bg-primary-container w-full h-[40%] rounded-none transition-all"></div>
+<div class="bg-primary-container/30 hover:bg-primary-container w-full h-[60%] rounded-none transition-all"></div>
+<div class="bg-primary-container/30 hover:bg-primary-container w-full h-[55%] rounded-none transition-all"></div>
+<div class="bg-primary-container/40 hover:bg-primary-container w-full h-[70%] rounded-none transition-all"></div>
+<div class="bg-primary-container/50 hover:bg-primary-container w-full h-[65%] rounded-none transition-all"></div>
+<div class="bg-primary-container w-full h-[48%] rounded-none"></div>
+</div>
+</div>
+<!-- PM2.5 Respirable -->
+<div class="bg-surface-container-low p-space-sm rounded">
+<div class="flex justify-between items-center mb-space-xs">
+<span class="font-mono-micro text-mono-micro text-on-surface-variant">PM2.5 RESPIRABLE</span>
+<span class="font-mono-micro text-mono-micro text-primary-container">MODERATE</span>
+</div>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-display-lg text-display-lg text-secondary font-bold tabular-nums" id="valPm25">12.1</span>
+<span class="font-mono-sm text-mono-sm text-on-surface-variant">µg/m³</span>
+</div>
+<div class="mt-space-xs h-6 w-full flex items-end gap-[2px]">
+<div class="bg-secondary-container/30 hover:bg-secondary-container w-full h-[50%] rounded-none transition-all"></div>
+<div class="bg-secondary-container/30 hover:bg-secondary-container w-full h-[55%] rounded-none transition-all"></div>
+<div class="bg-secondary-container/30 hover:bg-secondary-container w-full h-[48%] rounded-none transition-all"></div>
+<div class="bg-secondary-container/30 hover:bg-secondary-container w-full h-[75%] rounded-none transition-all"></div>
+<div class="bg-secondary-container/40 hover:bg-secondary-container w-full h-[65%] rounded-none transition-all"></div>
+<div class="bg-secondary-container/60 hover:bg-secondary-container w-full h-[82%] rounded-none transition-all"></div>
+<div class="bg-secondary-container/80 hover:bg-secondary-container w-full h-[70%] rounded-none transition-all"></div>
+<div class="bg-secondary-container w-full h-[62%] rounded-none"></div>
+</div>
+</div>
+<!-- PM10 Inhalable -->
+<div class="bg-surface-container-low p-space-sm rounded">
+<div class="flex justify-between items-center mb-space-xs">
+<span class="font-mono-micro text-mono-micro text-on-surface-variant">PM10 INHALABLE</span>
+<span class="font-mono-micro text-mono-micro text-primary-container">CLEAR</span>
+</div>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-display-lg text-display-lg text-primary-fixed-dim font-bold tabular-nums" id="valPm10">22.4</span>
+<span class="font-mono-sm text-mono-sm text-on-surface-variant">µg/m³</span>
+</div>
+<div class="mt-space-xs h-6 w-full flex items-end gap-[2px]">
+<div class="bg-primary-fixed-dim/30 hover:bg-primary-fixed-dim w-full h-[40%] rounded-none transition-all"></div>
+<div class="bg-primary-fixed-dim/30 hover:bg-primary-fixed-dim w-full h-[42%] rounded-none transition-all"></div>
+<div class="bg-primary-fixed-dim/30 hover:bg-primary-fixed-dim w-full h-[58%] rounded-none transition-all"></div>
+<div class="bg-primary-fixed-dim/30 hover:bg-primary-fixed-dim w-full h-[63%] rounded-none transition-all"></div>
+<div class="bg-primary-fixed-dim/40 hover:bg-primary-fixed-dim w-full h-[50%] rounded-none transition-all"></div>
+<div class="bg-primary-fixed-dim/60 hover:bg-primary-fixed-dim w-full h-[55%] rounded-none transition-all"></div>
+<div class="bg-primary-fixed-dim/80 hover:bg-primary-fixed-dim w-full h-[72%] rounded-none transition-all"></div>
+<div class="bg-primary-fixed-dim w-full h-[58%] rounded-none"></div>
+</div>
+</div>
+</div>
+<!-- Telemetry Vector Sub-data -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-gutter font-mono-micro text-mono-micro text-on-surface-variant bg-surface-container-low px-space-md py-space-xs rounded">
+<div>0.3µm DENSITY: <span class="text-on-surface font-semibold">1,418 pcs/0.1L</span></div>
+<div>0.5µm DENSITY: <span class="text-on-surface font-semibold">412 pcs/0.1L</span></div>
+<div>FAN RPM: <span class="text-secondary font-semibold">4,280 RPM</span></div>
+<div>DIODE TEMP: <span class="text-primary-container font-semibold">32.8°C</span></div>
+</div>
+</div>
+<!-- MQ135 Air Quality Gas Sensor Module -->
+<div class="lg:col-span-4 bg-surface-container-lowest p-space-md rounded-lg shadow-md flex flex-col justify-between">
+<div class="flex items-center justify-between mb-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-[20px]">detector_smoke</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">MQ135 HAZ-GAS</span>
+<span class="font-mono-micro text-mono-micro text-on-surface-variant">TIN DIOXIDE (SnO2) SEMICONDUCTOR</span>
+</div>
+</div>
+<span class="font-mono-micro text-mono-micro text-secondary font-bold">HEATER: 5.0V</span>
+</div>
+<!-- Sensor Primary Dial & PPM Estimation -->
+<div class="bg-surface-container-low p-space-md rounded flex flex-col items-center justify-center my-space-xs">
+<div class="flex items-baseline gap-space-sm">
+<span class="font-display-lg text-display-lg text-tertiary-fixed font-bold tracking-tight" id="valCo2">485</span>
+<span class="font-mono-sm text-mono-sm text-on-surface-variant">PPM CO₂-EQ</span>
+</div>
+<div class="w-full bg-surface-container-highest h-2 rounded overflow-hidden mt-space-sm">
+<div class="bg-tertiary-fixed-dim h-full w-[38%] transition-all duration-300"></div>
+</div>
+<div class="flex justify-between w-full font-mono-micro text-mono-micro text-on-surface-variant mt-space-xs">
+<span>350 PPM (CLEAN)</span>
+<span>THRESHOLD: 1000 PPM</span>
+</div>
+</div>
+<!-- Electrical Metrics List -->
+<div class="space-y-space-xs font-mono-micro text-mono-micro text-on-surface-variant bg-surface-container-low px-space-md py-space-xs rounded">
+<div class="flex justify-between">
+<span>ADC RAW COUNTS (12-BIT):</span>
+<span class="text-on-surface font-bold">412 / 4095</span>
+</div>
+<div class="flex justify-between">
+<span>SENSOR RESISTANCE (Rs):</span>
+<span class="text-secondary font-bold">14.82 kΩ</span>
+</div>
+<div class="flex justify-between">
+<span>BASELINE RATIO (Rs/Ro):</span>
+<span class="text-primary-container font-bold">1.48 (NOMINAL)</span>
+</div>
+</div>
+</div>
+</section>
+<!-- HARDWARE TELE-OPERATIONS: TACTILE COMMAND MATRIX -->
+<section class="w-full bg-surface-container-lowest p-space-md rounded-lg shadow-md mb-space-lg">
+<div class="flex flex-col md:flex-row md:items-center justify-between pb-space-xs mb-space-md gap-space-xs">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-error text-[22px]">bolt</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold uppercase tracking-wider">HARDWARE ACTUATOR MATRIX • DIRECT TTY BUS DISPATCH</span>
+<span class="font-mono-micro text-mono-micro text-on-surface-variant">WARNING: Commands write directly to MCU volatile register &amp; EEPROM FIFO via UART bus</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs bg-surface-container-low px-space-md py-space-xs rounded">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse"></span>
+<span class="font-mono-micro text-mono-micro text-primary-container font-semibold">SECURE BUS ARMED</span>
+</div>
+</div>
+<!-- 4 High-Contrast Safety Action Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-gutter">
+<!-- Card 1: REBOOT ESP32 MCU (Hazard Red) -->
+<div class="bg-surface-container-low p-space-md rounded-lg flex flex-col justify-between group hover:bg-surface-container transition-all">
+<div>
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-caps text-label-caps text-error font-bold uppercase">HAZARDOUS EXECUTION</span>
+<span class="material-symbols-outlined text-error text-[18px] animate-pulse">warning</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface font-bold mb-space-xs">REBOOT ESP32 MCU</h4>
+<p class="font-mono-micro text-mono-micro text-on-surface-variant mb-space-md leading-relaxed">
+            Forces hardware brownout reset cycle. Halts real-time sampling and reinitializes SPI/I2C buses. Raw payload: <code class="text-error font-bold">0xAA 0x01 0xFF</code>.
+          </p>
+</div>
+<div class="flex flex-col gap-space-xs mt-space-sm">
+<div class="flex items-center justify-between text-mono-micro font-mono-micro text-on-surface-variant">
+<span>SAFETY LATCH:</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" id="rebootLatch" type="checkbox"/>
+<div class="w-9 h-4 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-4 after:transition-all peer-checked:bg-error"></div>
+</label>
+</div>
+<button class="w-full bg-error-container disabled:opacity-40 disabled:cursor-not-allowed hover:bg-error text-on-error-container hover:text-on-error py-space-sm px-space-md rounded font-label-caps text-label-caps uppercase tracking-wider transition-all flex items-center justify-center gap-space-xs" disabled="" id="btnRebootMcu">
+<span class="material-symbols-outlined text-[16px]">restart_alt</span>
+<span>DISPATCH RESTART</span>
+</button>
+</div>
+</div>
+<!-- Card 2: SLEEP PMS SENSOR (60s) (Cautionary Amber) -->
+<div class="bg-surface-container-low p-space-md rounded-lg flex flex-col justify-between group hover:bg-surface-container transition-all">
+<div>
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-caps text-label-caps text-tertiary-fixed-dim font-bold uppercase">POWER CYCLE DIODE</span>
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-[18px]">bedtime</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface font-bold mb-space-xs">SLEEP PMS SENSOR (60s)</h4>
+<p class="font-mono-micro text-mono-micro text-on-surface-variant mb-space-md leading-relaxed">
+            Preserves PMS5003 8000-hour diode life. Spindowns optical fan motor and parks photodiode gate. Raw payload: <code class="text-tertiary-fixed-dim font-bold">0xAA 0x02 0x3C</code>.
+          </p>
+</div>
+<div class="flex flex-col gap-space-xs mt-space-sm">
+<div class="flex items-center justify-between text-mono-micro font-mono-micro text-on-surface-variant">
+<span>TIMER OFFSET:</span>
+<span class="text-tertiary-fixed-dim font-semibold">T+60 SECONDS</span>
+</div>
+<button class="w-full bg-surface-container-high hover:bg-surface-container-highest text-tertiary-fixed-dim hover:text-tertiary py-space-sm px-space-md rounded font-label-caps text-label-caps uppercase tracking-wider transition-all flex items-center justify-center gap-space-xs" id="btnSleepPms">
+<span class="material-symbols-outlined text-[16px]">mode_standby</span>
+<span>SEND SLEEP SIGNAL</span>
+</button>
+</div>
+</div>
+<!-- Card 3: CALIBRATE MQ-135 BASELINE (Tactical Cyan) -->
+<div class="bg-surface-container-low p-space-md rounded-lg flex flex-col justify-between group hover:bg-surface-container transition-all">
+<div>
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-caps text-label-caps text-secondary font-bold uppercase">ANALOG RESISTANCE Ro</span>
+<span class="material-symbols-outlined text-secondary text-[18px]">tune</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface font-bold mb-space-xs">CALIBRATE MQ-135 BASELINE</h4>
+<p class="font-mono-micro text-mono-micro text-on-surface-variant mb-space-md leading-relaxed">
+            Runs 10-point atmospheric sampling loop against verified 400ppm clean reference air to calculate fresh Ro resistance curve.
+          </p>
+</div>
+<div class="flex flex-col gap-space-xs mt-space-sm">
+<div class="flex items-center justify-between text-mono-micro font-mono-micro text-on-surface-variant">
+<span>SAMPLING SPREAD:</span>
+<span class="text-secondary font-semibold">10 SAMPLES / 500MS</span>
+</div>
+<button class="w-full bg-surface-container-high hover:bg-surface-container-highest text-secondary hover:text-on-secondary-container py-space-sm px-space-md rounded font-label-caps text-label-caps uppercase tracking-wider transition-all flex items-center justify-center gap-space-xs" id="btnCalibrateMq">
+<span class="material-symbols-outlined text-[16px]">auto_fix_high</span>
+<span>EXECUTE ZERO-BASE</span>
+</button>
+</div>
+</div>
+<!-- Card 4: ABORT ACTIVE COMMAND (Slate/Crimson) -->
+<div class="bg-surface-container-low p-space-md rounded-lg flex flex-col justify-between group hover:bg-surface-container transition-all">
+<div>
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-caps text-label-caps text-on-surface-variant font-bold uppercase">BUS INTERRUPT</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">cancel</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface font-bold mb-space-xs">ABORT ACTIVE COMMAND</h4>
+<p class="font-mono-micro text-mono-micro text-on-surface-variant mb-space-md leading-relaxed">
+            Sends an immediate high-priority hardware interrupt byte via SPI CS line to clear queued command buffer in memory.
+          </p>
+</div>
+<div class="flex flex-col gap-space-xs mt-space-sm">
+<div class="flex items-center justify-between text-mono-micro font-mono-micro text-on-surface-variant">
+<span>INTERRUPT PIN:</span>
+<span class="text-on-surface font-semibold">GPIO_04 (ACTIVE LOW)</span>
+</div>
+<button class="w-full bg-surface-container-high hover:bg-error-container text-on-surface hover:text-on-error py-space-sm px-space-md rounded font-label-caps text-label-caps uppercase tracking-wider transition-all flex items-center justify-center gap-space-xs" id="btnAbortCmd">
+<span class="material-symbols-outlined text-[16px]">stop_circle</span>
+<span>FORCE BUS ABORT</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- PUBLIC FEED OVERRIDE & MAINTENANCE CONTROLLER -->
+<section class="w-full bg-surface-container-lowest p-space-md rounded-lg shadow-md mb-space-lg">
+<div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-space-md pb-space-sm border-b-0">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-[22px]">shield</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold uppercase tracking-wider">PUBLIC TELEMETRY API OVERRIDE</span>
+<span class="font-mono-micro text-mono-micro text-on-surface-variant">Isolates public dashboard ingress from field test transients &amp; sensor calibration anomalies</span>
+</div>
+</div>
+<!-- Segmented Maintenance Rocker -->
+<div class="flex items-center gap-space-md bg-surface-container-low p-space-xs rounded">
+<span class="font-mono-micro text-mono-micro text-on-surface-variant px-space-xs uppercase">MAINTENANCE SHIELD:</span>
+<button class="px-space-md py-space-xs rounded font-label-caps text-label-caps uppercase tracking-wider bg-surface-container-high text-primary-container font-semibold transition-all" id="maintOffBtn">NORMAL BROADCAST</button>
+<button class="px-space-md py-space-xs rounded font-label-caps text-label-caps uppercase tracking-wider text-on-surface-variant hover:text-on-surface transition-all" id="maintOnBtn">ENGAGE 503 SHIELD</button>
+</div>
+</div>
+<!-- Active Shield Advisory Box -->
+<div class="mt-space-md bg-surface-container-low p-space-md rounded flex flex-col md:flex-row items-start md:items-center justify-between gap-space-md" id="maintNoticeContainer">
+<div class="flex items-start gap-space-sm">
+<div class="w-2.5 h-2.5 rounded-full bg-primary-container shadow-[0_0_8px_#00ff88] mt-1 shrink-0" id="maintStatusDot"></div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-mono-sm text-mono-sm font-bold text-on-surface uppercase" id="maintStatusTitle">PUBLIC GATEWAY: LIVE TELEMETRY STREAMING</span>
+<span class="font-mono-micro text-mono-micro text-outline">•</span>
+<span class="font-mono-micro text-mono-micro text-secondary">INGRESS PORT: 443 /api/v1/live</span>
+</div>
+<span class="font-mono-micro text-mono-micro text-on-surface-variant mt-space-xs" id="maintStatusDesc">
+            Broadcasting genuine un-scrubbed particulate readings to public subscribers. When Maintenance Shield is armed, API returns HTTP 503 with custom advisory string.
+          </span>
+</div>
+</div>
+<!-- Advisory Text Customization -->
+<div class="flex items-center gap-space-xs w-full md:w-auto">
+<input class="bg-surface-container-lowest font-mono-micro text-mono-micro text-on-surface px-space-md py-space-xs rounded focus:outline-none w-full md:w-80" id="maintReasonInput" type="text" value="SCHEDULED OPTICAL CHAMBER PURGE &amp; SENSOR RECALIBRATION"/>
+<button class="bg-surface-container-high hover:bg-surface-container-highest text-secondary hover:text-on-secondary px-space-md py-space-xs rounded font-label-caps text-label-caps uppercase shrink-0 transition-colors" id="btnUpdateAdvisory">
+          APPLY STR
+        </button>
+</div>
+</div>
+</section>
+<!-- EMBEDDED CLOUD SERIAL MONITOR (LIVE TTY CONSOLE) -->
+<section class="w-full bg-surface-container-lowest rounded-lg shadow-xl overflow-hidden flex flex-col">
+<!-- Window Header Toolbar -->
+<div class="bg-surface-container px-space-md py-space-xs flex flex-wrap items-center justify-between gap-space-sm">
+<!-- Left: macOS style dots + terminal title -->
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-3 rounded-full bg-[#FF5F56] inline-block"></span>
+<span class="w-3 h-3 rounded-full bg-[#FFBD2E] inline-block"></span>
+<span class="w-3 h-3 rounded-full bg-[#27C93F] inline-block"></span>
+</div>
+<div class="h-4 w-px bg-surface-container-highest"></div>
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[16px]">terminal</span>
+<span class="font-mono-sm text-mono-sm text-on-surface font-semibold tracking-wide">
+            TTY: /dev/ttyUSB0 (ESP32-UART0 @ 115200 baud)
+          </span>
+<span class="font-mono-micro text-mono-micro text-on-surface-variant ml-space-xs">BUFFER: 1024/4096 KB</span>
+</div>
+</div>
+<!-- Right: Action Buttons -->
+<div class="flex items-center gap-space-xs">
+<button class="flex items-center gap-1 bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface px-space-sm py-space-xs rounded font-mono-micro text-mono-micro uppercase transition-colors" id="terminalClearBtn">
+<span class="material-symbols-outlined text-[14px]">delete</span>
+<span>PURGE BUFFER</span>
+</button>
+<button class="flex items-center gap-1 bg-surface-container-low hover:bg-surface-container-high text-primary-container px-space-sm py-space-xs rounded font-mono-micro text-mono-micro uppercase transition-colors" id="terminalScrollBtn">
+<span class="material-symbols-outlined text-[14px]">vertical_align_bottom</span>
+<span id="scrollLockText">AUTOSCROLL: ON</span>
+</button>
+<button class="flex items-center gap-1 bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface px-space-sm py-space-xs rounded font-mono-micro text-mono-micro uppercase transition-colors" id="terminalCopyBtn">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+<span>HEX DUMP</span>
+</button>
+<div class="bg-surface-container-low px-space-sm py-space-xs rounded font-mono-micro text-mono-micro text-secondary font-bold">
+          BAUD: 115200 8N1
+        </div>
+</div>
+</div>
+<!-- Live Terminal Stream Buffer -->
+<div class="h-80 overflow-y-auto p-space-md font-mono-micro text-mono-micro space-y-1 bg-[#06080D] select-text" id="terminalStream">
+<!-- Timestamped Log Rows -->
+<div class="flex items-start gap-space-sm text-on-surface-variant">
+<span class="text-secondary">[2026-09-18 10:13:48]</span>
+<span class="text-on-surface-variant font-bold">[DEV 01]</span>
+<span class="text-primary-container">[BOOT] ESP32 core clock set to 240MHz. Flash chip: 4MB (DIO mode). SPIFFS mounted OK.</span>
+</div>
+<div class="flex items-start gap-space-sm text-on-surface-variant">
+<span class="text-secondary">[2026-09-18 10:13:51]</span>
+<span class="text-on-surface-variant font-bold">[DEV 01]</span>
+<span class="text-on-surface">[NET] WiFi connected to SSID 'TAC_IOT_MESH_04' • IP: 10.240.12.114 • RSSI: -62dBm</span>
+</div>
+<div class="flex items-start gap-space-sm text-on-surface-variant">
+<span class="text-secondary">[2026-09-18 10:13:53]</span>
+<span class="text-on-surface-variant font-bold">[DEV 01]</span>
+<span class="text-primary-container">[PMS5003] Laser diode emission stable. Optical fan calibration spin: 4300 RPM.</span>
+</div>
+<div class="flex items-start gap-space-sm text-on-surface-variant">
+<span class="text-secondary">[2026-09-18 10:13:55]</span>
+<span class="text-on-surface-variant font-bold">[DEV 01]</span>
+<span class="text-tertiary-fixed-dim">[MQ135] Internal heater plate reached thermal equilibrium (approx 280°C). ADC calibrated.</span>
+</div>
+<div class="flex items-start gap-space-sm text-on-surface-variant">
+<span class="text-secondary">[2026-09-18 10:13:58]</span>
+<span class="text-on-surface-variant font-bold">[DEV 01]</span>
+<span class="text-on-surface font-semibold">RECV: Temp=31.2°C | Hum=68% | PM2.5=12.1µg/m³ | PM10=22.4µg/m³ | MQ135_Raw=412 | CO2_Est=485ppm</span>
+</div>
+<div class="flex items-start gap-space-sm text-on-surface-variant">
+<span class="text-secondary">[2026-09-18 10:14:02]</span>
+<span class="text-on-surface-variant font-bold">[DEV 01]</span>
+<span class="text-tertiary-fixed-dim">[WARN] SPI Flash write cycle 42,912. Wear-leveling margin: 91.4% remaining.</span>
+</div>
+<div class="flex items-start gap-space-sm text-on-surface-variant">
+<span class="text-secondary">[2026-09-18 10:14:05]</span>
+<span class="text-on-surface-variant font-bold">[DEV 01]</span>
+<span class="text-primary-container">[HEARTBEAT] Free heap: 184,920 bytes | Min free heap: 142,100 bytes | WiFi RSSI: -62dBm</span>
+</div>
+<div class="flex items-start gap-space-sm text-on-surface-variant">
+<span class="text-secondary">[2026-09-18 10:14:10]</span>
+<span class="text-on-surface-variant font-bold">[DEV 01]</span>
+<span class="text-on-surface font-semibold">RECV: Temp=31.2°C | Hum=68% | PM2.5=12.0µg/m³ | PM10=22.3µg/m³ | MQ135_Raw=414 | CO2_Est=488ppm</span>
+</div>
+<div class="flex items-start gap-space-sm text-on-surface-variant">
+<span class="text-secondary">[2026-09-18 10:14:16]</span>
+<span class="text-on-surface-variant font-bold">[DEV 01]</span>
+<span class="text-primary-fixed-dim">[CRYPTO] HMAC-SHA256 signature packet 0x48FA validated with node key. CRC32 match.</span>
+</div>
+</div>
+<!-- Command Input Bar -->
+<div class="bg-surface-container p-space-sm flex items-center gap-space-sm">
+<span class="text-primary-container font-mono-sm text-mono-sm font-bold pl-space-xs">&gt;</span>
+<input class="flex-1 bg-surface-container-lowest font-mono-sm text-mono-sm text-on-surface px-space-md py-space-xs rounded focus:outline-none placeholder:text-on-surface-variant/40" id="ttyInput" placeholder="Type firmware command (e.g. SET_POLL_RATE 30s, DUMP_EEPROM, GET_ADC, WAKE_PMS)..." type="text"/>
+<button class="bg-primary-container hover:bg-primary-fixed-dim text-on-primary font-mono-sm text-mono-sm font-bold uppercase px-space-lg py-space-xs rounded transition-colors flex items-center gap-1 shadow-md" id="ttySubmitBtn">
+<span>EXECUTE</span>
+<span class="material-symbols-outlined text-[16px]">send</span>
+</button>
+</div>
+</section>
+<!-- MICRO INTERACTIVITY SCRIPT -->
+<script>
+    (function() {
+      // 1. Safety latch toggle for Reboot
+      const rebootLatch = document.getElementById('rebootLatch');
+      const btnRebootMcu = document.getElementById('btnRebootMcu');
+      if (rebootLatch && btnRebootMcu) {
+        rebootLatch.addEventListener('change', (e) => {
+          btnRebootMcu.disabled = !e.target.checked;
+        });
+      }
+
+      // 2. Terminal Log Appender
+      const terminalStream = document.getElementById('terminalStream');
+      const ttyInput = document.getElementById('ttyInput');
+      const ttySubmitBtn = document.getElementById('ttySubmitBtn');
+      const terminalClearBtn = document.getElementById('terminalClearBtn');
+      const terminalScrollBtn = document.getElementById('terminalScrollBtn');
+      const scrollLockText = document.getElementById('scrollLockText');
+
+      let autoscroll = true;
+
+      function appendLog(tag, message, colorClass) {
+        if (!terminalStream) return;
+        const now = new Date();
+        const timeStr = `[${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}]`;
+        
+        const row = document.createElement('div');
+        row.className = 'flex items-start gap-space-sm text-on-surface-variant';
+        row.innerHTML = `
+          <span class="text-secondary">${timeStr}</span>
+          <span class="text-on-surface-variant font-bold">[DEV 01]</span>
+          <span class="${colorClass || 'text-on-surface'}">${message}</span>
+        `;
+        terminalStream.appendChild(row);
+
+        if (autoscroll) {
+          terminalStream.scrollTop = terminalStream.scrollHeight;
+        }
+      }
+
+      function handleCommandSend(cmdText) {
+        const cmd = (cmdText || ttyInput.value || '').trim();
+        if (!cmd) return;
+        appendLog('[CMD_TX]', `DISPATCHED: ${cmd}`, 'text-tertiary-fixed-dim font-bold');
+        if (ttyInput) ttyInput.value = '';
+
+        // Simulate MCU response
+        setTimeout(() => {
+          if (cmd.toUpperCase().includes('RESTART') || cmd.includes('0x01')) {
+            appendLog('[ACK_RX]', 'ESP32 REBOOT TRIGGERED (0xAA 0x01 0xFF) -> ROM Serial Loader 0x00 Active.', 'text-error font-bold');
+          } else if (cmd.toUpperCase().includes('SLEEP') || cmd.includes('0x02')) {
+            appendLog('[ACK_RX]', 'PMS5003 laser diode powered down. Fan spin-down to 0 RPM acknowledged.', 'text-primary-container font-semibold');
+          } else if (cmd.toUpperCase().includes('CALIBRATE') || cmd.includes('ZERO')) {
+            appendLog('[ACK_RX]', 'MQ-135 10-pt clean air baseline computed: Ro = 10.04 kΩ (Offset applied).', 'text-secondary font-semibold');
+          } else if (cmd.toUpperCase().includes('ABORT')) {
+            appendLog('[ACK_RX]', 'EMERGENCY SPI INTERRUPT: FIFO flushed. Current task halted.', 'text-error font-semibold');
+          } else {
+            appendLog('[ACK_RX]', `EXEC OK: Return 0x00 for '${cmd}' • Heap: 183.4KB`, 'text-primary-container');
+          }
+        }, 320);
+      }
+
+      if (ttySubmitBtn) {
+        ttySubmitBtn.addEventListener('click', () => handleCommandSend());
+      }
+      if (ttyInput) {
+        ttyInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') handleCommandSend();
+        });
+      }
+
+      if (terminalClearBtn) {
+        terminalClearBtn.addEventListener('click', () => {
+          if (terminalStream) terminalStream.innerHTML = '';
+          appendLog('[SYS]', 'Terminal buffer purged by operator.', 'text-outline');
+        });
+      }
+
+      if (terminalScrollBtn && scrollLockText) {
+        terminalScrollBtn.addEventListener('click', () => {
+          autoscroll = !autoscroll;
+          scrollLockText.textContent = autoscroll ? 'AUTOSCROLL: ON' : 'AUTOSCROLL: OFF';
+          terminalScrollBtn.classList.toggle('text-primary-container', autoscroll);
+          terminalScrollBtn.classList.toggle('text-on-surface-variant', !autoscroll);
+        });
+      }
+
+      // 3. Hardware Button Dispatches
+      if (btnRebootMcu) {
+        btnRebootMcu.addEventListener('click', () => {
+          handleCommandSend('0xAA 0x01 0xFF (ESP.restart())');
+          if (rebootLatch) rebootLatch.checked = false;
+          btnRebootMcu.disabled = true;
+        });
+      }
+
+      const btnSleepPms = document.getElementById('btnSleepPms');
+      if (btnSleepPms) {
+        btnSleepPms.addEventListener('click', () => {
+          handleCommandSend('0xAA 0x02 0x3C (SLEEP_PMS_60S)');
+        });
+      }
+
+      const btnCalibrateMq = document.getElementById('btnCalibrateMq');
+      if (btnCalibrateMq) {
+        btnCalibrateMq.addEventListener('click', () => {
+          handleCommandSend('0xAA 0x04 0x0A (CALIBRATE_MQ135_RO)');
+        });
+      }
+
+      const btnAbortCmd = document.getElementById('btnAbortCmd');
+      if (btnAbortCmd) {
+        btnAbortCmd.addEventListener('click', () => {
+          handleCommandSend('0xFF 0x00 0x00 (BUS_INTERRUPT_ABORT)');
+        });
+      }
+
+      // 4. Maintenance Shield Toggle
+      const maintOffBtn = document.getElementById('maintOffBtn');
+      const maintOnBtn = document.getElementById('maintOnBtn');
+      const maintStatusDot = document.getElementById('maintStatusDot');
+      const maintStatusTitle = document.getElementById('maintStatusTitle');
+      const maintStatusDesc = document.getElementById('maintStatusDesc');
+      const maintReasonInput = document.getElementById('maintReasonInput');
+      const btnUpdateAdvisory = document.getElementById('btnUpdateAdvisory');
+
+      if (maintOffBtn && maintOnBtn) {
+        maintOffBtn.addEventListener('click', () => {
+          maintOffBtn.className = "px-space-md py-space-xs rounded font-label-caps text-label-caps uppercase tracking-wider bg-surface-container-high text-primary-container font-semibold transition-all";
+          maintOnBtn.className = "px-space-md py-space-xs rounded font-label-caps text-label-caps uppercase tracking-wider text-on-surface-variant hover:text-on-surface transition-all";
+          maintStatusDot.className = "w-2.5 h-2.5 rounded-full bg-primary-container shadow-[0_0_8px_#00ff88] mt-1 shrink-0";
+          maintStatusTitle.textContent = "PUBLIC GATEWAY: LIVE TELEMETRY STREAMING";
+          maintStatusTitle.className = "font-mono-sm text-mono-sm font-bold text-on-surface uppercase";
+          maintStatusDesc.textContent = "Broadcasting genuine un-scrubbed particulate readings to public subscribers. When Maintenance Shield is armed, API returns HTTP 503 with custom advisory string.";
+          appendLog('[GATEWAY]', 'Maintenance Shield DEACTIVATED. Public telemetry active.', 'text-primary-container');
+        });
+
+        maintOnBtn.addEventListener('click', () => {
+          maintOnBtn.className = "px-space-md py-space-xs rounded font-label-caps text-label-caps uppercase tracking-wider bg-error-container text-on-error font-semibold transition-all";
+          maintOffBtn.className = "px-space-md py-space-xs rounded font-label-caps text-label-caps uppercase tracking-wider text-on-surface-variant hover:text-on-surface transition-all";
+          maintStatusDot.className = "w-2.5 h-2.5 rounded-full bg-error shadow-[0_0_8px_#ffb4ab] mt-1 shrink-0 animate-pulse";
+          maintStatusTitle.textContent = "PUBLIC GATEWAY: 503 SERVICE_MAINTENANCE INJECTED";
+          maintStatusTitle.className = "font-mono-sm text-mono-sm font-bold text-error uppercase";
+          maintStatusDesc.textContent = "PUBLIC DASHBOARDS BLOCKED. External queries receiving HTTP 503 with reason: '" + (maintReasonInput.value || 'MAINTENANCE') + "'. Transient spikes isolated from records.";
+          appendLog('[GATEWAY]', 'MAINTENANCE SHIELD ARMED: Ingress API returning 503 SERVICE_MAINTENANCE.', 'text-error font-bold');
+        });
+      }
+
+      if (btnUpdateAdvisory && maintReasonInput) {
+        btnUpdateAdvisory.addEventListener('click', () => {
+          appendLog('[CONFIG]', `Public advisory string updated: "${maintReasonInput.value}"`, 'text-secondary');
+        });
+      }
+
+      // 5. Emergency Master Lockout
+      const masterLockoutBtn = document.getElementById('masterLockoutBtn');
+      if (masterLockoutBtn) {
+        masterLockoutBtn.addEventListener('click', () => {
+          const confirmed = confirm('CRITICAL: Terminate active C2 session and revoke cryptographic hardware operator token?');
+          if (confirmed) {
+            appendLog('[SECURITY]', 'MASTER LOCKOUT ENGAGED: Crypto session terminated. Disconnecting bus.', 'text-error font-bold');
+            masterLockoutBtn.textContent = 'SESSION TERMINATED';
+            masterLockoutBtn.disabled = true;
+          }
+        });
+      }
+
+      // 6. Live Periodic Telemetry Jitter
+      setInterval(() => {
+        const pm25El = document.getElementById('valPm25');
+        const co2El = document.getElementById('valCo2');
+        if (pm25El) {
+          const base = 12.1;
+          const jitter = (Math.random() * 0.6 - 0.3).toFixed(1);
+          pm25El.textContent = (base + parseFloat(jitter)).toFixed(1);
+        }
+        if (co2El) {
+          const baseCo2 = 485;
+          const co2Jitter = Math.floor(Math.random() * 6 - 3);
+          co2El.textContent = baseCo2 + co2Jitter;
+        }
+      }, 3500);
+    })();
+  </script>
+</div></main></div><footer class="fixed bottom-0 left-0 right-0 h-7 bg-surface-container-lowest/95 backdrop-blur-md z-50 flex items-center justify-between px-margin shadow-[0_-1px_6px_rgba(0,0,0,0.3)]"><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-xs"><div class="w-1.5 h-1.5 bg-primary-container rounded-none"></div><span class="font-mono-micro text-mono-micro text-on-surface-variant uppercase">FIRMWARE INTEGRITY:</span><span class="font-mono-micro text-mono-micro text-on-surface font-semibold">ECDSA-P256-VERIFIED (0x9AF8)</span></div><div class="h-3 w-px bg-surface-container-highest"></div><div class="flex items-center gap-space-xs"><span class="font-mono-micro text-mono-micro text-on-surface-variant uppercase">GATEWAY UPTIME:</span><span class="font-mono-micro text-mono-micro text-secondary font-semibold">418D 14H 22M 09S</span></div></div><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-xs"><span class="font-mono-micro text-mono-micro text-on-surface-variant uppercase">ISOLATION BUS:</span><span class="font-mono-micro text-mono-micro text-primary-container font-semibold">AIR-GAPPED TELEMETRY [ACTIVE]</span></div><div class="h-3 w-px bg-surface-container-highest"></div><div class="flex items-center gap-space-xs"><div class="w-1.5 h-1.5 rounded-full bg-secondary-container animate-pulse"></div><span class="font-mono-micro text-mono-micro text-on-surface font-semibold uppercase">TLS 1.3 HW-CRYPTO HANDSHAKE // LOCKED</span></div></div></footer></body></html>

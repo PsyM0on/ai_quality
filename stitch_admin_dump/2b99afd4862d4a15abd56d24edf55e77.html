@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "surface-dim": "#0d1320",
+          "on-secondary": "#00363d",
+          "on-primary-fixed": "#00210c",
+          "inverse-on-surface": "#2a303e",
+          "error-container": "#93000a",
+          "surface": "#0d1320",
+          "tertiary": "#fffaf8",
+          "on-surface-variant": "#b9cbb9",
+          "on-tertiary": "#452b00",
+          "surface-container-lowest": "#080e1b",
+          "primary-container": "#00ff88",
+          "error": "#ffb4ab",
+          "secondary-container": "#00e3fd",
+          "on-surface": "#dde2f5",
+          "on-primary-fixed-variant": "#005228",
+          "on-tertiary-fixed-variant": "#633f00",
+          "primary-fixed-dim": "#00e479",
+          "surface-container-highest": "#2f3543",
+          "outline": "#849585",
+          "outline-variant": "#3b4b3d",
+          "inverse-surface": "#dde2f5",
+          "surface-container-low": "#151b29",
+          "on-secondary-fixed-variant": "#004f58",
+          "inverse-primary": "#006d37",
+          "primary-fixed": "#60ff99",
+          "on-error-container": "#ffdad6",
+          "on-primary": "#003919",
+          "surface-container": "#1a202d",
+          "on-secondary-fixed": "#001f24",
+          "primary": "#f1ffef",
+          "tertiary-fixed": "#ffddb4",
+          "surface-tint": "#00e479",
+          "surface-bright": "#333947",
+          "on-tertiary-fixed": "#291800",
+          "on-primary-container": "#007139",
+          "on-background": "#dde2f5",
+          "on-secondary-container": "#00616d",
+          "background": "#0d1320",
+          "tertiary-fixed-dim": "#ffb952",
+          "secondary-fixed": "#9cf0ff",
+          "on-tertiary-container": "#875800",
+          "secondary": "#bdf4ff",
+          "secondary-fixed-dim": "#00daf3",
+          "tertiary-container": "#ffd8a7",
+          "on-error": "#690005",
+          "surface-container-high": "#242a38",
+          "surface-variant": "#2f3543"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "margin": "0.75rem",
+          "space-xl": "1rem",
+          "space-sm": "0.25rem",
+          "space-md": "0.5rem",
+          "space-xs": "0.125rem",
+          "gutter": "0.5rem",
+          "space-lg": "0.75rem"
+        },
+        "fontFamily": {
+          "mono-micro": ["JetBrains Mono"],
+          "mono-md": ["JetBrains Mono"],
+          "body-lg": ["Inter"],
+          "display-lg-mobile": ["Space Grotesk"],
+          "body-sm": ["Inter"],
+          "headline-md": ["Space Grotesk"],
+          "mono-sm": ["JetBrains Mono"],
+          "display-lg": ["Space Grotesk"],
+          "label-caps": ["Space Grotesk"],
+          "headline-sm": ["Space Grotesk"],
+          "mono-lg": ["JetBrains Mono"]
+        },
+        "fontSize": {
+          "mono-micro": ["9px", {"lineHeight": "12px", "letterSpacing": "0.06em", "fontWeight": "600"}],
+          "mono-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0em", "fontWeight": "500"}],
+          "body-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "400"}],
+          "display-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+          "body-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0em", "fontWeight": "400"}],
+          "headline-md": ["20px", {"lineHeight": "28px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+          "mono-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "400"}],
+          "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+          "label-caps": ["11px", {"lineHeight": "14px", "letterSpacing": "0.1em", "fontWeight": "700"}],
+          "headline-sm": ["16px", {"lineHeight": "24px", "letterSpacing": "0.04em", "fontWeight": "600"}],
+          "mono-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+        }
+      }
+    }
+  }</script></head><body class="bg-background font-body-sm text-on-surface antialiased"><main class="min-h-screen w-full flex items-center justify-center p-margin bg-background"><div class="flex flex-col w-full max-w-7xl mx-auto px-margin select-none">
+<!-- HARDENED STATUS BANNER -->
+<div class="w-full bg-surface-container-lowest rounded-DEFAULT p-space-md shadow-xl flex flex-col md:flex-row items-center justify-between gap-space-sm mb-space-lg">
+<div class="flex items-center gap-space-md w-full md:w-auto">
+<div class="flex items-center justify-center w-8 h-8 rounded-DEFAULT bg-surface-container-high text-primary-container shrink-0">
+<span class="material-symbols-outlined text-headline-sm" style="font-variation-settings: 'FILL' 1;">security</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-sm flex-wrap">
+<span class="font-label-caps text-label-caps text-primary-container bg-surface-container-high px-space-sm py-space-xs rounded-DEFAULT">SEC-LEVEL IV</span>
+<span class="font-mono-micro text-mono-micro text-on-surface tracking-widest uppercase">AIR-GAPPED HARDWARE GATEWAY // TLS 1.3 ECDSA-P256</span>
+</div>
+<span class="font-mono-sm text-mono-sm text-on-surface-variant">HOST: NODE-C2-AUTH01 // BINDING: MAC-RESTRICTED 192.168.1.104</span>
+</div>
+</div>
+<div class="flex items-center gap-space-lg w-full md:w-auto justify-between md:justify-end">
+<div class="flex items-center gap-space-sm">
+<div class="w-2 h-2 rounded-full bg-primary-container animate-pulse shadow-[0_0_8px_#00ff88]"></div>
+<span class="font-mono-micro text-mono-micro text-primary-container uppercase tracking-widest">HSM ENCLAVE ONLINE</span>
+</div>
+<div class="h-4 w-[1px] bg-surface-container-highest"></div>
+<div class="flex items-center gap-space-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-mono-md">lock</span>
+<span class="font-mono-micro text-mono-micro tracking-wider">ZERO-TRUST STRICT</span>
+</div>
+</div>
+</div>
+<!-- MAIN SECURITY TERMINAL GRID -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- LEFT & CENTER: CHASSIS AUTH MODULE -->
+<div class="lg:col-span-8 bg-surface-container-lowest rounded-DEFAULT p-space-lg shadow-2xl relative overflow-hidden">
+<!-- Decorative chassis corner brackets -->
+<div class="absolute top-2 left-2 w-3 h-3 bg-surface-container-highest flex items-center justify-center rounded-DEFAULT text-mono-micro text-outline font-mono-micro">◤</div>
+<div class="absolute top-2 right-2 w-3 h-3 bg-surface-container-highest flex items-center justify-center rounded-DEFAULT text-mono-micro text-outline font-mono-micro">◥</div>
+<div class="absolute bottom-2 left-2 w-3 h-3 bg-surface-container-highest flex items-center justify-center rounded-DEFAULT text-mono-micro text-outline font-mono-micro">◣</div>
+<div class="absolute bottom-2 right-2 w-3 h-3 bg-surface-container-highest flex items-center justify-center rounded-DEFAULT text-mono-micro text-outline font-mono-micro">◢</div>
+<!-- Header Label Inside Chassis -->
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-sm pb-space-md bg-surface-container-low p-space-md rounded-DEFAULT mb-space-lg">
+<div class="flex items-center gap-space-md">
+<span class="material-symbols-outlined text-headline-sm text-secondary-container" style="font-variation-settings: 'FILL' 1;">terminal</span>
+<div>
+<h1 class="font-headline-sm text-headline-sm text-on-surface tracking-wider uppercase">RESTRICTED HARDWARE ACCESS</h1>
+<p class="font-mono-micro text-mono-micro text-on-surface-variant uppercase">TACTICAL GATEWAY C2 // ZERO-LATENCY CIPHER MATRIX</p>
+</div>
+</div>
+<div class="bg-surface-container px-space-md py-space-xs rounded-DEFAULT flex items-center gap-space-sm self-stretch sm:self-auto justify-center">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-fixed-dim animate-ping"></span>
+<span class="font-mono-micro text-mono-micro text-tertiary-fixed-dim uppercase tracking-wider">TAMPER SENSORS ARMED</span>
+</div>
+</div>
+<!-- Tamper / Lockout Warning Callout -->
+<div class="bg-error-container/30 text-on-error-container p-space-md rounded-DEFAULT flex items-center gap-space-md mb-space-lg shadow-sm">
+<span class="material-symbols-outlined text-headline-md text-error shrink-0">warning</span>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-error tracking-wider uppercase">BRUTE-FORCE LOCKOUT ENGAGED</span>
+<span class="font-mono-sm text-mono-sm text-on-surface">5 FAILED SEQUENCES WILL TRIGGER AUTOMATIC VOLATILE MEMORY PURGE (ZEROIZE EEPROM).</span>
+</div>
+</div>
+<!-- Mode Selector Tabs -->
+<div class="grid grid-cols-2 gap-space-sm mb-space-lg bg-surface-container-low p-space-xs rounded-DEFAULT">
+<button class="flex items-center justify-center gap-space-sm py-space-sm rounded-DEFAULT bg-surface-container-highest text-primary-container font-headline-sm text-mono-md tracking-wider transition-all duration-150" id="tab-pin" onclick="switchAuthMode('pin')">
+<span class="material-symbols-outlined text-headline-sm">pin</span>
+<span>PIN / CRYPTO TOKEN</span>
+</button>
+<button class="flex items-center justify-center gap-space-sm py-space-sm rounded-DEFAULT bg-transparent text-on-surface-variant hover:text-on-surface font-headline-sm text-mono-md tracking-wider transition-all duration-150" id="tab-bio" onclick="switchAuthMode('bio')">
+<span class="material-symbols-outlined text-headline-sm">fingerprint</span>
+<span>YUBIKEY FIDO2 / ENCLAVE</span>
+</button>
+</div>
+<!-- AUTH MODE 1: NUMERIC CIPHER PANEL -->
+<div class="flex flex-col gap-space-lg" id="panel-pin">
+<!-- Masked Display Monitor -->
+<div class="bg-surface-container-low p-space-lg rounded-DEFAULT flex flex-col items-center justify-center shadow-inner">
+<div class="flex items-center justify-between w-full mb-space-sm">
+<span class="font-mono-micro text-mono-micro text-outline uppercase tracking-widest">CIPHER INPUT BUFFER</span>
+<span class="font-mono-micro text-mono-micro text-secondary-container">256-BIT ENCLAVE CIPHER</span>
+</div>
+<!-- Slots Container -->
+<div class="flex items-center justify-center gap-space-sm my-space-md flex-wrap" id="pin-slots-container">
+<div class="w-9 h-11 bg-surface-container-highest rounded-DEFAULT flex items-center justify-center text-headline-md font-mono-lg text-primary-container pin-slot shadow-inner">_</div>
+<div class="w-9 h-11 bg-surface-container-highest rounded-DEFAULT flex items-center justify-center text-headline-md font-mono-lg text-primary-container pin-slot shadow-inner">_</div>
+<div class="w-9 h-11 bg-surface-container-highest rounded-DEFAULT flex items-center justify-center text-headline-md font-mono-lg text-primary-container pin-slot shadow-inner">_</div>
+<div class="w-9 h-11 bg-surface-container-highest rounded-DEFAULT flex items-center justify-center text-headline-md font-mono-lg text-primary-container pin-slot shadow-inner">_</div>
+<div class="w-9 h-11 bg-surface-container-highest rounded-DEFAULT flex items-center justify-center text-headline-md font-mono-lg text-primary-container pin-slot shadow-inner">_</div>
+<div class="w-9 h-11 bg-surface-container-highest rounded-DEFAULT flex items-center justify-center text-headline-md font-mono-lg text-primary-container pin-slot shadow-inner">_</div>
+<div class="w-9 h-11 bg-surface-container-highest rounded-DEFAULT flex items-center justify-center text-headline-md font-mono-lg text-primary-container pin-slot shadow-inner">_</div>
+<div class="w-9 h-11 bg-surface-container-highest rounded-DEFAULT flex items-center justify-center text-headline-md font-mono-lg text-primary-container pin-slot shadow-inner">_</div>
+</div>
+<!-- Countdown / Attempt Status -->
+<div class="flex items-center gap-space-sm text-center">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span>
+<span class="font-mono-micro text-mono-micro text-on-surface-variant tracking-wider" id="attempt-tracker">ATTEMPT 1 OF 5 BEFORE HARDWARE ZERO-FILL TRIGGER</span>
+</div>
+</div>
+<!-- Scrambled Matrix Keypad (Anti-Shoulder Surfing / Thermal Shielding) -->
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between px-space-xs">
+<span class="font-mono-micro text-mono-micro text-outline tracking-wider uppercase">SCRAMBLED DYNAMIC KEYPAD MATRIX [RAND-SEED 0x9AF2]</span>
+<span class="font-mono-micro text-mono-micro text-outline-variant">THERMAL DECORRELATION ACTIVE</span>
+</div>
+<div class="grid grid-cols-5 sm:grid-cols-5 gap-space-sm" id="keypad-matrix">
+<!-- Dynamically ordered tactile buttons -->
+<button class="h-14 bg-surface-container hover:bg-surface-container-high active:bg-primary-container active:text-on-primary-fixed rounded-DEFAULT flex flex-col items-center justify-center transition-all duration-75 shadow-md" onclick="inputKey('7')">
+<span class="font-headline-md text-headline-md text-on-surface">7</span>
+<span class="font-mono-micro text-mono-micro text-outline opacity-60">..•</span>
+</button>
+<button class="h-14 bg-surface-container hover:bg-surface-container-high active:bg-primary-container active:text-on-primary-fixed rounded-DEFAULT flex flex-col items-center justify-center transition-all duration-75 shadow-md" onclick="inputKey('2')">
+<span class="font-headline-md text-headline-md text-on-surface">2</span>
+<span class="font-mono-micro text-mono-micro text-outline opacity-60">•..</span>
+</button>
+<button class="h-14 bg-surface-container hover:bg-surface-container-high active:bg-primary-container active:text-on-primary-fixed rounded-DEFAULT flex flex-col items-center justify-center transition-all duration-75 shadow-md" onclick="inputKey('9')">
+<span class="font-headline-md text-headline-md text-on-surface">9</span>
+<span class="font-mono-micro text-mono-micro text-outline opacity-60">...</span>
+</button>
+<button class="h-14 bg-surface-container hover:bg-surface-container-high active:bg-primary-container active:text-on-primary-fixed rounded-DEFAULT flex flex-col items-center justify-center transition-all duration-75 shadow-md" onclick="inputKey('4')">
+<span class="font-headline-md text-headline-md text-on-surface">4</span>
+<span class="font-mono-micro text-mono-micro text-outline opacity-60">•.•</span>
+</button>
+<button class="h-14 bg-surface-container hover:bg-surface-container-high active:bg-primary-container active:text-on-primary-fixed rounded-DEFAULT flex flex-col items-center justify-center transition-all duration-75 shadow-md" onclick="inputKey('8')">
+<span class="font-headline-md text-headline-md text-on-surface">8</span>
+<span class="font-mono-micro text-mono-micro text-outline opacity-60">•••</span>
+</button>
+<button class="h-14 bg-surface-container hover:bg-surface-container-high active:bg-primary-container active:text-on-primary-fixed rounded-DEFAULT flex flex-col items-center justify-center transition-all duration-75 shadow-md" onclick="inputKey('1')">
+<span class="font-headline-md text-headline-md text-on-surface">1</span>
+<span class="font-mono-micro text-mono-micro text-outline opacity-60">.••</span>
+</button>
+<button class="h-14 bg-surface-container hover:bg-surface-container-high active:bg-primary-container active:text-on-primary-fixed rounded-DEFAULT flex flex-col items-center justify-center transition-all duration-75 shadow-md" onclick="inputKey('0')">
+<span class="font-headline-md text-headline-md text-on-surface">0</span>
+<span class="font-mono-micro text-mono-micro text-outline opacity-60">---</span>
+</button>
+<button class="h-14 bg-surface-container hover:bg-surface-container-high active:bg-primary-container active:text-on-primary-fixed rounded-DEFAULT flex flex-col items-center justify-center transition-all duration-75 shadow-md" onclick="inputKey('5')">
+<span class="font-headline-md text-headline-md text-on-surface">5</span>
+<span class="font-mono-micro text-mono-micro text-outline opacity-60">•--</span>
+</button>
+<button class="h-14 bg-surface-container hover:bg-surface-container-high active:bg-primary-container active:text-on-primary-fixed rounded-DEFAULT flex flex-col items-center justify-center transition-all duration-75 shadow-md" onclick="inputKey('3')">
+<span class="font-headline-md text-headline-md text-on-surface">3</span>
+<span class="font-mono-micro text-mono-micro text-outline opacity-60">--•</span>
+</button>
+<button class="h-14 bg-surface-container hover:bg-surface-container-high active:bg-primary-container active:text-on-primary-fixed rounded-DEFAULT flex flex-col items-center justify-center transition-all duration-75 shadow-md" onclick="inputKey('6')">
+<span class="font-headline-md text-headline-md text-on-surface">6</span>
+<span class="font-mono-micro text-mono-micro text-outline opacity-60">-•-</span>
+</button>
+</div>
+<!-- Dual Execution Controls -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm mt-space-sm">
+<button class="h-12 bg-surface-container hover:bg-tertiary-fixed-dim/20 text-tertiary-fixed-dim active:bg-tertiary-fixed-dim/30 rounded-DEFAULT flex items-center justify-center gap-space-sm font-headline-sm text-mono-sm tracking-wider uppercase shadow-md transition-colors" onclick="clearBuffer()">
+<span class="material-symbols-outlined text-mono-lg">backspace</span>
+<span>CLEAR BUFFER [CLR]</span>
+</button>
+<button class="h-12 bg-primary-container hover:bg-primary-fixed text-on-primary-container active:bg-primary font-headline-sm text-mono-sm tracking-wider uppercase rounded-DEFAULT flex items-center justify-center gap-space-sm shadow-lg transition-transform active:scale-[0.99]" onclick="submitAuthentication()">
+<span class="material-symbols-outlined text-mono-lg" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span>AUTHENTICATE CIPHER</span>
+</button>
+</div>
+</div>
+</div>
+<!-- AUTH MODE 2: BIOMETRIC / HARDWARE TOKEN SENSOR (Hidden by Default) -->
+<div class="hidden flex-col items-center justify-center py-space-xl bg-surface-container-low rounded-DEFAULT gap-space-lg text-center" id="panel-bio">
+<!-- Optical Sensor Display -->
+<div class="relative w-40 h-40 bg-surface-container-lowest rounded-DEFAULT flex items-center justify-center overflow-hidden shadow-inner group cursor-pointer" onclick="simulateBioScan()">
+<!-- Animated Scanline Beam -->
+<div class="absolute left-0 right-0 h-1 bg-secondary-container shadow-[0_0_12px_#00e3fd] top-0 animate-[bounce_2.5s_infinite]" id="bio-scanline"></div>
+<!-- Tactical Sensor Pattern SVG -->
+<svg class="w-24 h-24 text-secondary-container opacity-80" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 100 100">
+<circle cx="50" cy="50" r="45" stroke-dasharray="4 4" stroke-opacity="0.4"></circle>
+<circle cx="50" cy="50" r="35" stroke-opacity="0.3"></circle>
+<path d="M50 20 V30 M50 70 V80 M20 50 H30 M70 50 H80" stroke-opacity="0.8"></path>
+<path d="M38 42 C40 38 60 38 62 42 C64 48 36 50 36 58 C36 64 64 64 64 54" stroke-linecap="round" stroke-width="2.5"></path>
+<circle cx="50" cy="50" fill="currentColor" fill-opacity="0.2" r="8"></circle>
+</svg>
+<span class="absolute bottom-2 font-mono-micro text-mono-micro text-outline tracking-wider uppercase">TOUCH SENSOR</span>
+</div>
+<div class="max-w-md flex flex-col gap-space-xs px-space-md">
+<div class="flex items-center justify-center gap-space-sm text-secondary-container">
+<span class="material-symbols-outlined text-headline-sm animate-pulse">usb</span>
+<span class="font-headline-sm text-headline-sm tracking-wider uppercase">FIDO2 / U2F ENCLAVE READY</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Touch registered YubiKey Hardware Token or place authorized operator thumbprint on optical sensor to dispatch Hardware Zero-Knowledge Attestation.
+          </p>
+</div>
+<button class="px-space-xl py-space-md bg-secondary-container text-on-secondary-container rounded-DEFAULT font-headline-sm text-mono-sm tracking-wider uppercase shadow-md hover:bg-secondary-fixed transition-colors" onclick="simulateBioScan()">
+          DISPATCH HARDWARE ATTESTATION
+        </button>
+</div>
+</div>
+<!-- RIGHT: AIR-GAPPED TELEMETRY & AUDIT LOGS -->
+<div class="lg:col-span-4 flex flex-col gap-space-lg">
+<!-- Live Gateway Telemetry Matrix -->
+<div class="bg-surface-container-lowest rounded-DEFAULT p-space-md shadow-xl flex flex-col gap-space-md">
+<div class="flex items-center justify-between pb-space-xs bg-surface-container-low p-space-sm rounded-DEFAULT">
+<span class="font-label-caps text-label-caps text-on-surface tracking-wider uppercase">GATEWAY TELEMETRY</span>
+<span class="font-mono-micro text-mono-micro text-primary-container">ISOLATED BUS</span>
+</div>
+<!-- Metric Cluster -->
+<div class="grid grid-cols-2 gap-space-sm">
+<div class="bg-surface-container-low p-space-sm rounded-DEFAULT flex flex-col">
+<span class="font-mono-micro text-mono-micro text-outline uppercase">BUS LATENCY</span>
+<span class="font-headline-sm text-headline-sm text-primary-container">0.14 <span class="text-mono-micro font-mono-micro text-on-surface-variant">MS</span></span>
+</div>
+<div class="bg-surface-container-low p-space-sm rounded-DEFAULT flex flex-col">
+<span class="font-mono-micro text-mono-micro text-outline uppercase">HSM ENTROPY</span>
+<span class="font-headline-sm text-headline-sm text-secondary-container">99.98 <span class="text-mono-micro font-mono-micro text-on-surface-variant">%</span></span>
+</div>
+<div class="bg-surface-container-low p-space-sm rounded-DEFAULT flex flex-col">
+<span class="font-mono-micro text-mono-micro text-outline uppercase">TEMP SENSOR</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">38.4 <span class="text-mono-micro font-mono-micro text-on-surface-variant">°C</span></span>
+</div>
+<div class="bg-surface-container-low p-space-sm rounded-DEFAULT flex flex-col">
+<span class="font-mono-micro text-mono-micro text-outline uppercase">TAMPER VOLTS</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">3.30 <span class="text-mono-micro font-mono-micro text-on-surface-variant">V</span></span>
+</div>
+</div>
+<!-- Sparkline Trendline Visualization -->
+<div class="bg-surface-container-low p-space-sm rounded-DEFAULT flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-mono-micro text-mono-micro text-outline uppercase">NOISE ENTROPY SPECTRUM</span>
+<span class="font-mono-micro text-mono-micro text-primary-container">TRNG OK</span>
+</div>
+<svg class="w-full h-10 text-primary-container" fill="none" viewbox="0 0 200 40">
+<path d="M0 25 L20 18 L40 28 L60 12 L80 22 L100 8 L120 20 L140 14 L160 26 L180 10 L200 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+<path d="M0 25 L20 18 L40 28 L60 12 L80 22 L100 8 L120 20 L140 14 L160 26 L180 10 L200 24 L200 40 L0 40 Z" fill="currentColor" fill-opacity="0.08"></path>
+</svg>
+</div>
+</div>
+<!-- Real-time Security Event Audit Stream -->
+<div class="bg-surface-container-lowest rounded-DEFAULT p-space-md shadow-xl flex flex-col gap-space-sm">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="w-1.5 h-1.5 bg-secondary-container rounded-full animate-ping"></span>
+<span class="font-label-caps text-label-caps text-on-surface tracking-wider uppercase">AUDIT EVENT FEED</span>
+</div>
+<span class="font-mono-micro text-mono-micro text-outline font-mono-micro">TTY 01 // 115200</span>
+</div>
+<div class="h-48 overflow-y-auto bg-surface-container-low p-space-sm rounded-DEFAULT flex flex-col gap-space-xs font-mono-micro text-mono-micro text-on-surface-variant" id="audit-log-box">
+<div class="flex gap-space-xs">
+<span class="text-secondary-container shrink-0">[10:11:40]</span>
+<span class="text-on-surface">SYS: TLS 1.3 handshake completed with 192.168.1.104</span>
+</div>
+<div class="flex gap-space-xs">
+<span class="text-secondary-container shrink-0">[10:12:02]</span>
+<span class="text-tertiary-fixed-dim">AUTH: Operator cert [ENG-4092] verified against root CA</span>
+</div>
+<div class="flex gap-space-xs">
+<span class="text-secondary-container shrink-0">[10:13:15]</span>
+<span class="text-on-surface">GATEWAY: Standby for 2FA hardware PIN dispatch</span>
+</div>
+<div class="flex gap-space-xs">
+<span class="text-secondary-container shrink-0">[10:13:58]</span>
+<span class="text-primary-container">SEC: Scrambled layout generated. Random seed synchronized</span>
+</div>
+<div id="live-audit-insert"></div>
+</div>
+</div>
+<!-- Emergency Hardware Reset / Physical Override Panel -->
+<div class="bg-surface-container-lowest rounded-DEFAULT p-space-md shadow-xl flex flex-col gap-space-sm">
+<div class="flex items-center gap-space-sm text-error">
+<span class="material-symbols-outlined text-mono-lg">vpn_key_alert</span>
+<span class="font-label-caps text-label-caps uppercase tracking-wider">HARDWARE AIR-GAP KEYHOLE</span>
+</div>
+<p class="font-mono-micro text-mono-micro text-outline">
+          PHYSICAL RECOVERY REQUIRES DUAL-TURN KEY ON PHYSICAL RACK CHASSIS SLOT [J12]. ALL REMOTE COMMAND TERMINALS ARE FULLY LOCKED DOWN.
+        </p>
+<div class="flex items-center justify-between bg-surface-container-low p-space-sm rounded-DEFAULT">
+<span class="font-mono-micro text-mono-micro text-on-surface uppercase">PHYSICAL INTERLOCK</span>
+<span class="font-mono-micro text-mono-micro text-primary-container px-space-xs py-space-xs bg-surface-container rounded-DEFAULT">ENGAGED</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  let pinBuffer = "";
+  let failedAttempts = 0;
+  const maxAttempts = 5;
+
+  function updateSlots() {
+    const slots = document.querySelectorAll('#pin-slots-container .pin-slot');
+    slots.forEach((slot, index) => {
+      if (index < pinBuffer.length) {
+        slot.textContent = "•";
+        slot.classList.add("bg-surface-container-high");
+        slot.classList.add("text-primary-container");
+      } else {
+        slot.textContent = "_";
+        slot.classList.remove("bg-surface-container-high");
+      }
+    });
+  }
+
+  function inputKey(num) {
+    if (pinBuffer.length < 8) {
+      pinBuffer += num;
+      updateSlots();
+      addAuditLog(`INPUT: Cipher buffer updated [length: ${pinBuffer.length}]`, "text-outline");
+    }
+  }
+
+  function clearBuffer() {
+    pinBuffer = "";
+    updateSlots();
+    addAuditLog("BUFFER: Operator cleared cipher memory register", "text-tertiary-fixed-dim");
+  }
+
+  function submitAuthentication() {
+    if (pinBuffer.length < 8) {
+      addAuditLog("ERR: Cipher token incomplete. 8 tokens required.", "text-error");
+      return;
+    }
+
+    if (pinBuffer === "72948105") {
+      addAuditLog("SUCCESS: Zero-knowledge master cipher validated. Hardware unlocked.", "text-primary-container");
+      const tracker = document.getElementById("attempt-tracker");
+      tracker.textContent = "ACCESS GRANTED // HARDWARE DISPATCH AUTHORIZED";
+      tracker.className = "font-mono-micro text-mono-micro text-primary-container tracking-wider";
+    } else {
+      failedAttempts++;
+      const tracker = document.getElementById("attempt-tracker");
+      if (failedAttempts >= maxAttempts) {
+        tracker.textContent = "SYSTEM PURGE ENGAGED: MEMORY ZEROIZED";
+        tracker.className = "font-mono-micro text-mono-micro text-error font-bold tracking-widest animate-pulse";
+        addAuditLog("CRITICAL: LOCKOUT TRIGGERED. Zeroize bus memory initiated.", "text-error");
+        document.getElementById("keypad-matrix").classList.add("opacity-20", "pointer-events-none");
+      } else {
+        tracker.textContent = `ATTEMPT ${failedAttempts + 1} OF ${maxAttempts} BEFORE HARDWARE ZERO-FILL TRIGGER`;
+        addAuditLog(`AUTH_FAIL: Invalid cipher token payload. Attempt ${failedAttempts}/${maxAttempts}`, "text-error");
+      }
+      clearBuffer();
+    }
+  }
+
+  function switchAuthMode(mode) {
+    const tabPin = document.getElementById("tab-pin");
+    const tabBio = document.getElementById("tab-bio");
+    const panelPin = document.getElementById("panel-pin");
+    const panelBio = document.getElementById("panel-bio");
+
+    if (mode === 'pin') {
+      tabPin.className = "flex items-center justify-center gap-space-sm py-space-sm rounded-DEFAULT bg-surface-container-highest text-primary-container font-headline-sm text-mono-md tracking-wider transition-all duration-150";
+      tabBio.className = "flex items-center justify-center gap-space-sm py-space-sm rounded-DEFAULT bg-transparent text-on-surface-variant hover:text-on-surface font-headline-sm text-mono-md tracking-wider transition-all duration-150";
+      panelPin.classList.remove("hidden");
+      panelBio.classList.add("hidden");
+      addAuditLog("MODE: Operator switched to PIN / Crypto-key panel", "text-on-surface-variant");
+    } else {
+      tabBio.className = "flex items-center justify-center gap-space-sm py-space-sm rounded-DEFAULT bg-surface-container-highest text-secondary-container font-headline-sm text-mono-md tracking-wider transition-all duration-150";
+      tabPin.className = "flex items-center justify-center gap-space-sm py-space-sm rounded-DEFAULT bg-transparent text-on-surface-variant hover:text-on-surface font-headline-sm text-mono-md tracking-wider transition-all duration-150";
+      panelPin.classList.add("hidden");
+      panelBio.classList.remove("hidden");
+      addAuditLog("MODE: Operator activated Yubikey / Biometric enclave sensor", "text-secondary-container");
+    }
+  }
+
+  function simulateBioScan() {
+    addAuditLog("SENSOR: Optical reader polling hardware key token...", "text-secondary-container");
+    setTimeout(() => {
+      addAuditLog("ATTEST: FIDO2 hardware challenge received [AUTH-P256-VALID]", "text-primary-container");
+    }, 1200);
+  }
+
+  function addAuditLog(text, colorClass) {
+    const box = document.getElementById("audit-log-box");
+    const now = new Date();
+    const timeStr = `[${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}]`;
+    
+    const row = document.createElement("div");
+    row.className = "flex gap-space-xs";
+    row.innerHTML = `<span class="text-secondary-container shrink-0">${timeStr}</span> <span class="${colorClass}">${text}</span>`;
+    box.appendChild(row);
+    box.scrollTop = box.scrollHeight;
+  }
+</script></main></body></html>

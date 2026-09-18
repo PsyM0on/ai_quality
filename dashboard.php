@@ -166,7 +166,6 @@ if (isset($_GET['latest'])) {
         <div class="c2-pulse-dot logo-dot"></div>
         <div>
             <div class="c2-title">Eco Quality</div>
-            <div class="c2-sub">PUBLIC ENVIRONMENTAL TELEMETRY // AMBIENT AIR MONITORING</div>
         </div>
     </div>
     <div class="c2-top-right">
