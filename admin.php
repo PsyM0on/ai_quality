@@ -60,7 +60,7 @@ if (!isset($_SESSION["admin_logged_in"])) {
     <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
         <title>Eco Quality - Hardware C2 Authentication Gate</title>
         <link rel="stylesheet" href="assets/css/dashboard.css">
         <style>
@@ -388,7 +388,7 @@ $operator_ip = $_SESSION["admin_ip"] ?? "127.0.0.1";
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <?php if($current_cmd !== "NONE"): ?>
     <meta http-equiv="refresh" content="3">
     <?php endif; ?>

@@ -135,7 +135,7 @@ if (isset($_GET['latest'])) {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#00CFA8">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -146,7 +146,7 @@ if (isset($_GET['latest'])) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="assets/css/dashboard.css?v=29" rel="stylesheet">
+<link href="assets/css/dashboard.css?v=30" rel="stylesheet">
 <script>
     // System Validation: Early Device Theme Detection (Anti-FOUC)
     (function() {
@@ -610,11 +610,11 @@ if (isset($_GET['latest'])) {
         <button class="close-modal-btn" onclick="closeFeedback(event)">&times;</button>
         <div class="tip-title">System Feedback</div>
         <p style="font-size: 11px; color: var(--muted); font-family: var(--font-mono); margin-bottom: 16px; line-height: 1.4;">
-            Report bugs, concerns, or inquiries. Messages are sent directly to saimonrando9104@gmail.com.
+            Report bugs, concerns, or inquiries. Messages are delivered directly to the project team.
         </p>
-        <form action="https://formsubmit.co/saimonrando9104@gmail.com" method="POST" class="feedback-form">
+        <form action="https://formsubmit.co/9d0f5f115f6d55431f114e43e692b709" method="POST" class="feedback-form">
             <input type="hidden" name="_captcha" value="false">
-            <input type="hidden" name="_next" value="http://168.138.165.221/ai_quality/dashboard.php">
+            <input type="hidden" name="_next" value="https://eco-quality.duckdns.org/dashboard.php">
             <input type="hidden" name="_subject" value="New Feedback from Air Quality Dashboard!">
             <input type="text" name="name" placeholder="Your Name (Optional)" class="fb-input">
             <input type="email" name="email" placeholder="Your Email Address" required class="fb-input">

@@ -206,7 +206,7 @@ $msg = $_GET['msg'] ?? '';
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Export Data - Eco Quality</title>
     <link rel="stylesheet" href="assets/css/dashboard.css">
     <style>
@@ -273,6 +273,10 @@ $msg = $_GET['msg'] ?? '';
         .input-group input:focus {
             outline: none;
             border-color: var(--accent);
+        }
+        @media (max-width: 600px) {
+            .input-group input { font-size: 16px; }
+            .date-row { grid-template-columns: 1fr; }
         }
         .preview-box {
             background: rgba(0, 207, 168, 0.05);
