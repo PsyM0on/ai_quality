@@ -39,6 +39,34 @@ document.addEventListener('keydown', e => {
     }
 });
 
+// Feedback submission confirmation listener (from FormSubmit redirect)
+(function() {
+    try {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('feedback') === 'success') {
+            window.addEventListener('DOMContentLoaded', () => {
+                setTimeout(() => {
+                    const modal = document.getElementById('glass-modal');
+                    const modalBody = document.getElementById('glass-modal-body');
+                    if (modal && modalBody) {
+                        modalBody.innerHTML = `
+                            <div class="tip-title" style="color: var(--accent);">✓ Feedback Delivered</div>
+                            <div style="font-size: 12px; line-height: 1.6; color: var(--text); margin-bottom: 14px;">
+                                Thank you! Your feedback message has been submitted and sent to the project team.
+                            </div>
+                        `;
+                        modal.classList.add('show');
+                        document.body.style.overflow = 'hidden';
+                    }
+                    if (window.history && window.history.replaceState) {
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
+                }, 400);
+            });
+        }
+    } catch (e) {}
+})();
+
 /* ── NATIVE WEB SHARE ── */
 function nativeShare() {
     const aqiEl = document.getElementById('current_aqi');

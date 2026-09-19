@@ -605,6 +605,20 @@ if (isset($_GET['latest'])) {
 </div>
 
 <!-- Glassmorphism Modal for Feedback -->
+<?php
+$is_https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+    || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+    || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
+$current_host = $_SERVER['HTTP_HOST'] ?? 'eco-quality.duckdns.org';
+$proto = $is_https ? 'https://' : 'http://';
+$script_path = strtok($_SERVER['REQUEST_URI'] ?? '/ai_quality/dashboard.php', '?');
+if (empty($script_path) || $script_path === '/') {
+    $script_path = '/ai_quality/dashboard.php';
+}
+$feedback_next_url = (strpos($current_host, 'localhost') !== false || strpos($current_host, '127.0.0.1') !== false)
+    ? 'https://eco-quality.duckdns.org/ai_quality/dashboard.php?feedback=success'
+    : ($proto . $current_host . $script_path . '?feedback=success');
+?>
 <div id="feedback-modal" class="glass-modal" onclick="closeFeedback(event)">
     <div class="glass-modal-content" onclick="event.stopPropagation()">
         <button class="close-modal-btn" onclick="closeFeedback(event)">&times;</button>
@@ -614,7 +628,7 @@ if (isset($_GET['latest'])) {
         </p>
         <form action="https://formsubmit.co/9d0f5f115f6d55431f114e43e692b709" method="POST" class="feedback-form">
             <input type="hidden" name="_captcha" value="false">
-            <input type="hidden" name="_next" value="https://eco-quality.duckdns.org/dashboard.php">
+            <input type="hidden" name="_next" value="<?= htmlspecialchars($feedback_next_url) ?>">
             <input type="hidden" name="_subject" value="New Feedback from Air Quality Dashboard!">
             <input type="text" name="name" placeholder="Your Name (Optional)" class="fb-input">
             <input type="email" name="email" placeholder="Your Email Address" required class="fb-input">
@@ -638,7 +652,7 @@ if (isset($_GET['latest'])) {
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=30" defer></script>
+<script src="assets/js/dashboard.js?v=31" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
