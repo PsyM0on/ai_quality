@@ -13,8 +13,18 @@ if ($date_to > $today) $date_to = $today;
 $from_ts = strtotime($date_from);
 $to_ts   = strtotime($date_to . ' 23:59:59');
 
-if ($to_ts - $from_ts > (60 * 86400)) {
-    $from_ts = $to_ts - (60 * 86400);
+// Fetch minimum collection date from database
+$min_res = $conn->query("SELECT DATE(MIN(`timestamp`)) AS min_date FROM telemetry_raw");
+$min_row = $min_res ? $min_res->fetch_assoc() : null;
+$min_date = !empty($min_row['min_date']) ? $min_row['min_date'] : '2026-05-04';
+
+if ($date_from < $min_date) {
+    $date_from = $min_date;
+    $from_ts = strtotime($date_from);
+}
+
+if ($to_ts - $from_ts > (365 * 86400)) {
+    $from_ts = $to_ts - (365 * 86400);
     $date_from = date('Y-m-d', $from_ts);
 }
 

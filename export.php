@@ -15,6 +15,12 @@ $last_export = $_SESSION['last_export_time'] ?? 0;
 
 // ── HANDLE CSV DOWNLOAD ───────────────────────────────
 $do_export = isset($_GET['export']) && $_GET['export'] === '1';
+
+// Fetch minimum collection date from telemetry_raw
+$min_res = $conn->query("SELECT DATE(MIN(`timestamp`)) AS min_date FROM telemetry_raw");
+$min_row = $min_res ? $min_res->fetch_assoc() : null;
+$min_date = !empty($min_row['min_date']) ? $min_row['min_date'] : '2026-05-04';
+
 $date_from = $_GET['from'] ?? date('Y-m-d', strtotime('-7 days'));
 $date_to   = $_GET['to']   ?? date('Y-m-d');
 
@@ -22,17 +28,25 @@ $date_to   = $_GET['to']   ?? date('Y-m-d');
 if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date_from)) $date_from = date('Y-m-d', strtotime('-7 days'));
 if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date_to))   $date_to   = date('Y-m-d');
 
-// Clamp: don't allow future end dates
+// Enforce boundary constraints:
+// 1. Cannot be earlier than the system's first recorded telemetry date
+if ($date_from < $min_date) $date_from = $min_date;
+if ($date_to < $min_date)   $date_to   = $min_date;
+
+// 2. Clamp: don't allow future end dates
 $today = date('Y-m-d');
 if ($date_to > $today) $date_to = $today;
+if ($date_from > $today) $date_from = $today;
 
-// Enforce max date window (e.g. max 60 days per export to prevent memory exhaustion)
+// 3. Ensure from <= to
+if ($date_from > $date_to) $date_from = $date_to;
+
 $from_ts = strtotime($date_from);
 $to_ts   = strtotime($date_to . ' 23:59:59');
 
-if ($to_ts - $from_ts > (60 * 86400)) {
-    // Clamp from date to max 60 days
-    $from_ts = $to_ts - (60 * 86400);
+// Enforce max date window (up to 365 days, bounded safely by LIMIT 50000 in SQL)
+if ($to_ts - $from_ts > (365 * 86400)) {
+    $from_ts = $to_ts - (365 * 86400);
     $date_from = date('Y-m-d', $from_ts);
 }
 
@@ -456,6 +470,53 @@ $msg = $_GET['msg'] ?? '';
             transition: color 0.2s;
         }
         .btn-back:hover { color: var(--text); }
+        .archive-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 18px;
+            padding: 9px 12px;
+            background: rgba(0, 207, 168, 0.04);
+            border: 1px solid rgba(0, 207, 168, 0.15);
+            border-radius: 6px;
+        }
+        .archive-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 6px var(--accent);
+            flex-shrink: 0;
+        }
+        .archive-info strong {
+            color: var(--accent);
+        }
+        .quick-presets {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+        .preset-btn {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            color: var(--soft);
+            padding: 7px 8px;
+            border-radius: 6px;
+            font-family: var(--mono);
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .preset-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(0, 207, 168, 0.05);
+        }
         .alert {
             background: rgba(240, 82, 82, 0.1);
             color: var(--danger);
@@ -474,6 +535,11 @@ $msg = $_GET['msg'] ?? '';
     <div class="export-title">Export Telemetry</div>
     <div class="export-desc">Download a complete CSV dataset of sensor telemetry, including AI predictions and environmental anomalies.</div>
 
+    <div class="archive-info">
+        <span class="archive-dot"></span>
+        <span>Data collection active since <strong><?= date('M j, Y', strtotime($min_date)) ?></strong> (Min: <?= htmlspecialchars($min_date) ?>)</span>
+    </div>
+
     <?php if ($msg === 'nodata'): ?>
     <div class="alert">
         ⚠️ No data found for the selected date range.
@@ -483,14 +549,20 @@ $msg = $_GET['msg'] ?? '';
     <form method="GET" action="export.php" id="exportForm">
         <input type="hidden" name="export" value="1">
 
+        <div class="quick-presets">
+            <button type="button" class="preset-btn" onclick="setPreset(7)">Last 7 Days</button>
+            <button type="button" class="preset-btn" onclick="setPreset(30)">Last 30 Days</button>
+            <button type="button" class="preset-btn" onclick="setPreset('all')">All Time (Since May 4)</button>
+        </div>
+
         <div class="date-row">
             <div class="input-group">
-                <label>Start Date</label>
-                <input type="date" name="from" id="from" value="<?= htmlspecialchars($date_from) ?>" max="<?= date('Y-m-d') ?>" required>
+                <label>Start Date (Min: <?= htmlspecialchars($min_date) ?>)</label>
+                <input type="date" name="from" id="from" value="<?= htmlspecialchars($date_from) ?>" min="<?= htmlspecialchars($min_date) ?>" max="<?= date('Y-m-d') ?>" required>
             </div>
             <div class="input-group">
                 <label>End Date</label>
-                <input type="date" name="to" id="to" value="<?= htmlspecialchars($date_to) ?>" max="<?= date('Y-m-d') ?>" required>
+                <input type="date" name="to" id="to" value="<?= htmlspecialchars($date_to) ?>" min="<?= htmlspecialchars($min_date) ?>" max="<?= date('Y-m-d') ?>" required>
             </div>
         </div>
 
@@ -518,16 +590,37 @@ $msg = $_GET['msg'] ?? '';
         }
     })();
 
+    const minDate = "<?= htmlspecialchars($min_date) ?>";
     const fromEl = document.getElementById('from');
     const toEl   = document.getElementById('to');
     const countEl = document.getElementById('previewCount');
     const boxEl   = document.getElementById('previewBox');
     const dlBtn   = document.getElementById('dlBtn');
 
+    function setPreset(val) {
+        const today = new Date().toISOString().split('T')[0];
+        toEl.value = today;
+        if (val === 'all') {
+            fromEl.value = minDate;
+        } else {
+            const d = new Date();
+            d.setDate(d.getDate() - parseInt(val, 10));
+            let str = d.toISOString().split('T')[0];
+            if (str < minDate) str = minDate;
+            fromEl.value = str;
+        }
+        updatePreview();
+    }
+
     function updatePreview() {
-        const from = fromEl.value;
-        const to   = toEl.value;
-        if (!from || !to || from > to) return;
+        let from = fromEl.value;
+        let to   = toEl.value;
+        if (!from || !to) return;
+        if (from < minDate) {
+            from = minDate;
+            fromEl.value = minDate;
+        }
+        if (from > to) return;
 
         countEl.textContent = "...";
 
