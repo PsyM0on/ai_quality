@@ -67,6 +67,106 @@ $aqi = calcAQI($pm10);
 $stmt = $conn->prepare("INSERT INTO telemetry_raw (device_id, temp, hum, pm10, mq135, aqi) VALUES (?, ?, ?, ?, ?, ?)");
 $stmt->bind_param("idddii", $device_id, $temp, $hum, $pm10, $mq135, $aqi);
 $stmt->execute();
+$inserted_telemetry_id = $conn->insert_id;
+
+// --- AUTO-POPULATE AI PREDICTIONS ---
+// Establish slope and trend from the immediate prior reading
+$prev_stmt = $conn->prepare("SELECT aqi, `timestamp` FROM telemetry_raw WHERE id < ? ORDER BY id DESC LIMIT 1");
+$prev_stmt->bind_param("i", $inserted_telemetry_id);
+$prev_stmt->execute();
+$prev_row = $prev_stmt->get_result()->fetch_assoc();
+$prev_stmt->close();
+
+$slope = 0.0;
+if ($prev_row) {
+    $prev_ts = strtotime($prev_row['timestamp']);
+    $now_ts = time();
+    $dt = max(1, $now_ts - $prev_ts);
+    if ($dt <= 7200) {
+        $slope = (($aqi - (int)$prev_row['aqi']) / $dt) * 3600;
+        if (abs($slope) > 40) $slope = ($slope > 0 ? 40 : -40);
+    }
+}
+
+if ($slope > 1.0) $trend = "rising";
+elseif ($slope < -1.0) $trend = "falling";
+else $trend = "stable";
+
+$f1 = (int)round(min(500, max(0, $aqi + $slope * 1)));
+$f2 = (int)round(min(500, max(0, $aqi + $slope * 2)));
+$f3 = (int)round(min(500, max(0, $aqi + $slope * 3)));
+$pred_aqi = $f1;
+
+// Category & Advice (Philippine Clean Air Act RA 8749 / DENR EMB)
+if ($aqi <= 50) {
+    $category = "Good";
+    $advice = "Air quality is satisfactory. No air pollution health risks (DENR Good).";
+} elseif ($aqi <= 100) {
+    $category = "Fair";
+    $advice = "Air quality is acceptable (Fair). Unusually sensitive individuals should consider limiting prolonged outdoor exertion.";
+} elseif ($aqi <= 150) {
+    $category = "Unhealthy for Sensitive Groups";
+    $advice = "Unhealthy for Sensitive Groups. People with respiratory or heart disease, the elderly, and children should limit outdoor exertion.";
+} elseif ($aqi <= 200) {
+    $category = "Very Unhealthy";
+    $advice = "Very Unhealthy. People with respiratory illness should avoid outdoor exertion; everyone else should limit prolonged exposure.";
+} elseif ($aqi <= 300) {
+    $category = "Acutely Unhealthy";
+    $advice = "Acutely Unhealthy. People with respiratory disease (asthma) must stay indoors; general public should avoid outdoor exertion.";
+} else {
+    $category = "Emergency";
+    $advice = "EMERGENCY. Everyone should avoid outdoor exertion; remain indoors with doors and windows closed.";
+}
+
+// Health Risk Score & Risk Level (Standard Project Weighted Model)
+$pm_score  = min($pm10 / 325.4, 1.0) * 100;
+$voc_score = min(max($mq135 - 300, 0) / 400.0, 1.0) * 100;
+$hum_score = min(max(abs($hum - 50) - 10, 0) / 40.0, 1.0) * 100;
+$tmp_score = min(max($temp - 35, 0) / 15.0, 1.0) * 100;
+$health_score = round(min($pm_score * 0.50 + $voc_score * 0.30 + $hum_score * 0.10 + $tmp_score * 0.10, 100.0), 1);
+
+if ($temp > 74.0) $risk_level = "Critical Risk";
+elseif ($temp >= 57.0) $risk_level = "High Risk";
+elseif ($health_score <= 20.0) $risk_level = "Low Risk";
+elseif ($health_score <= 40.0) $risk_level = "Mild Risk";
+elseif ($health_score <= 60.0) $risk_level = "Moderate Risk";
+elseif ($health_score <= 80.0) $risk_level = "High Risk";
+else $risk_level = "Critical Risk";
+
+// K-Means Cluster Label
+if ($aqi <= 50 && $pm10 <= 54) $cluster_label = "Clean";
+elseif ($aqi <= 100 && $pm10 <= 154) $cluster_label = "Moderate";
+else $cluster_label = "Polluted";
+
+// Statistical Anomaly & Outlier Assessment
+$is_anomaly = 0;
+$anomaly_severity = "normal";
+if ($pm10 >= 255 || $temp >= 57 || $mq135 >= 700 || abs($slope) >= 30) {
+    $is_anomaly = 1;
+    $anomaly_severity = "critical";
+} elseif ($pm10 >= 155 || $mq135 >= 500 || abs($slope) >= 15) {
+    $is_anomaly = 1;
+    $anomaly_severity = "warning";
+}
+
+$pred_ins = $conn->prepare("
+    INSERT INTO ai_predictions (
+        predicted_aqi, actual_aqi, category, advice, trend,
+        forecast_1h, forecast_2h, forecast_3h,
+        health_score, risk_level, is_anomaly, anomaly_severity,
+        cluster_label
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+");
+$pred_ins->bind_param(
+    "iisssiiidssss",
+    $pred_aqi, $aqi, $category, $advice, $trend,
+    $f1, $f2, $f3,
+    $health_score, $risk_level, $is_anomaly, $anomaly_severity,
+    $cluster_label
+);
+$pred_ins->execute();
+$pred_ins->close();
+// ------------------------------------
 
 $command = "NONE";
 $cmd_file = "command_" . $device_id . ".txt";

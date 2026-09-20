@@ -1,4 +1,4 @@
-﻿# Python Virtual Environment
+# Python Virtual Environment
 .venv/
 __pycache__/
 
@@ -16,3 +16,4 @@ ai/models/*
 !ai/models/.gitkeep
 
 stitch_dump/
+scratch/

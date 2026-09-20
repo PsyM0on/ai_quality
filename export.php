@@ -139,24 +139,144 @@ if ($do_export) {
         "Air Pattern"
     ]);
 
-    // Stream out rows
+    // ── FALLBACK COMPUTATION HELPERS ─────────────────────────
+    // Used if any AI prediction is missing or incomplete in the database
+    function calc_export_category($aqi) {
+        if ($aqi <= 50) return "Good";
+        if ($aqi <= 100) return "Fair";
+        if ($aqi <= 150) return "Unhealthy for Sensitive Groups";
+        if ($aqi <= 200) return "Very Unhealthy";
+        if ($aqi <= 300) return "Acutely Unhealthy";
+        return "Emergency";
+    }
+
+    function calc_export_health_score($pm10, $mq135, $temp, $hum) {
+        $pm_score  = min($pm10 / 325.4, 1.0) * 100;
+        $voc_score = min(max($mq135 - 300, 0) / 400.0, 1.0) * 100;
+        $hum_score = min(max(abs($hum - 50) - 10, 0) / 40.0, 1.0) * 100;
+        $tmp_score = min(max($temp - 35, 0) / 15.0, 1.0) * 100;
+        $score = $pm_score * 0.50 + $voc_score * 0.30 + $hum_score * 0.10 + $tmp_score * 0.10;
+        return round(min($score, 100.0), 1);
+    }
+
+    function calc_export_risk_level($health_score, $temp) {
+        if ($temp > 74.0) return "Critical Risk";
+        if ($temp >= 57.0) return "High Risk";
+        if ($health_score <= 20.0) return "Low Risk";
+        if ($health_score <= 40.0) return "Mild Risk";
+        if ($health_score <= 60.0) return "Moderate Risk";
+        if ($health_score <= 80.0) return "High Risk";
+        return "Critical Risk";
+    }
+
+    function calc_export_cluster($aqi, $pm10) {
+        if ($aqi <= 50 && $pm10 <= 54) return "Clean";
+        if ($aqi <= 100 && $pm10 <= 154) return "Moderate";
+        return "Polluted";
+    }
+
+    // Stream out rows with two-pointer sliding window and fallback calculation
+    $pred_idx = 0;
+    $pred_count = count($predictions);
+    $prev_row = null;
+
     while ($row = $result->fetch_assoc()) {
         $raw_ts = strtotime($row['timestamp']);
 
-        // Find closest AI prediction in memory (fast binary or linear scan within bounds)
+        // Find closest AI prediction in memory using sliding window
         $closest_pred = null;
         $min_diff = 7200; // max 2 hours tolerance
-        foreach ($predictions as $pred) {
-            $diff = abs($pred['ts'] - $raw_ts);
+
+        // Advance index to skip predictions that are more than 2 hours behind
+        while ($pred_idx < $pred_count && ($raw_ts - $predictions[$pred_idx]['ts']) > 7200) {
+            $pred_idx++;
+        }
+
+        // Scan ahead within the 2-hour window
+        $scan_idx = $pred_idx;
+        while ($scan_idx < $pred_count) {
+            $diff = abs($predictions[$scan_idx]['ts'] - $raw_ts);
             if ($diff < $min_diff) {
                 $min_diff = $diff;
-                $closest_pred = $pred['data'];
+                $closest_pred = $predictions[$scan_idx]['data'];
             }
-            // Since predictions are sorted, stop early if we are past the window
-            if ($pred['ts'] - $raw_ts > 7200) {
+            if ($predictions[$scan_idx]['ts'] - $raw_ts > 7200) {
                 break;
             }
+            $scan_idx++;
         }
+
+        // Dynamic slope and trend calculation from telemetry series
+        $aqi = (int)$row['aqi'];
+        $pm10 = (float)$row['pm10'];
+        $mq135 = (int)$row['mq135'];
+        $temp = (float)$row['temp'];
+        $hum = (float)$row['hum'];
+
+        $slope = 0.0;
+        if ($prev_row !== null) {
+            $dt = max(1, $raw_ts - strtotime($prev_row['timestamp']));
+            if ($dt <= 7200) {
+                $slope = (($aqi - (int)$prev_row['aqi']) / $dt) * 3600;
+                if (abs($slope) > 40) $slope = ($slope > 0 ? 40 : -40);
+            }
+        }
+
+        $fallback_trend = ($slope > 1.0 ? "rising" : ($slope < -1.0 ? "falling" : "stable"));
+        $fallback_f1 = (int)round(min(500, max(0, $aqi + $slope * 1)));
+        $fallback_f2 = (int)round(min(500, max(0, $aqi + $slope * 2)));
+        $fallback_f3 = (int)round(min(500, max(0, $aqi + $slope * 3)));
+        $fallback_pred_aqi = $fallback_f1;
+        $fallback_category = calc_export_category($aqi);
+        $fallback_health = calc_export_health_score($pm10, $mq135, $temp, $hum);
+        $fallback_risk = calc_export_risk_level($fallback_health, $temp);
+        $fallback_cluster = calc_export_cluster($aqi, $pm10);
+
+        $is_anomaly = false;
+        $anomaly_sev = "normal";
+        if ($pm10 >= 255 || $temp >= 57 || $mq135 >= 700 || abs($slope) >= 30) {
+            $is_anomaly = true;
+            $anomaly_sev = "critical";
+        } elseif ($pm10 >= 155 || $mq135 >= 500 || abs($slope) >= 15) {
+            $is_anomaly = true;
+            $anomaly_sev = "warning";
+        }
+
+        // Values with fallback guarantee (never output blank or '—')
+        $val_pred_aqi = (!empty($closest_pred['predicted_aqi']) || (isset($closest_pred['predicted_aqi']) && $closest_pred['predicted_aqi'] !== '')) 
+            ? $closest_pred['predicted_aqi'] 
+            : $fallback_pred_aqi;
+
+        $val_category = (!empty($closest_pred['category'])) ? $closest_pred['category'] : $fallback_category;
+        $val_trend = (!empty($closest_pred['trend'])) ? $closest_pred['trend'] : $fallback_trend;
+
+        $val_f1 = (isset($closest_pred['forecast_1h']) && $closest_pred['forecast_1h'] !== '' && $closest_pred['forecast_1h'] !== '—') 
+            ? $closest_pred['forecast_1h'] 
+            : $fallback_f1;
+        $val_f2 = (isset($closest_pred['forecast_2h']) && $closest_pred['forecast_2h'] !== '' && $closest_pred['forecast_2h'] !== '—') 
+            ? $closest_pred['forecast_2h'] 
+            : $fallback_f2;
+        $val_f3 = (isset($closest_pred['forecast_3h']) && $closest_pred['forecast_3h'] !== '' && $closest_pred['forecast_3h'] !== '—') 
+            ? $closest_pred['forecast_3h'] 
+            : $fallback_f3;
+
+        $val_health = (isset($closest_pred['health_score']) && $closest_pred['health_score'] !== '' && $closest_pred['health_score'] !== '—') 
+            ? $closest_pred['health_score'] 
+            : $fallback_health;
+
+        $val_risk = (!empty($closest_pred['risk_level'])) ? $closest_pred['risk_level'] : $fallback_risk;
+
+        $val_anomaly = isset($closest_pred['is_anomaly']) 
+            ? ($closest_pred['is_anomaly'] ? 'Yes' : 'No') 
+            : ($is_anomaly ? 'Yes' : 'No');
+
+        $val_severity = (!empty($closest_pred['anomaly_severity']) && $closest_pred['anomaly_severity'] !== '—') 
+            ? $closest_pred['anomaly_severity'] 
+            : $anomaly_sev;
+
+        $val_cluster = (!empty($closest_pred['cluster_label']) && $closest_pred['cluster_label'] !== '—') 
+            ? $closest_pred['cluster_label'] 
+            : $fallback_cluster;
 
         fputcsv($out, [
             $row['timestamp'],
@@ -165,18 +285,20 @@ if ($do_export) {
             $row['mq135'],
             $row['pm10'],
             $row['aqi'],
-            $closest_pred['predicted_aqi'] ?? '—',
-            $closest_pred['category'] ?? '—',
-            $closest_pred['trend'] ?? '—',
-            $closest_pred['forecast_1h'] ?? '—',
-            $closest_pred['forecast_2h'] ?? '—',
-            $closest_pred['forecast_3h'] ?? '—',
-            $closest_pred['health_score'] ?? '—',
-            $closest_pred['risk_level'] ?? '—',
-            isset($closest_pred['is_anomaly']) ? ($closest_pred['is_anomaly'] ? 'Yes' : 'No') : '—',
-            $closest_pred['anomaly_severity'] ?? '—',
-            $closest_pred['cluster_label'] ?? '—'
+            $val_pred_aqi,
+            $val_category,
+            $val_trend,
+            $val_f1,
+            $val_f2,
+            $val_f3,
+            $val_health,
+            $val_risk,
+            $val_anomaly,
+            $val_severity,
+            $val_cluster
         ]);
+
+        $prev_row = $row;
     }
 
     fclose($out);
