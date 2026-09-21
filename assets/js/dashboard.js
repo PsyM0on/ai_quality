@@ -776,19 +776,23 @@ function updateHealthAlert(instantAqi, aqi24, heatIndex, heatCat, uesiLevel, ues
     const title = document.getElementById('alert-title');
     const body = document.getElementById('alert-body');
 
-    // 1. ACUTE AI ANOMALY DETECTION (Fast-response detection of genuine emission spikes / open combustion)
+    // 1. ACUTE SENSOR ANOMALY DETECTION (Fast-response detection of genuine emission spikes / open combustion)
     if (isAnomaly && aqi24Val <= 100) {
         const isCrit = anomalySeverity === 'critical';
         banner.style.background = isCrit ? 'rgba(240, 82, 82, 0.18)' : 'rgba(245, 166, 35, 0.2)';
         banner.style.borderColor = isCrit ? 'rgba(240, 82, 82, 0.45)' : 'rgba(245, 166, 35, 0.5)';
+        banner.style.borderLeft = isCrit ? '4px solid #F05252' : '4px solid #F5A623';
         if (icon) icon.textContent = isCrit ? '🚨' : '⚠️';
         if (title) {
-            const srcName = sourceAttribution && sourceAttribution.source ? ` • ${sourceAttribution.source}` : '';
-            title.textContent = isCrit ? `AI SPIKE ALERT: ACUTE ENVIRONMENTAL ANOMALY${srcName}` : `AI ADVISORY: ENVIRONMENTAL FLUCTUATION${srcName}`;
+            const srcName = sourceAttribution && sourceAttribution.source ? ` • ${sourceAttribution.source.toUpperCase()}` : '';
+            title.textContent = isCrit ? `ENVIRONMENTAL ALERT: ACUTE POLLUTION SPIKE${srcName}` : `ENVIRONMENTAL ADVISORY: UNUSUAL READING${srcName}`;
             title.style.color = isCrit ? '#F05252' : '#F5A623';
         }
         if (body) {
-            let desc = anomalyMsg;
+            let desc = (anomalyMsg || '').replace(/by AI\.?/gi, '').replace(/\bAI\b/gi, '').replace(/\s{2,}/g, ' ').trim();
+            if (!desc) {
+                desc = isCrit ? 'Acute pollution spike detected! Concentrations are unusually elevated.' : 'Unusual localized fluctuation in ambient air quality detected.';
+            }
             if (sourceAttribution && sourceAttribution.recommendation) {
                 desc += ` ${sourceAttribution.recommendation}`;
             }
@@ -801,9 +805,10 @@ function updateHealthAlert(instantAqi, aqi24, heatIndex, heatCat, uesiLevel, ues
     if (aqi24Val <= 100 && hi >= 42) {
         banner.style.background = 'rgba(240, 82, 82, 0.18)';
         banner.style.borderColor = 'rgba(240, 82, 82, 0.4)';
+        banner.style.borderLeft = '4px solid #F05252';
         if (icon) icon.textContent = '🌡️';
         if (title) {
-            title.textContent = `THERMAL ADVISORY: ${hCat} (${hi}°C FEELS LIKE)`;
+            title.textContent = `HEAT ADVISORY: ${hCat.toUpperCase()} (${hi}°C FEELS LIKE)`;
             title.style.color = '#F05252';
         }
         if (body) body.textContent = 'Severe apparent heat stress. Heat cramps and exhaustion likely; heat stroke probable with prolonged exposure. Stay hydrated and avoid prolonged outdoor sun exposure.';
@@ -814,49 +819,54 @@ function updateHealthAlert(instantAqi, aqi24, heatIndex, heatCat, uesiLevel, ues
     if (aqi24Val > 100 && hi >= 33) {
         banner.style.background = 'rgba(245, 166, 35, 0.2)';
         banner.style.borderColor = 'rgba(245, 166, 35, 0.5)';
+        banner.style.borderLeft = '4px solid #F5A623';
         if (icon) icon.textContent = '⚠️';
         if (title) {
-            title.textContent = `URBAN ENVIRONMENTAL STRESS: ${uLevel || 'ELEVATED RISK'} (24H AQI ${Math.round(aqi24Val)} · HI ${hi}°C)`;
+            title.textContent = `ENVIRONMENTAL ADVISORY: ${uLevel ? uLevel.toUpperCase() : 'ELEVATED RISK'} (24H AQI ${Math.round(aqi24Val)} · HI ${hi}°C)`;
             title.style.color = '#F5A623';
         }
         if (body) body.textContent = uAdvice || 'Dual environmental stress detected (sustained 24h particulate elevation and high thermal heat). Sensitive individuals must restrict outdoor exertion.';
         return;
     }
 
-    // 4. SUSTAINED REGULATORY TIERS (Philippine Clean Air Act RA 8749 / DENR DAO 2000-81 standard)
+    // 4. SUSTAINED AMBIENT TIERS (24-Hour Average PM10 standard)
     if (aqi24Val <= 150) {
         banner.style.background = 'rgba(245, 166, 35, 0.15)';
         banner.style.borderColor = 'rgba(245, 166, 35, 0.35)';
+        banner.style.borderLeft = '4px solid #F5A623';
         if (icon) icon.textContent = '⚠️';
         if (title) {
-            title.textContent = 'RA 8749 ADVISORY: UNHEALTHY FOR SENSITIVE GROUPS (24H AQI ' + Math.round(aqi24Val) + ')';
+            title.textContent = 'AIR QUALITY ADVISORY: UNHEALTHY FOR SENSITIVE GROUPS (24H AQI ' + Math.round(aqi24Val) + ')';
             title.style.color = '#F5A623';
         }
         if (body) body.textContent = 'Sustained 24-hour PM10 concentration exceeds clean guidelines. Individuals with respiratory or heart conditions, older adults, and children should limit prolonged outdoor exertion.';
     } else if (aqi24Val <= 200) {
         banner.style.background = 'rgba(240, 82, 82, 0.15)';
         banner.style.borderColor = 'rgba(240, 82, 82, 0.35)';
+        banner.style.borderLeft = '4px solid #F05252';
         if (icon) icon.textContent = '🚨';
         if (title) {
-            title.textContent = 'RA 8749 HEALTH ALERT: VERY UNHEALTHY (24H AQI ' + Math.round(aqi24Val) + ')';
+            title.textContent = 'PUBLIC HEALTH ALERT: VERY UNHEALTHY (24H AQI ' + Math.round(aqi24Val) + ')';
             title.style.color = '#F05252';
         }
         if (body) body.textContent = 'Significant sustained 24-hour air pollution detected. Active children, adults, and sensitive individuals should avoid outdoor exertion.';
     } else if (aqi24Val <= 300) {
         banner.style.background = 'rgba(168, 85, 247, 0.2)';
         banner.style.borderColor = 'rgba(168, 85, 247, 0.4)';
+        banner.style.borderLeft = '4px solid #C084FC';
         if (icon) icon.textContent = '🛑';
         if (title) {
-            title.textContent = 'RA 8749 WARNING: ACUTELY UNHEALTHY (24H AQI ' + Math.round(aqi24Val) + ')';
+            title.textContent = 'AIR QUALITY WARNING: ACUTELY UNHEALTHY (24H AQI ' + Math.round(aqi24Val) + ')';
             title.style.color = '#C084FC';
         }
         if (body) body.textContent = 'Severe sustained 24-hour pollution risk. General public should stay indoors or wear protective masks outdoors.';
     } else {
         banner.style.background = 'rgba(127, 29, 29, 0.35)';
         banner.style.borderColor = 'rgba(239, 68, 68, 0.6)';
+        banner.style.borderLeft = '4px solid #EF4444';
         if (icon) icon.textContent = '☣️';
         if (title) {
-            title.textContent = 'RA 8749 EMERGENCY DECLARATION (24H AQI ' + Math.round(aqi24Val) + ')';
+            title.textContent = 'EMERGENCY HEALTH DECLARATION: HAZARDOUS AIR (24H AQI ' + Math.round(aqi24Val) + ')';
             title.style.color = '#EF4444';
         }
         if (body) body.textContent = 'Hazardous sustained 24-hour emergency conditions. All residents should remain indoors with windows and doors tightly sealed.';

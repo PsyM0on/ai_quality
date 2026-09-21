@@ -195,12 +195,12 @@ if (isset($_GET['latest'])) {
 </header>
 </div>
 
-<!-- 🚨 RA 8749 PUBLIC HEALTH ALERT BANNER -->
+<!-- 🚨 PUBLIC HEALTH ALERT BANNER -->
 <div id="health-alert-banner" class="health-alert-banner" style="display: none;">
     <div class="alert-content">
         <span class="alert-icon" id="alert-icon">⚠️</span>
         <div class="alert-text">
-            <strong id="alert-title">AIR QUALITY ADVISORY (RA 8749)</strong>
+            <strong id="alert-title">AIR QUALITY ADVISORY</strong>
             <span id="alert-body">Air pollution levels require attention.</span>
         </div>
     </div>
@@ -652,7 +652,7 @@ $feedback_next_url = (strpos($current_host, 'localhost') !== false || strpos($cu
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=31" defer></script>
+<script src="assets/js/dashboard.js?v=33" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {

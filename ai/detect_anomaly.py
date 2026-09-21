@@ -151,7 +151,7 @@ if is_anomaly:
     if flag_labels:
         message = "Anomaly in: " + ", ".join(flag_labels) + ". " + severity_msg
     else:
-        message = "Anomaly detected by AI. " + severity_msg
+        message = "Environmental anomaly detected. " + severity_msg
 else:
     message = severity_msg
 

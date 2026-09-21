@@ -13,10 +13,8 @@ if ($date_to > $today) $date_to = $today;
 $from_ts = strtotime($date_from);
 $to_ts   = strtotime($date_to . ' 23:59:59');
 
-// Fetch minimum collection date from database
-$min_res = $conn->query("SELECT DATE(MIN(`timestamp`)) AS min_date FROM telemetry_raw");
-$min_row = $min_res ? $min_res->fetch_assoc() : null;
-$min_date = !empty($min_row['min_date']) ? $min_row['min_date'] : '2026-05-04';
+// Active data collection started on May 6, 2026 (May 4-5 were preliminary calibration tests)
+$min_date = '2026-05-06';
 
 if ($date_from < $min_date) {
     $date_from = $min_date;

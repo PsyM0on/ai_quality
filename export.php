@@ -16,10 +16,8 @@ $last_export = $_SESSION['last_export_time'] ?? 0;
 // ── HANDLE CSV DOWNLOAD ───────────────────────────────
 $do_export = isset($_GET['export']) && $_GET['export'] === '1';
 
-// Fetch minimum collection date from telemetry_raw
-$min_res = $conn->query("SELECT DATE(MIN(`timestamp`)) AS min_date FROM telemetry_raw");
-$min_row = $min_res ? $min_res->fetch_assoc() : null;
-$min_date = !empty($min_row['min_date']) ? $min_row['min_date'] : '2026-05-04';
+// Active data collection started on May 6, 2026 (May 4-5 were preliminary calibration tests)
+$min_date = '2026-05-06';
 
 $date_from = $_GET['from'] ?? date('Y-m-d', strtotime('-7 days'));
 $date_to   = $_GET['to']   ?? date('Y-m-d');
@@ -138,7 +136,7 @@ if ($do_export) {
         "Temperature (°C)",
         "Humidity (%)",
         "MQ135 (VOC Raw)",
-        "PM10 / PM2.5 (µg/m³)",
+        "PM10 (µg/m³)",
         "AQI",
         "Predicted AQI",
         "AQI Category",
@@ -552,7 +550,7 @@ $msg = $_GET['msg'] ?? '';
         <div class="quick-presets">
             <button type="button" class="preset-btn" onclick="setPreset(7)">Last 7 Days</button>
             <button type="button" class="preset-btn" onclick="setPreset(30)">Last 30 Days</button>
-            <button type="button" class="preset-btn" onclick="setPreset('all')">All Time (Since May 4)</button>
+            <button type="button" class="preset-btn" onclick="setPreset('all')">All Time (Since May 6)</button>
         </div>
 
         <div class="date-row">
