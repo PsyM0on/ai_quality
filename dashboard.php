@@ -490,7 +490,7 @@ if (isset($_GET['latest'])) {
             <!-- Model Validation Benchmark (Academic Defense Component) -->
             <details class="defense-benchmark-details" style="margin-top: 15px; border-top: 1px solid var(--border); padding-top: 10px;">
                 <summary style="cursor: pointer; font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--mono); display: flex; justify-content: space-between; align-items: center; user-select: none;">
-                    <span>📊 Model Evaluation (Defense Benchmark)</span>
+                    <span style="display: inline-flex; align-items: center; gap: 6px;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent); flex-shrink: 0;"><line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/></svg> Model Evaluation</span>
                     <span id="bm-r2" style="font-size: 0.75rem; color: var(--accent); font-family: var(--mono); font-weight: bold;">R²: —</span>
                 </summary>
                 <div class="model-benchmark-box" id="model-benchmark-box" style="margin-top: 10px;">
