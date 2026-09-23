@@ -428,11 +428,15 @@ function live() {
             }
 
             const diff = d.now_unix - d.ts_unix;
-            if (diff > 60) {
+            // 5-Minute Telemetry Cadence: Allow 2 transmission cycles (600s / 10m) before marking Offline
+            if (diff > 600) {
                 if (dot) { dot.style.backgroundColor = '#F05252'; dot.style.boxShadow = '0 0 10px #F05252'; }
                 blankValues('Offline');
             } else {
                 if (dot) { dot.style.backgroundColor = 'var(--accent)'; dot.style.boxShadow = '0 0 10px var(--accent)'; }
+
+                const aqiBadge = document.getElementById('aqi-mode-badge');
+                if (aqiBadge) aqiBadge.textContent = d.interval_mode ? (d.interval_mode + ' INTERVAL') : '5-MIN INTERVAL';
 
                 document.getElementById('temp').textContent = d.temp ?? '—';
                 document.getElementById('hum').textContent = d.hum ?? '—';
@@ -523,6 +527,8 @@ function blankValues(statusMsg = 'Offline') {
     document.getElementById('aqi-label').textContent = statusMsg;
     const card = document.getElementById('aqi-card');
     if (card) card.className = 'card hero-card hero-aqi';
+    const aqiBadge = document.getElementById('aqi-mode-badge');
+    if (aqiBadge) aqiBadge.textContent = '5-MIN INTERVAL';
     const guidance = document.getElementById('aqi_health_guidance');
     if (guidance) {
         guidance.textContent = (statusMsg === 'Offline')
@@ -1083,9 +1089,9 @@ function closeMenu() {
     }
 })();
 
-// Polling intervals
-setInterval(live, 2000);         // Live values: every 2s
-setInterval(load, 5000);         // Historical chart: every 5s
+// Polling intervals (optimized for 5-minute telemetry transmission cadence)
+setInterval(live, 15000);         // Live values: every 15s (catches 5-min transmissions promptly)
+setInterval(load, 30000);         // Historical chart: every 30s
 setInterval(loadTrend, 300000);   // Random Forest Trend: every 5m
 setInterval(loadAnomaly, 300000); // Isolation Forest Anomaly: every 5m
 setInterval(loadDaily, 300000);   // Daily Summary: every 5m

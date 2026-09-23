@@ -27,12 +27,7 @@ if (isset($_GET['latest'])) {
     $latest = $result ? $result->fetch_assoc() : null;
     
     if ($latest) {
-        // Compute 24-Hour Rolling Average for PM10 (RA 8749 Compliance Standard)
-        $avg_res = $conn->query("SELECT AVG(pm10) as pm10_24h, COUNT(*) as count_24h FROM telemetry_raw WHERE `timestamp` >= NOW() - INTERVAL 24 HOUR");
-        $avg_row = $avg_res ? $avg_res->fetch_assoc() : null;
-        $pm10_24h = ($avg_row && $avg_row['pm10_24h'] !== null) ? round(floatval($avg_row['pm10_24h']), 1) : floatval($latest['pm10']);
-        
-        // Philippine DENR EMB Breakpoints for PM10 (ug/m3, 24-hr avg, DAO 2000-81)
+        // Philippine DENR EMB Breakpoints for PM10 (ug/m3, DAO 2000-81)
         $bp = [
             [0, 54, 0, 50],
             [55, 154, 51, 100],
@@ -41,6 +36,34 @@ if (isset($_GET['latest'])) {
             [355, 424, 201, 300],
             [425, 604, 301, 500]
         ];
+
+        // 1. Compute 5-Minute Interval Average for PM10 (Academic Standard Cadence)
+        $avg_5m_res = $conn->query("SELECT AVG(pm10) as pm10_5m, COUNT(*) as count_5m FROM telemetry_raw WHERE `timestamp` >= NOW() - INTERVAL 5 MINUTE");
+        $avg_5m_row = $avg_5m_res ? $avg_5m_res->fetch_assoc() : null;
+        if ($avg_5m_row && $avg_5m_row['pm10_5m'] !== null && intval($avg_5m_row['count_5m']) > 0) {
+            $pm10_val = round(floatval($avg_5m_row['pm10_5m']), 1);
+        } else {
+            $pm10_val = floatval($latest['pm10']);
+        }
+
+        // 5-Minute Interval AQI Calculation
+        $aqi_5m = 500;
+        foreach ($bp as $b) {
+            list($cl, $ch, $il, $ih) = $b;
+            if ($pm10_val >= $cl && $pm10_val <= $ch) {
+                $aqi_5m = round((($ih - $il) / ($ch - $cl)) * ($pm10_val - $cl) + $il);
+                break;
+            }
+        }
+        $latest['aqi'] = $aqi_5m;
+        $latest['pm10'] = $pm10_val;
+        $latest['interval_mode'] = '5-MIN';
+
+        // 2. Compute 24-Hour Rolling Average for PM10 (RA 8749 Compliance Standard)
+        $avg_res = $conn->query("SELECT AVG(pm10) as pm10_24h, COUNT(*) as count_24h FROM telemetry_raw WHERE `timestamp` >= NOW() - INTERVAL 24 HOUR");
+        $avg_row = $avg_res ? $avg_res->fetch_assoc() : null;
+        $pm10_24h = ($avg_row && $avg_row['pm10_24h'] !== null) ? round(floatval($avg_row['pm10_24h']), 1) : floatval($latest['pm10']);
+        
         $aqi_24h = 500;
         foreach ($bp as $b) {
             list($cl, $ch, $il, $ih) = $b;
@@ -147,7 +170,7 @@ if (isset($_GET['latest'])) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="assets/css/dashboard.css?v=35" rel="stylesheet">
+<link href="assets/css/dashboard.css?v=36" rel="stylesheet">
 <script>
     // System Validation: Early Device Theme Detection (Anti-FOUC)
     (function() {
@@ -244,7 +267,7 @@ if (isset($_GET['latest'])) {
                             <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg>
                             Air Quality Index
                         </span>
-                        <span class="badge-pill" id="aqi-mode-badge">NOWCAST</span>
+                        <span class="badge-pill" id="aqi-mode-badge">5-MIN INTERVAL</span>
                     </div>
                 </div>
                 
@@ -855,11 +878,11 @@ $feedback_next_url = (strpos($current_host, 'localhost') !== false || strpos($cu
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=35" defer></script>
+<script src="assets/js/dashboard.js?v=36" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=29')
+        navigator.serviceWorker.register('./sw.js?update=30')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update();
