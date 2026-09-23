@@ -581,8 +581,7 @@ $msg = $_GET['msg'] ?? '';
     // System Validation: Device Theme Detection
     (function() {
         const saved = localStorage.getItem('aq-theme');
-        const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
-        const isLight = (saved === 'light' || saved === 'dark') ? (saved === 'light') : prefersLight;
+        const isLight = (saved === 'dark') ? false : true;
         if (isLight) {
             document.body.classList.add('light');
         }

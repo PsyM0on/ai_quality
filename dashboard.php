@@ -170,37 +170,42 @@ if (isset($_GET['latest'])) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="assets/css/dashboard.css?v=37" rel="stylesheet">
+<link href="assets/css/dashboard.css?v=38" rel="stylesheet">
 <script>
-    // System Validation: Early Device Theme Detection (Anti-FOUC)
+    // System Validation: Early Device Theme Detection (Default: Light Mode)
     (function() {
         try {
             var saved = localStorage.getItem('aq-theme');
-            var prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
-            var isLight = (saved === 'light' || saved === 'dark') ? (saved === 'light') : prefersLight;
+            var isLight = (saved === 'dark') ? false : true;
             if (isLight) {
                 document.documentElement.classList.add('light');
                 document.addEventListener('DOMContentLoaded', function() {
                     if (document.body) document.body.classList.add('light');
+                });
+            } else {
+                document.documentElement.classList.remove('light');
+                document.documentElement.classList.add('dark');
+                document.addEventListener('DOMContentLoaded', function() {
+                    if (document.body) {
+                        document.body.classList.remove('light');
+                        document.body.classList.add('dark');
+                    }
                 });
             }
         } catch (e) {}
     })();
 </script>
 </head>
-<body>
+<body class="light">
 
 <!-- ═══════════════════════════════════════════════════════════════════════════ -->
 <!--  STICKY TOP BAR                                                            -->
 <!-- ═══════════════════════════════════════════════════════════════════════════ -->
 <header class="topbar">
     <div class="topbar-left">
-        <a href="dashboard.php" class="brand-container" title="Eastern Samar State University - Eco Quality">
+        <a href="dashboard.php" class="brand-container" title="Eco Quality — Live Environmental Station">
             <div class="pulse-dot logo-dot" title="Sensor node connection active"></div>
-            <div class="brand-text">
-                <span class="brand-title">Eco Quality</span>
-                <span class="brand-subtitle">ESSU Urban Air Station</span>
-            </div>
+            <span class="brand-title">Eco Quality</span>
         </a>
     </div>
 
@@ -208,23 +213,30 @@ if (isset($_GET['latest'])) {
         <!-- Dual-Mode Segmented View Switch (Progressive Disclosure) -->
         <nav class="segmented-control" role="tablist" aria-label="Dashboard View Modes">
             <button class="seg-btn active" id="btn-citizen" role="tab" aria-selected="true" aria-controls="view-citizen" onclick="switchViewMode('citizen')">
-                <span class="seg-icon">👤</span>
+                <svg class="seg-svg" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 <span class="seg-text">Citizen Overview</span>
             </button>
             <button class="seg-btn" id="btn-technical" role="tab" aria-selected="false" aria-controls="view-technical" onclick="switchViewMode('technical')">
-                <span class="seg-icon">🔬</span>
+                <svg class="seg-svg" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2v17.5c0 1.4-1.1 2.5-2.5 2.5h0c-1.4 0-2.5-1.1-2.5-2.5V2"/><path d="M8.5 2h7"/><path d="M14.5 16h-5"/></svg>
                 <span class="seg-text">Technical Diagnostics</span>
             </button>
         </nav>
     </div>
 
     <div class="topbar-right">
-        <button class="btn-icon-action" onclick="toggleTheme()" title="Toggle Dark/Light Theme" aria-label="Toggle Theme">
-            <span id="theme-icon">☾</span>
-            <span id="theme-label" style="display: none;">Dark</span>
+        <button class="btn-icon-action" id="theme-toggle-btn" onclick="toggleTheme()" title="Switch to Dark Mode" aria-label="Toggle Theme">
+            <svg id="theme-icon-svg" class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+            <span id="theme-icon" style="display: none;">☾</span>
+            <span id="theme-label" style="display: none;">Light</span>
         </button>
         <button class="btn-icon-action" onclick="openMenu()" title="System Navigation Menu" aria-label="Open Navigation Menu">
-            ☰
+            <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
         </button>
     </div>
 </header>
@@ -502,7 +514,8 @@ if (isset($_GET['latest'])) {
                     </div>
                     <div class="panel-actions">
                         <button type="button" class="btn-subtle-export" onclick="openExportModal()" title="Export CSV Data Logs">
-                            <span class="icon">↓</span> CSV Export
+                            <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            <span>CSV Export</span>
                         </button>
                         <button type="button" class="btn-info-circle" onclick="toggleTip(this)" title="Methodology info" aria-label="Daily summary info">i</button>
                         <div class="info-tip">
@@ -807,16 +820,16 @@ if (isset($_GET['latest'])) {
         </button>
         <hr class="menu-divider">
         <button onclick="nativeShare(); closeMenu();" class="menu-link">
-            <span class="icon">🔗</span>
+            <svg class="menu-icon-svg" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
             <span>Share Live Air Quality</span>
         </button>
         <button type="button" class="menu-link" onclick="openExportModal(); closeMenu();">
-            <span class="icon">↓</span>
+            <svg class="menu-icon-svg" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             <span>Export Historical Logs (CSV)</span>
         </button>
         <hr class="menu-divider">
         <button onclick="openFeedback(); closeMenu();" class="menu-link">
-            <span class="icon">💬</span>
+            <svg class="menu-icon-svg" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             <span>Submit Feedback</span>
         </button>
     </div>
@@ -928,11 +941,11 @@ $feedback_next_url = (strpos($current_host, 'localhost') !== false || strpos($cu
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=37" defer></script>
+<script src="assets/js/dashboard.js?v=38" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=31')
+        navigator.serviceWorker.register('./sw.js?update=32')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update();

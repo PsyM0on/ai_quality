@@ -376,27 +376,27 @@ const DARK_CHART = {
 };
 
 const LIGHT_CHART = {
-    grid: 'rgba(0, 0, 0, 0.06)',
-    tick: '#64748B',
+    grid: '#E2E8F0',
+    tick: '#475569',
     bg: '#FFFFFF',
-    border: 'rgba(0, 0, 0, 0.1)',
+    border: '#CBD5E1',
     body: '#0F172A',
-    legend: '#64748B'
+    legend: '#475569'
 };
 
 function getDeviceSystemTheme() {
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-        return 'light';
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        return 'dark';
     }
-    return 'dark';
+    return 'light';
 }
 
 function validateInitialTheme() {
     const saved = localStorage.getItem('aq-theme');
-    if (saved === 'light' || saved === 'dark') {
-        return saved === 'light';
-    }
-    return getDeviceSystemTheme() === 'light';
+    if (saved === 'dark') return false;
+    if (saved === 'light') return true;
+    // Default theme: Light Mode
+    return true;
 }
 
 let isLight = validateInitialTheme();
@@ -404,12 +404,31 @@ let isLight = validateInitialTheme();
 function applyTheme(light) {
     document.body.classList.toggle('light', light);
     document.documentElement.classList.toggle('light', light);
+    document.body.classList.toggle('dark', !light);
+    document.documentElement.classList.toggle('dark', !light);
     
     const iconEl = document.getElementById('theme-icon');
     if (iconEl) iconEl.textContent = light ? '☼' : '☾';
+
+    const iconSvg = document.getElementById('theme-icon-svg');
+    if (iconSvg) {
+        if (light) {
+            // Light mode active: Show Moon to switch to dark mode
+            iconSvg.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+        } else {
+            // Dark mode active: Show Sun to switch to light mode
+            iconSvg.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+        }
+    }
     
     const labelEl = document.getElementById('theme-label');
     if (labelEl) labelEl.textContent = light ? 'Light' : 'Dark';
+
+    const themeBtn = document.getElementById('theme-toggle-btn');
+    if (themeBtn) {
+        themeBtn.setAttribute('title', light ? 'Switch to Dark Mode' : 'Switch to Light Mode');
+        themeBtn.setAttribute('aria-label', light ? 'Switch to Dark Mode' : 'Switch to Light Mode');
+    }
 
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (metaThemeColor) {
