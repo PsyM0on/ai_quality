@@ -180,7 +180,7 @@ if (isset($_GET['latest'])) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="assets/css/dashboard.css?v=39" rel="stylesheet">
+<link href="assets/css/dashboard.css?v=40" rel="stylesheet">
 <script>
     // System Validation: Early Device Theme Detection (Default: Light Mode)
     (function() {
@@ -223,12 +223,12 @@ if (isset($_GET['latest'])) {
         <!-- Dual-Mode Segmented View Switch (Progressive Disclosure) -->
         <nav class="segmented-control" role="tablist" aria-label="Dashboard View Modes">
             <button class="seg-btn active" id="btn-citizen" role="tab" aria-selected="true" aria-controls="view-citizen" onclick="switchViewMode('citizen')">
-                <svg class="seg-svg" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                <span class="seg-text">Citizen Overview</span>
+                <svg class="icon-svg seg-svg" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                <span class="seg-text">Overview</span>
             </button>
             <button class="seg-btn" id="btn-technical" role="tab" aria-selected="false" aria-controls="view-technical" onclick="switchViewMode('technical')">
-                <svg class="seg-svg" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2v17.5c0 1.4-1.1 2.5-2.5 2.5h0c-1.4 0-2.5-1.1-2.5-2.5V2"/><path d="M8.5 2h7"/><path d="M14.5 16h-5"/></svg>
-                <span class="seg-text">Technical Diagnostics</span>
+                <svg class="icon-svg seg-svg" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                <span class="seg-text">Diagnostics</span>
             </button>
         </nav>
     </div>
@@ -299,7 +299,9 @@ if (isset($_GET['latest'])) {
                 </div>
 
                 <div class="aqi-guidance-box" id="aqi-guidance-box">
-                    <div class="guidance-icon">🛡️</div>
+                    <div class="guidance-icon">
+                        <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
                     <div class="guidance-content">
                         <span class="guidance-title">Health Action Guidance</span>
                         <p class="guidance-text" id="aqi_health_guidance">Analyzing atmospheric conditions...</p>
@@ -349,7 +351,9 @@ if (isset($_GET['latest'])) {
                 </div>
 
                 <div class="forecast-summary-box">
-                    <div class="forecast-trend-icon">📈</div>
+                    <div class="forecast-trend-icon">
+                        <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                    </div>
                     <div class="forecast-summary-content">
                         <span class="summary-label">Random Forest Trend</span>
                         <p class="summary-text" id="trend_msg">Stable air quality predicted over the next 3 hours.</p>
@@ -481,10 +485,12 @@ if (isset($_GET['latest'])) {
         <!-- Progressive Disclosure Callout -->
         <div class="disclosure-callout-card" onclick="switchViewMode('technical')">
             <div class="disclosure-left">
-                <span class="disclosure-icon">🔬</span>
+                <span class="disclosure-icon">
+                    <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                </span>
                 <div class="disclosure-texts">
-                    <strong>Looking for In-Depth Technical & AI Diagnostics?</strong>
-                    <span>Inspect model validation benchmarks ($R^2=0.952$), Isolation Forest anomaly Z-scores, and interactive sensor history timelines.</span>
+                    <strong>Looking for In-Depth Diagnostics?</strong>
+                    <span>Inspect model validation benchmarks (R² = 0.952), Isolation Forest anomaly Z-scores, and interactive sensor history timelines.</span>
                 </div>
             </div>
             <button type="button" class="btn-disclosure-action">
@@ -499,13 +505,13 @@ if (isset($_GET['latest'])) {
     <!-- ───────────────────────────────────────────────────────────────────── -->
     <section id="view-technical" class="view-section" style="display: none;" role="tabpanel" aria-labelledby="btn-technical">
         <!-- Progressive Disclosure Sub-Tabs -->
-        <div class="sub-tab-bar" role="tablist" aria-label="Technical Diagnostics Subsections">
+        <div class="sub-tab-bar" role="tablist" aria-label="Diagnostics Subsections">
             <button class="sub-tab-btn active" id="subtab-daily-chart" role="tab" aria-selected="true" onclick="switchTechTab('daily-chart')">
-                <span class="tab-icon">📅</span>
+                <svg class="icon-svg tab-svg" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                 <span>Daily Trends & Interactive History</span>
             </button>
             <button class="sub-tab-btn" id="subtab-ml-anomaly" role="tab" aria-selected="false" onclick="switchTechTab('ml-anomaly')">
-                <span class="tab-icon">🧠</span>
+                <svg class="icon-svg tab-svg" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
                 <span>Machine Learning & Anomaly Diagnostics</span>
             </button>
         </div>
@@ -951,11 +957,11 @@ $feedback_next_url = (strpos($current_host, 'localhost') !== false || strpos($cu
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=39" defer></script>
+<script src="assets/js/dashboard.js?v=40" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=33')
+        navigator.serviceWorker.register('./sw.js?update=34')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update();

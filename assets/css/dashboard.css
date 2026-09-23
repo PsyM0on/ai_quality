@@ -616,6 +616,9 @@ body.light .aqi-guidance-box {
     font-size: 1.25rem;
     line-height: 1;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .guidance-content {
@@ -740,6 +743,9 @@ body.light .forecast-summary-box {
     font-size: 1.25rem;
     line-height: 1;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .forecast-summary-content {
@@ -1004,6 +1010,11 @@ body.light .forecast-summary-box {
 
 .sub-tab-btn .tab-icon {
     font-size: 1rem;
+}
+
+.sub-tab-btn .tab-svg {
+    flex-shrink: 0;
+    transition: stroke 0.15s ease;
 }
 
 .tech-sub-pane {
