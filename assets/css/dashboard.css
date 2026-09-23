@@ -560,9 +560,24 @@ body.light .seg-btn.active {
     box-shadow: 0 4px 24px -2px rgba(245, 166, 35, 0.12);
 }
 
+.hero-aqi.c-orange {
+    border-color: rgba(255, 140, 0, 0.35);
+    box-shadow: 0 4px 24px -2px rgba(255, 140, 0, 0.12);
+}
+
 .hero-aqi.c-danger {
     border-color: rgba(240, 82, 82, 0.35);
     box-shadow: 0 4px 24px -2px rgba(240, 82, 82, 0.12);
+}
+
+.hero-aqi.c-purple {
+    border-color: rgba(155, 89, 182, 0.35);
+    box-shadow: 0 4px 24px -2px rgba(155, 89, 182, 0.12);
+}
+
+.hero-aqi.c-maroon {
+    border-color: rgba(123, 36, 28, 0.35);
+    box-shadow: 0 4px 24px -2px rgba(123, 36, 28, 0.12);
 }
 
 .aqi-score-container {

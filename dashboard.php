@@ -180,7 +180,7 @@ if (isset($_GET['latest'])) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="assets/css/dashboard.css?v=40" rel="stylesheet">
+<link href="assets/css/dashboard.css?v=41" rel="stylesheet">
 <script>
     // System Validation: Early Device Theme Detection (Default: Light Mode)
     (function() {
@@ -957,11 +957,11 @@ $feedback_next_url = (strpos($current_host, 'localhost') !== false || strpos($cu
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=40" defer></script>
+<script src="assets/js/dashboard.js?v=41" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=34')
+        navigator.serviceWorker.register('./sw.js?update=35')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update();

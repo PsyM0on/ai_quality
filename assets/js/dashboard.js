@@ -492,15 +492,15 @@ const AQI_LEVELS = [
         label: 'Fair',
         cls: 'aqi-mod',
         card: 'c-warn',
-        color: '#4C9EEB',
+        color: '#F5A623',
         guidance: 'Acceptable air quality. Unusually sensitive individuals should monitor respiratory symptoms.'
     },
     {
         max: 150,
         label: 'Unhealthy for Sensitive Groups',
         cls: 'aqi-sensitive',
-        card: 'c-warn',
-        color: '#F5A623',
+        card: 'c-orange',
+        color: '#FF8C00',
         guidance: 'Sensitive groups (children, elderly, people with asthma) should reduce prolonged outdoor exertion.'
     },
     {
@@ -515,16 +515,16 @@ const AQI_LEVELS = [
         max: 300,
         label: 'Acutely Unhealthy',
         cls: 'aqi-very',
-        card: 'c-danger',
-        color: '#A855F7',
+        card: 'c-purple',
+        color: '#9B59B6',
         guidance: 'General public should avoid outdoor exertion. Consider wearing a protective particulate mask.'
     },
     {
         max: 9999,
         label: 'Emergency / Hazardous',
         cls: 'aqi-hazardous',
-        card: 'c-danger',
-        color: '#DC2626',
+        card: 'c-maroon',
+        color: '#7B241C',
         guidance: 'Hazardous air conditions. Everyone should remain indoors with doors and windows tightly closed.'
     }
 ];
@@ -840,9 +840,9 @@ function applyTrendFallback(curAqi) {
     const cat1 = document.getElementById('trend_cat1');
     const cat2 = document.getElementById('trend_cat2');
     const cat3 = document.getElementById('trend_cat3');
-    if (cat1) cat1.textContent = info.label;
-    if (cat2) cat2.textContent = info.label;
-    if (cat3) cat3.textContent = info.label;
+    if (cat1) { cat1.textContent = info.label; cat1.style.color = info.color; }
+    if (cat2) { cat2.textContent = info.label; cat2.style.color = info.color; }
+    if (cat3) { cat3.textContent = info.label; cat3.style.color = info.color; }
 
     const msgEl = document.getElementById('trend_msg');
     if (msgEl) msgEl.textContent = 'Projections indicate steady air quality across the 3-hour forecast window.';
@@ -906,16 +906,20 @@ function loadTrend() {
             const el2 = document.getElementById('trend_2h');
             const el3 = document.getElementById('trend_3h');
             
-            if (el1) { el1.textContent = d.forecast_1h ?? '—'; if (d.color_1h) el1.style.color = d.color_1h; }
-            if (el2) { el2.textContent = d.forecast_2h ?? '—'; if (d.color_2h) el2.style.color = d.color_2h; }
-            if (el3) { el3.textContent = d.forecast_3h ?? '—'; if (d.color_3h) el3.style.color = d.color_3h; }
+            const color1 = d.color_1h || (d.forecast_1h !== undefined && d.forecast_1h !== null ? aqiInfo(d.forecast_1h).color : null);
+            const color2 = d.color_2h || (d.forecast_2h !== undefined && d.forecast_2h !== null ? aqiInfo(d.forecast_2h).color : null);
+            const color3 = d.color_3h || (d.forecast_3h !== undefined && d.forecast_3h !== null ? aqiInfo(d.forecast_3h).color : null);
+
+            if (el1) { el1.textContent = d.forecast_1h ?? '—'; if (color1) el1.style.color = color1; }
+            if (el2) { el2.textContent = d.forecast_2h ?? '—'; if (color2) el2.style.color = color2; }
+            if (el3) { el3.textContent = d.forecast_3h ?? '—'; if (color3) el3.style.color = color3; }
 
             const cat1 = document.getElementById('trend_cat1');
             const cat2 = document.getElementById('trend_cat2');
             const cat3 = document.getElementById('trend_cat3');
-            if (cat1) cat1.textContent = d.category_1h ?? '—';
-            if (cat2) cat2.textContent = d.category_2h ?? '—';
-            if (cat3) cat3.textContent = d.category_3h ?? '—';
+            if (cat1) { cat1.textContent = d.category_1h ?? '—'; if (color1) cat1.style.color = color1; }
+            if (cat2) { cat2.textContent = d.category_2h ?? '—'; if (color2) cat2.style.color = color2; }
+            if (cat3) { cat3.textContent = d.category_3h ?? '—'; if (color3) cat3.style.color = color3; }
 
             const msgEl = document.getElementById('trend_msg');
             if (msgEl) msgEl.textContent = d.trend_msg ?? 'Stable air quality predicted over the next 3 hours.';
