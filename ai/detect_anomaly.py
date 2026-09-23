@@ -39,6 +39,20 @@ os.makedirs(MODEL_DIR, exist_ok=True)
 MODEL_PATH = os.path.join(MODEL_DIR, "iforest_model.joblib")
 SCALER_PATH = os.path.join(MODEL_DIR, "iforest_scaler.joblib")
 
+def atomic_joblib_dump(obj, target_path):
+    """Safely write joblib model using atomic file rename to prevent concurrency corruption."""
+    os.makedirs(os.path.dirname(target_path), exist_ok=True)
+    tmp_path = target_path + ".tmp"
+    try:
+        joblib.dump(obj, tmp_path)
+        os.replace(tmp_path, target_path)
+    except Exception:
+        if os.path.exists(tmp_path):
+            try:
+                os.remove(tmp_path)
+            except Exception:
+                pass
+
 # ── DB CONNECTION
 conn = get_conn()
 # Increased window to 500 rows for better Isolation Forest training
@@ -74,8 +88,8 @@ if train_model:
     model = IsolationForest(contamination=0.05, n_estimators=100, random_state=42, n_jobs=-1)
     model.fit(X_scaled)
     
-    joblib.dump(model, MODEL_PATH)
-    joblib.dump(scaler, SCALER_PATH)
+    atomic_joblib_dump(model, MODEL_PATH)
+    atomic_joblib_dump(scaler, SCALER_PATH)
     model_age_minutes = 0
 else:
     try:
@@ -88,8 +102,8 @@ else:
         model = IsolationForest(contamination=0.05, n_estimators=100, random_state=42, n_jobs=-1)
         model.fit(X_scaled)
         try:
-            joblib.dump(model, MODEL_PATH)
-            joblib.dump(scaler, SCALER_PATH)
+            atomic_joblib_dump(model, MODEL_PATH)
+            atomic_joblib_dump(scaler, SCALER_PATH)
         except Exception:
             pass
         model_age_minutes = 0

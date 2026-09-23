@@ -43,16 +43,21 @@ if (isset($_GET['latest'])) {
         if ($avg_5m_row && $avg_5m_row['pm10_5m'] !== null && intval($avg_5m_row['count_5m']) > 0) {
             $pm10_val = round(floatval($avg_5m_row['pm10_5m']), 1);
         } else {
-            $pm10_val = floatval($latest['pm10']);
+            $pm10_val = floatval($latest['pm10'] ?? 0);
         }
+        $pm10_val = max(0.0, $pm10_val);
 
         // 5-Minute Interval AQI Calculation
-        $aqi_5m = 500;
-        foreach ($bp as $b) {
-            list($cl, $ch, $il, $ih) = $b;
-            if ($pm10_val >= $cl && $pm10_val <= $ch) {
-                $aqi_5m = round((($ih - $il) / ($ch - $cl)) * ($pm10_val - $cl) + $il);
-                break;
+        $aqi_5m = 0;
+        if ($pm10_val > 604) {
+            $aqi_5m = 500;
+        } else {
+            foreach ($bp as $b) {
+                list($cl, $ch, $il, $ih) = $b;
+                if ($pm10_val >= $cl && $pm10_val <= $ch) {
+                    $aqi_5m = round((($ih - $il) / ($ch - $cl)) * ($pm10_val - $cl) + $il);
+                    break;
+                }
             }
         }
         $latest['aqi'] = $aqi_5m;
@@ -62,14 +67,19 @@ if (isset($_GET['latest'])) {
         // 2. Compute 24-Hour Rolling Average for PM10 (RA 8749 Compliance Standard)
         $avg_res = $conn->query("SELECT AVG(pm10) as pm10_24h, COUNT(*) as count_24h FROM telemetry_raw WHERE `timestamp` >= NOW() - INTERVAL 24 HOUR");
         $avg_row = $avg_res ? $avg_res->fetch_assoc() : null;
-        $pm10_24h = ($avg_row && $avg_row['pm10_24h'] !== null) ? round(floatval($avg_row['pm10_24h']), 1) : floatval($latest['pm10']);
+        $pm10_24h = ($avg_row && $avg_row['pm10_24h'] !== null) ? round(floatval($avg_row['pm10_24h']), 1) : floatval($latest['pm10'] ?? 0);
+        $pm10_24h = max(0.0, $pm10_24h);
         
-        $aqi_24h = 500;
-        foreach ($bp as $b) {
-            list($cl, $ch, $il, $ih) = $b;
-            if ($pm10_24h >= $cl && $pm10_24h <= $ch) {
-                $aqi_24h = round((($ih - $il) / ($ch - $cl)) * ($pm10_24h - $cl) + $il);
-                break;
+        $aqi_24h = 0;
+        if ($pm10_24h > 604) {
+            $aqi_24h = 500;
+        } else {
+            foreach ($bp as $b) {
+                list($cl, $ch, $il, $ih) = $b;
+                if ($pm10_24h >= $cl && $pm10_24h <= $ch) {
+                    $aqi_24h = round((($ih - $il) / ($ch - $cl)) * ($pm10_24h - $cl) + $il);
+                    break;
+                }
             }
         }
         $latest['pm10_24h'] = $pm10_24h;
@@ -170,7 +180,7 @@ if (isset($_GET['latest'])) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="assets/css/dashboard.css?v=38" rel="stylesheet">
+<link href="assets/css/dashboard.css?v=39" rel="stylesheet">
 <script>
     // System Validation: Early Device Theme Detection (Default: Light Mode)
     (function() {
@@ -941,11 +951,11 @@ $feedback_next_url = (strpos($current_host, 'localhost') !== false || strpos($cu
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=38" defer></script>
+<script src="assets/js/dashboard.js?v=39" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=32')
+        navigator.serviceWorker.register('./sw.js?update=33')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update();
