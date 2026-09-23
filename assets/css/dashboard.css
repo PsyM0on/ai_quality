@@ -148,12 +148,19 @@ h1, h2, h3, h4, h5, h6 {
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
     border-bottom: 1px solid var(--border);
-    padding: max(10px, env(safe-area-inset-top)) 24px 10px 24px;
+    padding: max(10px, env(safe-area-inset-top)) clamp(14px, 2vw, 24px) 10px;
+    width: 100%;
+    transition: background 0.25s ease, border-color 0.25s ease;
+}
+
+.topbar-inner {
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    transition: background 0.25s ease, border-color 0.25s ease;
 }
 
 .topbar-left {
@@ -340,8 +347,8 @@ body.light .seg-btn.active {
     justify-content: space-between;
     padding: 14px 24px;
     margin: 16px auto 0;
-    max-width: 1280px;
-    width: calc(100% - 32px);
+    max-width: 1400px;
+    width: calc(100% - clamp(20px, 3.5vw, 32px));
     border-radius: var(--radius-outer);
     border: 1px solid rgba(240, 82, 82, 0.3);
     border-left: 5px solid var(--danger);
@@ -408,10 +415,10 @@ body.light .seg-btn.active {
 /* ── MAIN CONTENT CONTAINER ─────────────────────────────────────────────── */
 .main-viewport {
     flex: 1;
-    max-width: 1280px;
+    max-width: 1400px;
     width: 100%;
     margin: 0 auto;
-    padding: 24px 16px 48px;
+    padding: clamp(16px, 2.5vw, 28px) clamp(14px, 2vw, 24px) clamp(48px, 6vw, 72px);
 }
 
 .view-section {
@@ -1269,7 +1276,7 @@ body.light .forecast-summary-box {
 
 .chart-canvas-wrap {
     position: relative;
-    height: 320px;
+    height: clamp(240px, 34vh, 360px);
     width: 100%;
 }
 
@@ -1823,12 +1830,28 @@ body.light .fb-submit {
 }
 
 /* Export Modal Controls */
+.quick-presets {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.date-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
 .preset-btn {
     flex: 1;
+    min-width: 90px;
+    min-height: 36px;
     background: var(--card-subtle);
     border: 1px solid var(--border);
     color: var(--muted);
-    padding: 7px 8px;
+    padding: 8px 10px;
     border-radius: var(--radius-inner);
     font-family: var(--font-mono);
     font-size: 11px;
@@ -1851,10 +1874,10 @@ body.light .preset-btn {
 
 @media (max-width: 480px) {
     .quick-presets {
-        flex-direction: column !important;
+        flex-direction: column;
     }
     .date-row {
-        grid-template-columns: 1fr !important;
+        grid-template-columns: 1fr;
     }
 }
 
@@ -1994,18 +2017,19 @@ body.light .menu-link:hover {
 /* ── PWA INSTALL PROMPT ─────────────────────────────────────────────────── */
 .install-prompt {
     position: fixed;
-    bottom: -100px;
-    left: 50%;
-    transform: translateX(-50%);
+    bottom: -120px;
+    right: 24px;
+    left: auto;
+    transform: none;
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: var(--radius-outer);
     padding: 12px 18px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
     z-index: 9999;
-    max-width: 420px;
-    width: calc(100% - 32px);
-    transition: bottom 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    max-width: 400px;
+    width: auto;
+    transition: bottom 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
 }
 
 .install-prompt.show {
@@ -2103,10 +2127,16 @@ body.light .skeleton::after {
     100% { transform: translateX(100%); }
 }
 
-/* ── RESPONSIVE BREAKPOINTS ─────────────────────────────────────────────── */
-@media (max-width: 1024px) {
+/* ── RESPONSIVE BREAKPOINTS (CROSS-PLATFORM & FLUID DISPLAY SCALING) ────── */
+@media (max-width: 1080px) {
     .telemetry-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 960px) {
+    .hero-grid {
+        grid-template-columns: 1fr;
     }
 
     .diagnostics-split-grid {
@@ -2116,8 +2146,12 @@ body.light .skeleton::after {
 
 @media (max-width: 768px) {
     .topbar {
+        padding: max(8px, env(safe-area-inset-top)) 14px 8px;
+    }
+
+    .topbar-inner {
         flex-wrap: wrap;
-        padding: 10px 16px;
+        gap: 8px 12px;
     }
 
     .topbar-left {
@@ -2132,46 +2166,245 @@ body.light .skeleton::after {
         order: 3;
         width: 100%;
         max-width: 100%;
-        margin-top: 6px;
+        margin-top: 4px;
     }
 
-    .hero-grid {
-        grid-template-columns: 1fr;
+    .segmented-control {
+        width: 100%;
+        min-height: 42px;
+        border-radius: 9px;
+        padding: 3px;
+    }
+
+    .seg-btn {
+        min-height: 38px;
+        padding: 7px 10px;
+        font-size: 0.82rem;
+    }
+
+    .main-viewport {
+        padding: 16px 12px 64px;
+    }
+
+    .card,
+    .panel {
+        padding: 18px 16px;
+        border-radius: var(--radius-outer);
     }
 
     .daily-metrics-grid {
         grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .chart-canvas-wrap {
+        height: clamp(240px, 32vh, 320px);
+    }
+
+    .sub-tab-bar {
+        padding-bottom: 8px;
+        gap: 6px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .sub-tab-bar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .sub-tab-btn {
+        padding: 8px 14px;
+        font-size: 0.8rem;
+        min-height: 40px;
     }
 
     .z-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+    }
+
+    .benchmark-table-wrap {
+        -webkit-overflow-scrolling: touch;
     }
 
     .disclosure-callout-card {
         flex-direction: column;
         align-items: flex-start;
+        gap: 12px;
     }
 
     .btn-disclosure-action {
         width: 100%;
         justify-content: center;
     }
+
+    .install-prompt {
+        left: 14px;
+        right: 14px;
+        max-width: calc(100% - 28px);
+        margin: 0 auto;
+        bottom: -140px;
+    }
+
+    .install-prompt.show {
+        bottom: max(16px, env(safe-area-inset-bottom));
+    }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 520px) {
     .telemetry-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .telemetry-card {
+        padding: 14px 12px;
+    }
+
+    .telemetry-num {
+        font-size: clamp(1.4rem, 5vw, 1.8rem);
+    }
+
+    .telemetry-unit {
+        font-size: 0.72rem;
+    }
+
+    .telemetry-sub {
+        font-size: 0.68rem;
+    }
+
+    .aqi-score-container {
+        gap: 10px;
+        margin: 8px 0 12px;
+    }
+
+    .aqi-value {
+        font-size: clamp(2.8rem, 11vw, 3.8rem);
+    }
+
+    .aqi-status-pill {
+        font-size: 0.84rem;
+        padding: 5px 10px;
+    }
+
+    .aqi-guidance-box {
+        padding: 10px 12px;
+        gap: 10px;
+    }
+
+    .guidance-text {
+        font-size: 0.78rem;
     }
 
     .forecast-step-row {
         gap: 6px;
+        margin: 10px 0 12px;
+    }
+
+    .forecast-step-card {
+        padding: 10px 4px;
+        min-width: 0;
+    }
+
+    .step-hour {
+        font-size: 0.65rem;
     }
 
     .step-aqi {
         font-size: 1.35rem;
     }
 
-    .z-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .step-cat {
+        font-size: 0.68rem;
+    }
+
+    .forecast-summary-box {
+        padding: 10px 12px;
+        gap: 10px;
+    }
+
+    .summary-text {
+        font-size: 0.76rem;
+    }
+
+    .daily-pills-row {
+        gap: 6px;
+    }
+
+    .metric-pill {
+        padding: 10px 6px;
+    }
+
+    .pill-lbl {
+        font-size: 0.64rem;
+    }
+
+    .pill-val {
+        font-size: 1.05rem;
+    }
+
+    .compare-val {
+        font-size: 1.5rem;
+    }
+
+    .daily-change-banner {
+        margin-bottom: 8px;
+    }
+
+    .chart-controls-strip {
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .filter-pills {
+        gap: 6px;
+    }
+
+    .chart-pill {
+        padding: 4px 8px;
+        font-size: 0.7rem;
+        min-height: 30px;
+    }
+
+    .glass-modal {
+        padding: 12px;
+    }
+
+    .glass-modal-content {
+        padding: 20px 16px;
+        border-radius: 12px;
+        max-height: 88dvh;
+    }
+
+    .close-modal-btn {
+        top: 12px;
+        right: 12px;
+    }
+
+    .quick-presets {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .date-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 360px) {
+    .telemetry-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .brand-title {
+        font-size: 1.05rem;
+    }
+
+    .seg-text {
+        font-size: 0.75rem;
+    }
+
+    .daily-pills-row {
+        grid-template-columns: 1fr;
     }
 }

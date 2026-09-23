@@ -180,7 +180,7 @@ if (isset($_GET['latest'])) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="assets/css/dashboard.css?v=41" rel="stylesheet">
+<link href="assets/css/dashboard.css?v=42" rel="stylesheet">
 <script>
     // System Validation: Early Device Theme Detection (Default: Light Mode)
     (function() {
@@ -212,42 +212,44 @@ if (isset($_GET['latest'])) {
 <!--  STICKY TOP BAR                                                            -->
 <!-- ═══════════════════════════════════════════════════════════════════════════ -->
 <header class="topbar">
-    <div class="topbar-left">
-        <a href="dashboard.php" class="brand-container" title="Eco Quality — Live Environmental Station">
-            <div class="pulse-dot logo-dot" title="Sensor node connection active"></div>
-            <span class="brand-title">Eco Quality</span>
-        </a>
-    </div>
+    <div class="topbar-inner">
+        <div class="topbar-left">
+            <a href="dashboard.php" class="brand-container" title="Eco Quality — Live Environmental Station">
+                <div class="pulse-dot logo-dot" title="Sensor node connection active"></div>
+                <span class="brand-title">Eco Quality</span>
+            </a>
+        </div>
 
-    <div class="topbar-center">
-        <!-- Dual-Mode Segmented View Switch (Progressive Disclosure) -->
-        <nav class="segmented-control" role="tablist" aria-label="Dashboard View Modes">
-            <button class="seg-btn active" id="btn-citizen" role="tab" aria-selected="true" aria-controls="view-citizen" onclick="switchViewMode('citizen')">
-                <svg class="icon-svg seg-svg" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                <span class="seg-text">Overview</span>
-            </button>
-            <button class="seg-btn" id="btn-technical" role="tab" aria-selected="false" aria-controls="view-technical" onclick="switchViewMode('technical')">
-                <svg class="icon-svg seg-svg" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-                <span class="seg-text">Diagnostics</span>
-            </button>
-        </nav>
-    </div>
+        <div class="topbar-center">
+            <!-- Dual-Mode Segmented View Switch (Progressive Disclosure) -->
+            <nav class="segmented-control" role="tablist" aria-label="Dashboard View Modes">
+                <button class="seg-btn active" id="btn-citizen" role="tab" aria-selected="true" aria-controls="view-citizen" onclick="switchViewMode('citizen')">
+                    <svg class="icon-svg seg-svg" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    <span class="seg-text">Overview</span>
+                </button>
+                <button class="seg-btn" id="btn-technical" role="tab" aria-selected="false" aria-controls="view-technical" onclick="switchViewMode('technical')">
+                    <svg class="icon-svg seg-svg" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                    <span class="seg-text">Diagnostics</span>
+                </button>
+            </nav>
+        </div>
 
-    <div class="topbar-right">
-        <button class="btn-icon-action" id="theme-toggle-btn" onclick="toggleTheme()" title="Switch to Dark Mode" aria-label="Toggle Theme">
-            <svg id="theme-icon-svg" class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-            </svg>
-            <span id="theme-icon" style="display: none;">☾</span>
-            <span id="theme-label" style="display: none;">Light</span>
-        </button>
-        <button class="btn-icon-action" onclick="openMenu()" title="System Navigation Menu" aria-label="Open Navigation Menu">
-            <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="3" y1="12" x2="21" y2="12"></line>
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <line x1="3" y1="18" x2="21" y2="18"></line>
-            </svg>
-        </button>
+        <div class="topbar-right">
+            <button class="btn-icon-action" id="theme-toggle-btn" onclick="toggleTheme()" title="Switch to Dark Mode" aria-label="Toggle Theme">
+                <svg id="theme-icon-svg" class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+                <span id="theme-icon" style="display: none;">☾</span>
+                <span id="theme-label" style="display: none;">Light</span>
+            </button>
+            <button class="btn-icon-action" onclick="openMenu()" title="System Navigation Menu" aria-label="Open Navigation Menu">
+                <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </div>
     </div>
 </header>
 
@@ -913,13 +915,13 @@ $feedback_next_url = (strpos($current_host, 'localhost') !== false || strpos($cu
         <form method="GET" action="export.php" id="modalExportForm" onsubmit="handleExportSubmit(event)">
             <input type="hidden" name="export" value="1">
 
-            <div class="quick-presets" style="display: flex; gap: 8px; margin-bottom: 16px;">
+            <div class="quick-presets">
                 <button type="button" class="preset-btn" onclick="setExportPreset(7)">Last 7 Days</button>
                 <button type="button" class="preset-btn" onclick="setExportPreset(30)">Last 30 Days</button>
                 <button type="button" class="preset-btn" onclick="setExportPreset('all')">All Time (Since May 6)</button>
             </div>
 
-            <div class="date-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+            <div class="date-row">
                 <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
                     <label style="font-size: 11px; color: var(--muted); font-family: var(--font-mono); text-transform: uppercase;">From Date</label>
                     <input type="date" name="from" id="modal_export_from" class="fb-input" value="<?= date('Y-m-d', strtotime('-7 days')) ?>" min="2026-05-06" max="<?= date('Y-m-d') ?>" onchange="updateExportPreview()" required>
@@ -957,11 +959,11 @@ $feedback_next_url = (strpos($current_host, 'localhost') !== false || strpos($cu
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=41" defer></script>
+<script src="assets/js/dashboard.js?v=42" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=35')
+        navigator.serviceWorker.register('./sw.js?update=36')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update();

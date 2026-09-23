@@ -749,20 +749,41 @@ function load() {
                                 cornerRadius: 8
                             }
                         },
+                        layout: {
+                            padding: {
+                                left: 2,
+                                right: (window.innerWidth < 640 ? 6 : 14),
+                                top: 8,
+                                bottom: 4
+                            }
+                        },
                         scales: {
                             x: {
                                 grid: { display: false },
-                                ticks: { color: t.tick, font: { family: mono, size: 10 }, maxTicksLimit: 8 }
+                                ticks: {
+                                    color: t.tick,
+                                    font: { family: mono, size: (window.innerWidth < 640 ? 9 : 10) },
+                                    maxTicksLimit: (window.innerWidth < 640 ? 5 : 8)
+                                }
                             },
                             y: {
                                 position: 'left',
                                 grid: { color: t.grid, drawBorder: false },
-                                ticks: { color: t.tick, font: { family: mono, size: 10 } }
+                                ticks: {
+                                    color: t.tick,
+                                    font: { family: mono, size: (window.innerWidth < 640 ? 9 : 10) },
+                                    maxTicksLimit: 6
+                                }
                             },
                             y1: {
                                 position: 'right',
                                 grid: { display: false },
-                                ticks: { color: '#8A93B8', font: { family: mono, size: 10 } }
+                                ticks: {
+                                    color: '#8A93B8',
+                                    font: { family: mono, size: (window.innerWidth < 640 ? 9 : 10) },
+                                    maxTicksLimit: 6,
+                                    callback: function(v) { return Number.isInteger(v) ? v : ''; }
+                                }
                             }
                         }
                     }
