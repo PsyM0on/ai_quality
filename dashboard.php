@@ -180,7 +180,7 @@ if (isset($_GET['latest'])) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="assets/css/dashboard.css?v=43" rel="stylesheet">
+<link href="assets/css/dashboard.css?v=44" rel="stylesheet">
 <script>
     // System Validation: Early Device Theme Detection (Default: Light Mode)
     (function() {
@@ -510,11 +510,13 @@ if (isset($_GET['latest'])) {
         <div class="sub-tab-bar" role="tablist" aria-label="Diagnostics Subsections">
             <button class="sub-tab-btn active" id="subtab-daily-chart" role="tab" aria-selected="true" onclick="switchTechTab('daily-chart')">
                 <svg class="icon-svg tab-svg" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                <span>Daily Trends & Interactive History</span>
+                <span class="tab-label-full">Daily Trends & Interactive History</span>
+                <span class="tab-label-short">Trends & History</span>
             </button>
             <button class="sub-tab-btn" id="subtab-ml-anomaly" role="tab" aria-selected="false" onclick="switchTechTab('ml-anomaly')">
                 <svg class="icon-svg tab-svg" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
-                <span>Machine Learning & Anomaly Diagnostics</span>
+                <span class="tab-label-full">Machine Learning & Anomaly Diagnostics</span>
+                <span class="tab-label-short">ML & Diagnostics</span>
             </button>
         </div>
 
@@ -769,7 +771,7 @@ if (isset($_GET['latest'])) {
                         <div class="panel-header">
                             <div class="panel-title-group">
                                 <span class="panel-title">
-                                    <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                                    <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
                                     Pollution Source Diagnostic
                                 </span>
                                 <span class="badge-pill" id="source_confidence_badge">Match —</span>
@@ -800,20 +802,12 @@ if (isset($_GET['latest'])) {
 <footer class="citizen-footer">
     <div class="citizen-footer-content">
         <div class="footer-primary-text">
-            <span class="footer-badge">ESSU CAPSTONE RESEARCH // RA 8749 MANDATE</span>
             <p class="footer-description">
                 Atmospheric particulate telemetry (PM10) and relative gas contamination indices are monitored via publicly-deployed IoT telemetry sensing nodes. Real-time data is served for public health awareness and ambient environmental assessment under the Philippine Clean Air Act (RA 8749) and DENR DAO 2000-81.
             </p>
         </div>
         <div class="footer-meta-strip">
-            <div class="meta-left">
-                <span>STATION RUNTIME: <strong class="highlight-accent">24/7 CONTINUOUS IoT</strong></span>
-                <span class="divider">•</span>
-                <span>DOCUMENT REF: <strong>EQ-UIUX-2026</strong></span>
-            </div>
-            <div class="meta-right">
-                <span>&copy; <?= date('Y') ?> Eastern Samar State University &bull; Eco Quality Project &bull; <a href="admin.php" class="subtle-console-link" title="Administrative Console">Admin Portal</a></span>
-            </div>
+            <span>&copy; <?= date('Y') ?> Eastern Samar State University &bull; Eco Quality Project &bull; <a href="admin.php" class="subtle-console-link" title="Administrative Console">Admin Portal</a></span>
         </div>
     </div>
 </footer>
@@ -959,11 +953,11 @@ $feedback_next_url = (strpos($current_host, 'localhost') !== false || strpos($cu
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=43" defer></script>
+<script src="assets/js/dashboard.js?v=44" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=37')
+        navigator.serviceWorker.register('./sw.js?update=38')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update();
