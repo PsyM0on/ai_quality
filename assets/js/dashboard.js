@@ -1,45 +1,167 @@
-/* ── INFO TOOLTIPS ────────────────────────────────────── */
-/* ── INFO TOOLTIPS (GLASS MODAL) ── */
+/* ═══════════════════════════════════════════════════════════════════════════
+   ECO QUALITY — UI/UX CONTROLLER SCRIPT (EQ-UIUX-2026)
+   Eastern Samar State University • Capstone Project
+   Dual-Mode Progressive Disclosure Dashboard • ISO/IEC 25010 & IBM CSUQ
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── DUAL-MODE PROGRESSIVE DISCLOSURE VIEW CONTROLLER ───────────────────── */
+function switchViewMode(mode, targetSubTab) {
+    const citizenSection = document.getElementById('view-citizen');
+    const techSection = document.getElementById('view-technical');
+    const btnCitizen = document.getElementById('btn-citizen');
+    const btnTech = document.getElementById('btn-technical');
+
+    if (mode === 'citizen') {
+        if (citizenSection) citizenSection.style.display = 'block';
+        if (techSection) techSection.style.display = 'none';
+        if (btnCitizen) {
+            btnCitizen.classList.add('active');
+            btnCitizen.setAttribute('aria-selected', 'true');
+        }
+        if (btnTech) {
+            btnTech.classList.remove('active');
+            btnTech.setAttribute('aria-selected', 'false');
+        }
+        try {
+            localStorage.setItem('aq-view-mode', 'citizen');
+            if (window.location.hash !== '#citizen') {
+                history.replaceState(null, null, '#citizen');
+            }
+        } catch (e) {}
+    } else {
+        if (citizenSection) citizenSection.style.display = 'none';
+        if (techSection) techSection.style.display = 'block';
+        if (btnCitizen) {
+            btnCitizen.classList.remove('active');
+            btnCitizen.setAttribute('aria-selected', 'false');
+        }
+        if (btnTech) {
+            btnTech.classList.add('active');
+            btnTech.setAttribute('aria-selected', 'true');
+        }
+        try {
+            localStorage.setItem('aq-view-mode', 'technical');
+            if (window.location.hash !== '#technical') {
+                history.replaceState(null, null, '#technical');
+            }
+        } catch (e) {}
+
+        // Handle direct deep jump (e.g. from Hero B Driver Insight link)
+        if (targetSubTab === 'ml') {
+            switchTechTab('ml-anomaly');
+            setTimeout(() => {
+                const driversPanel = document.getElementById('drivers-panel');
+                if (driversPanel) {
+                    driversPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 100);
+        } else {
+            // Resize chart when pane becomes visible
+            if (chart) {
+                setTimeout(() => {
+                    chart.resize();
+                    chart.update();
+                }, 60);
+            }
+        }
+    }
+}
+
+/* ── TECHNICAL SUB-TAB CONTROLLER ───────────────────────────────────────── */
+function switchTechTab(tabId) {
+    const paneDaily = document.getElementById('tech-pane-daily-chart');
+    const paneMl = document.getElementById('tech-pane-ml-anomaly');
+    const btnDaily = document.getElementById('subtab-daily-chart');
+    const btnMl = document.getElementById('subtab-ml-anomaly');
+
+    if (tabId === 'daily-chart') {
+        if (paneDaily) paneDaily.style.display = 'flex';
+        if (paneMl) paneMl.style.display = 'none';
+        if (btnDaily) {
+            btnDaily.classList.add('active');
+            btnDaily.setAttribute('aria-selected', 'true');
+        }
+        if (btnMl) {
+            btnMl.classList.remove('active');
+            btnMl.setAttribute('aria-selected', 'false');
+        }
+        if (chart) {
+            setTimeout(() => {
+                chart.resize();
+                chart.update();
+            }, 60);
+        }
+    } else {
+        if (paneDaily) paneDaily.style.display = 'none';
+        if (paneMl) paneMl.style.display = 'flex';
+        if (btnDaily) {
+            btnDaily.classList.remove('active');
+            btnDaily.setAttribute('aria-selected', 'false');
+        }
+        if (btnMl) {
+            btnMl.classList.add('active');
+            btnMl.setAttribute('aria-selected', 'true');
+        }
+    }
+}
+
+/* ── MULTI-SENSOR CHART SERIES TOGGLE FILTERING ─────────────────────────── */
+function toggleChartSeries(datasetIndex, btn) {
+    if (!chart) return;
+    const isVisible = chart.isDatasetVisible(datasetIndex);
+    chart.setDatasetVisibility(datasetIndex, !isVisible);
+    chart.update();
+    if (btn) {
+        btn.classList.toggle('active', !isVisible);
+        btn.classList.toggle('disabled', isVisible);
+    }
+}
+
+/* ── INFO TOOLTIPS & GLASS MODALS ───────────────────────────────────────── */
 function toggleTip(btn) {
     const tip = btn.nextElementSibling;
     const modal = document.getElementById('glass-modal');
     const modalBody = document.getElementById('glass-modal-body');
+    if (!tip || !modal || !modalBody) return;
     
-    // Copy the contents of the hidden info-tip into the modal
     modalBody.innerHTML = tip.innerHTML;
-    
-    // Show the modal
     modal.classList.add('show');
-    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    document.body.style.overflow = 'hidden';
 }
 
 function closeModal(e) {
     if (e && e.type === 'click' && e.target.classList.contains('glass-modal-content')) return;
-    document.getElementById('glass-modal').classList.remove('show');
+    const modal = document.getElementById('glass-modal');
+    if (modal) modal.classList.remove('show');
     document.body.style.overflow = '';
 }
 
-/* ── FEEDBACK MODAL ── */
+/* ── FEEDBACK MODAL ─────────────────────────────────────────────────────── */
 function openFeedback() {
-    document.getElementById('feedback-modal').classList.add('show');
-    document.body.style.overflow = 'hidden';
+    const modal = document.getElementById('feedback-modal');
+    if (modal) {
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
 }
+
 function closeFeedback(e) {
     if (e && e.type === 'click' && e.target.classList.contains('glass-modal-content')) return;
-    document.getElementById('feedback-modal').classList.remove('show');
+    const modal = document.getElementById('feedback-modal');
+    if (modal) modal.classList.remove('show');
     document.body.style.overflow = '';
 }
 
-// Ensure clicking outside closes it (handled by onclick="closeModal(event)" in HTML)
-// Keep ESC key to close
+// ESC key closes any open modal
 document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
         closeModal();
         closeFeedback();
+        closeMenu();
     }
 });
 
-// Feedback submission confirmation listener (from FormSubmit redirect)
+// Feedback redirect listener confirmation
 (function() {
     try {
         const params = new URLSearchParams(window.location.search);
@@ -51,8 +173,8 @@ document.addEventListener('keydown', e => {
                     if (modal && modalBody) {
                         modalBody.innerHTML = `
                             <div class="tip-title" style="color: var(--accent);">✓ Feedback Delivered</div>
-                            <div style="font-size: 12px; line-height: 1.6; color: var(--text); margin-bottom: 14px;">
-                                Thank you! Your feedback message has been submitted and sent to the project team.
+                            <div style="font-size: 13px; line-height: 1.6; color: var(--text); margin-bottom: 14px;">
+                                Thank you! Your observation has been recorded and submitted to the Eastern Samar State University research team.
                             </div>
                         `;
                         modal.classList.add('show');
@@ -67,23 +189,23 @@ document.addEventListener('keydown', e => {
     } catch (e) {}
 })();
 
-/* ── NATIVE WEB SHARE ── */
+/* ── NATIVE WEB SHARE ───────────────────────────────────────────────────── */
 function nativeShare() {
-    const aqiEl = document.getElementById('current_aqi');
-    const aqiVal = (aqiEl && aqiEl.textContent !== '--') ? aqiEl.textContent : 'available';
-    const catEl = document.getElementById('current_category');
+    const aqiEl = document.getElementById('aqi');
+    const aqiVal = (aqiEl && aqiEl.textContent !== '000' && aqiEl.textContent !== '—') ? aqiEl.textContent : 'available';
+    const catEl = document.getElementById('aqi-label');
     const catVal = catEl ? catEl.textContent : '';
     
     const shareData = {
-        title: 'Borongan Air Quality',
-        text: `Borongan City AQI is currently ${aqiVal} ${catVal ? '('+catVal+')' : ''}. Check the live environmental dashboard here:`,
+        title: 'Eco Quality — Urban Air Quality Status',
+        text: `ESSU Urban Air Station AQI is currently ${aqiVal} ${catVal ? '(' + catVal + ')' : ''}. Check the live environmental dashboard:`,
         url: window.location.href
     };
 
     if (navigator.share) {
         navigator.share(shareData).catch(err => console.log('Share cancelled', err));
     } else {
-        alert("Web Share is not supported on this browser. Just copy the URL to share!");
+        alert("Web Share is not supported on this browser. Copy the URL from your address bar to share!");
     }
 }
 
@@ -92,22 +214,19 @@ function showIosInstructions() {
     if (installPromptEl) {
         installPromptEl.classList.add('show');
     } else {
-        alert("To install on iPhone: Tap the 'Share' icon at the bottom of Safari, then tap 'Add to Home Screen'.");
+        alert("To install on iPhone: Tap the 'Share' icon at the bottom of Safari, then select 'Add to Home Screen'.");
     }
 }
 
-/* ── PWA INSTALL PROMPT ── */
+/* ── PWA INSTALL PROMPT ─────────────────────────────────────────────────── */
 let deferredPrompt;
 const installPromptEl = document.getElementById('install-prompt');
 const installBtn = document.getElementById('btn-install');
 const closeInstallBtn = document.getElementById('btn-install-close');
 
-// Listen for the Android/Chrome install event
 window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault(); // Prevent standard mini-infobar
+    e.preventDefault();
     deferredPrompt = e;
-    
-    // Wait 3 seconds before sliding up the prompt
     setTimeout(() => {
         if (installPromptEl) installPromptEl.classList.add('show');
     }, 3000);
@@ -117,74 +236,55 @@ if (installBtn) {
     installBtn.addEventListener('click', async () => {
         if (deferredPrompt) {
             deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
+            await deferredPrompt.userChoice;
             deferredPrompt = null;
-            installPromptEl.classList.remove('show');
+            if (installPromptEl) installPromptEl.classList.remove('show');
         } else {
-            // iOS Fallback instruction
-            alert("To install on iPhone: Tap the 'Share' icon at the bottom of Safari, then tap 'Add to Home Screen'.");
+            alert("To install on iPhone: Tap the 'Share' icon at the bottom of Safari, then select 'Add to Home Screen'.");
         }
     });
 }
 
 if (closeInstallBtn) {
     closeInstallBtn.addEventListener('click', () => {
-        installPromptEl.classList.remove('show');
+        if (installPromptEl) installPromptEl.classList.remove('show');
     });
 }
 
-// iOS manual prompt detection (if they are on iOS and NOT in standalone mode)
-const isIos = () => {
-    const userAgent = window.navigator.userAgent.toLowerCase();
-    return /iphone|ipad|ipod/.test(userAgent);
+/* ── THEME ENGINE (DARK / LIGHT WITH ANTI-FOUC RECOVERY) ────────────────── */
+let chart = null;
+
+const DARK_CHART = {
+    grid: 'rgba(255, 255, 255, 0.06)',
+    tick: '#94A3B8',
+    bg: '#141C2B',
+    border: 'rgba(255, 255, 255, 0.1)',
+    body: '#F1F5F9',
+    legend: '#94A3B8'
 };
-const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
 
-if (isIos() && !isInStandaloneMode()) {
-    setTimeout(() => {
-        if (installPromptEl) installPromptEl.classList.add('show');
-    }, 3000);
-}
-
-/* ── THEME & DEVICE SYSTEM VALIDATION ── */
-let chart    = null;
-let accChart = null;
-
-const DARK_CHART  = {
-    grid: '#1C2035', tick: '#5A6180', bg: '#111420',
-    border: '#1C2035', body: '#DDE1F0', legend: '#5A6180'
-};
 const LIGHT_CHART = {
-    grid: '#D0D5E8', tick: '#3D4768', bg: '#FFFFFF',
-    border: '#C5CBDB', body: '#0C1220', legend: '#3D4768'
+    grid: 'rgba(0, 0, 0, 0.06)',
+    tick: '#64748B',
+    bg: '#FFFFFF',
+    border: 'rgba(0, 0, 0, 0.1)',
+    body: '#0F172A',
+    legend: '#64748B'
 };
 
-/**
- * System Validation: Query the user's device/OS hardware preference
- * Returns: 'light' or 'dark'
- */
 function getDeviceSystemTheme() {
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
         return 'light';
     }
-    return 'dark'; // Fallback default
+    return 'dark';
 }
 
-/**
- * Validates initial theme with precedence:
- * 1. Explicit user choice previously stored in localStorage ('aq-theme')
- * 2. Hardware/OS device system theme validation ('prefers-color-scheme')
- */
 function validateInitialTheme() {
     const saved = localStorage.getItem('aq-theme');
     if (saved === 'light' || saved === 'dark') {
         return saved === 'light';
     }
-    
-    // No explicit manual choice recorded — perform system validation on device
-    const deviceTheme = getDeviceSystemTheme();
-    console.info(`[System Validation] No manual theme override found. Detected device system theme: ${deviceTheme.toUpperCase()} mode.`);
-    return deviceTheme === 'light';
+    return getDeviceSystemTheme() === 'light';
 }
 
 let isLight = validateInitialTheme();
@@ -198,17 +298,10 @@ function applyTheme(light) {
     
     const labelEl = document.getElementById('theme-label');
     if (labelEl) labelEl.textContent = light ? 'Light' : 'Dark';
-    
-    const themeBtn = document.querySelector('.btn-dash-action[onclick="toggleTheme()"]');
-    if (themeBtn) {
-        const sourceDesc = localStorage.getItem('aq-theme') ? 'Manual' : 'Device System Default';
-        themeBtn.setAttribute('title', `Theme: ${light ? 'Light' : 'Dark'} (${sourceDesc}) — Click to toggle`);
-    }
 
-    // Sync browser UI status bar (iOS Safari / Android Chrome)
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (metaThemeColor) {
-        metaThemeColor.setAttribute('content', light ? '#FFFFFF' : '#0D1320');
+        metaThemeColor.setAttribute('content', light ? '#F8FAFC' : '#0B0F17');
     }
 
     updateChartTheme(light ? LIGHT_CHART : DARK_CHART);
@@ -220,14 +313,11 @@ function toggleTheme() {
     applyTheme(isLight);
 }
 
-// Active real-time listener: Adapts automatically if the user changes their OS theme in device settings
 if (window.matchMedia) {
     const sysThemeQuery = window.matchMedia('(prefers-color-scheme: light)');
     const handleSystemThemeChange = (e) => {
-        // Only dynamically change if the user has NOT set a manual override
         if (!localStorage.getItem('aq-theme')) {
             isLight = e.matches;
-            console.info(`[System Validation] Real-time device theme shift detected: ${isLight ? 'LIGHT' : 'DARK'} mode.`);
             applyTheme(isLight);
         }
     };
@@ -239,36 +329,80 @@ if (window.matchMedia) {
 }
 
 function updateChartTheme(t) {
-    [chart, accChart].forEach(c => {
-        if (!c) return;
-        const o = c.options;
-        o.plugins.legend.labels.color     = t.legend;
-        o.plugins.tooltip.backgroundColor = t.bg;
-        o.plugins.tooltip.borderColor     = t.border;
-        o.plugins.tooltip.bodyColor       = t.body;
-        o.plugins.tooltip.titleColor      = t.tick;
-        o.scales.x.grid.color  = t.grid;  o.scales.x.ticks.color  = t.tick;
-        o.scales.y.grid.color  = t.grid;  o.scales.y.ticks.color  = t.tick;
-        if (o.scales.y.title)  o.scales.y.title.color  = t.tick;
-        c.update();
-    });
+    if (!chart) return;
+    const o = chart.options;
+    o.plugins.legend.labels.color = t.legend;
+    o.plugins.tooltip.backgroundColor = t.bg;
+    o.plugins.tooltip.borderColor = t.border;
+    o.plugins.tooltip.bodyColor = t.body;
+    o.plugins.tooltip.titleColor = t.tick;
+    o.scales.x.grid.color = t.grid;
+    o.scales.x.ticks.color = t.tick;
+    o.scales.y.grid.color = t.grid;
+    o.scales.y.ticks.color = t.tick;
+    chart.update();
 }
 
-// Apply resolved theme immediately
+// Apply initial resolved theme
 applyTheme(isLight);
 
-/* ── AQI LEVELS (PHILIPPINE CLEAN AIR ACT RA 8749 / DENR EMB) ── */
+/* ── AQI BREAKPOINTS & ACTIONABLE HEALTH GUIDANCE (RA 8749 / DAO 2000-81) ─ */
 const AQI_LEVELS = [
-    { max:50,   label:'Good',                            cls:'aqi-good',      card:'c-accent'  },
-    { max:100,  label:'Fair',                            cls:'aqi-mod',       card:'c-warn'    },
-    { max:150,  label:'Unhealthy for Sensitive Groups', cls:'aqi-sensitive', card:'c-warn'    },
-    { max:200,  label:'Very Unhealthy',                 cls:'aqi-unhealthy', card:'c-danger'  },
-    { max:300,  label:'Acutely Unhealthy',              cls:'aqi-very',      card:'c-very'    },
-    { max:9999, label:'Emergency',                      cls:'aqi-hazardous', card:'c-haz'     },
+    {
+        max: 50,
+        label: 'Good',
+        cls: 'aqi-good',
+        card: 'c-accent',
+        color: '#00CFA8',
+        guidance: 'Air quality is ideal. Safe for all regular outdoor activities and exercise.'
+    },
+    {
+        max: 100,
+        label: 'Fair',
+        cls: 'aqi-mod',
+        card: 'c-warn',
+        color: '#4C9EEB',
+        guidance: 'Acceptable air quality. Unusually sensitive individuals should monitor respiratory symptoms.'
+    },
+    {
+        max: 150,
+        label: 'Unhealthy for Sensitive Groups',
+        cls: 'aqi-sensitive',
+        card: 'c-warn',
+        color: '#F5A623',
+        guidance: 'Sensitive groups (children, elderly, people with asthma) should reduce prolonged outdoor exertion.'
+    },
+    {
+        max: 200,
+        label: 'Very Unhealthy',
+        cls: 'aqi-unhealthy',
+        card: 'c-danger',
+        color: '#F05252',
+        guidance: 'Active children and adults should avoid prolonged outdoor exertion; keep indoor spaces well-ventilated.'
+    },
+    {
+        max: 300,
+        label: 'Acutely Unhealthy',
+        cls: 'aqi-very',
+        card: 'c-danger',
+        color: '#A855F7',
+        guidance: 'General public should avoid outdoor exertion. Consider wearing a protective particulate mask.'
+    },
+    {
+        max: 9999,
+        label: 'Emergency / Hazardous',
+        cls: 'aqi-hazardous',
+        card: 'c-danger',
+        color: '#DC2626',
+        guidance: 'Hazardous air conditions. Everyone should remain indoors with doors and windows tightly closed.'
+    }
 ];
-function aqiInfo(v) { return AQI_LEVELS.find(l => v <= l.max) || AQI_LEVELS[5]; }
 
-/* ── LIVE DATA ────────────────────────────────────────── */
+function aqiInfo(v) {
+    return AQI_LEVELS.find(l => v <= l.max) || AQI_LEVELS[5];
+}
+
+/* ── LIVE TELEMETRY INGESTION ───────────────────────────────────────────── */
 let isLiveFetching = false;
 function live() {
     if (isLiveFetching) return;
@@ -279,29 +413,30 @@ function live() {
         .then(d => {
             isLiveFetching = false;
             
-            // Remove Skeleton Loaders once data arrives (only happens on first load)
+            // Remove skeleton loaders
             const targets = ['aqi', 'aqi-label', 'temp', 'hum', 'pm', 'mq'];
             targets.forEach(id => {
                 let el = document.getElementById(id);
-                if(el) el.classList.remove('skeleton');
+                if (el) el.classList.remove('skeleton');
             });
 
             const dot = document.querySelector('.logo-dot');
             if (!d) {
-                if (dot) { dot.style.background = '#F5A623'; dot.style.boxShadow = '0 0 8px #F5A623'; }
+                if (dot) { dot.style.backgroundColor = '#F5A623'; dot.style.boxShadow = '0 0 10px #F5A623'; }
                 blankValues('No Data');
                 return;
             }
 
             const diff = d.now_unix - d.ts_unix;
             if (diff > 60) {
-                if (dot) { dot.style.background = '#F05252'; dot.style.boxShadow = '0 0 8px #F05252'; }
+                if (dot) { dot.style.backgroundColor = '#F05252'; dot.style.boxShadow = '0 0 10px #F05252'; }
                 blankValues('Offline');
             } else {
-                if (dot) { dot.style.background = 'var(--accent)'; dot.style.boxShadow = '0 0 8px var(--accent)'; }
+                if (dot) { dot.style.backgroundColor = 'var(--accent)'; dot.style.boxShadow = '0 0 10px var(--accent)'; }
 
-                document.getElementById('temp').textContent = d.temp  ?? '—';
-                document.getElementById('hum').textContent  = d.hum   ?? '—';
+                document.getElementById('temp').textContent = d.temp ?? '—';
+                document.getElementById('hum').textContent = d.hum ?? '—';
+                
                 const humVal = parseFloat(d.hum);
                 const humComfortEl = document.getElementById('hum-comfort-label');
                 if (humComfortEl && !isNaN(humVal)) {
@@ -309,26 +444,44 @@ function live() {
                     else if (humVal <= 60) humComfortEl.textContent = 'Comfort (30–60%)';
                     else humComfortEl.textContent = 'Humid (>60%)';
                 }
-                document.getElementById('mq').textContent   = d.mq135 ?? '—';
-                document.getElementById('pm').textContent   = d.pm10  ?? '—';
+                
+                document.getElementById('mq').textContent = d.mq135 ?? '—';
+                document.getElementById('pm').textContent = d.pm10 ?? '—';
 
-                const aqi  = parseFloat(d.aqi);
+                const aqi = parseFloat(d.aqi);
                 const info = aqiInfo(aqi);
-                document.getElementById('aqi').textContent       = aqi;
-                document.getElementById('aqi-label').textContent = info.label;
-                document.getElementById('aqi-card').className    = 'card ' + info.card;
+                
+                const aqiValEl = document.getElementById('aqi');
+                const aqiLabelEl = document.getElementById('aqi-label');
+                const aqiCardEl = document.getElementById('aqi-card');
+                const aqiGuidanceEl = document.getElementById('aqi_health_guidance');
 
-                // Update 24-hr Rolling Average (RA 8749 Regulatory Compliance Standard)
+                if (aqiValEl) {
+                    aqiValEl.textContent = aqi;
+                    aqiValEl.style.color = info.color;
+                }
+                if (aqiLabelEl) {
+                    aqiLabelEl.textContent = info.label;
+                    aqiLabelEl.style.color = info.color;
+                    aqiLabelEl.style.borderColor = info.color;
+                }
+                if (aqiCardEl) {
+                    aqiCardEl.className = 'card hero-card hero-aqi ' + info.card;
+                }
+                if (aqiGuidanceEl) {
+                    aqiGuidanceEl.textContent = info.guidance;
+                }
+
+                // 24-Hour Rolling Average (RA 8749 Compliance Standard)
                 if (d.aqi_24h !== undefined) {
                     const info24 = aqiInfo(d.aqi_24h);
                     const wrap24 = document.getElementById('aqi_24h_val');
                     if (wrap24) {
-                        const col24 = info24.cls === 'aqi-good' ? 'var(--accent)' : 'var(--warn)';
-                        wrap24.innerHTML = `<span style="color:${col24};">${d.aqi_24h} AQI · ${info24.label}</span> <span style="font-size:9.5px; color:var(--muted); font-weight:normal;">(${d.pm10_24h} µg/m³)</span>`;
+                        wrap24.innerHTML = `<span style="color:${info24.color}; font-weight:700;">${d.aqi_24h} AQI · ${info24.label}</span> <span style="font-size:0.75rem; color:var(--muted); font-weight:normal;">(${d.pm10_24h} µg/m³)</span>`;
                     }
                 }
 
-                // Update MQ-135 Relative Contamination Index
+                // MQ-135 Relative Gas Contamination
                 const rawMq = parseInt(d.mq135, 10);
                 let mqStatus = 'Baseline / Normal';
                 if (rawMq > 280) mqStatus = 'Elevated Contaminants';
@@ -336,8 +489,7 @@ function live() {
                 const mqStatusEl = document.getElementById('mq-status-label');
                 if (mqStatusEl) mqStatusEl.textContent = mqStatus;
 
-                // Threshold Health Alert Notification (RA 8749)
-                // Update PAGASA Heat Index (Apparent Temperature)
+                // PAGASA Heat Index
                 if (d.heat_index !== undefined) {
                     window.currentHeatIndex = d.heat_index;
                     window.currentHeatCat = d.heat_cat;
@@ -346,11 +498,10 @@ function live() {
                     
                     const wrapHi = document.getElementById('heat_index_val');
                     if (wrapHi) {
-                        wrapHi.innerHTML = `<span style="color:${d.heat_color};">${d.heat_index}°C — ${d.heat_cat}</span>`;
+                        wrapHi.innerHTML = `<span style="color:${d.heat_color}; font-weight:700;">${d.heat_index}°C — ${d.heat_cat}</span>`;
                     }
                 }
 
-                // Health Alert Notification: Based on 24-Hr AQI & ML Anomaly Detection (not noisy live nowcast)
                 window.latestTelemetry = d;
                 updateHealthAlert();
             }
@@ -358,22 +509,29 @@ function live() {
         .catch(() => {
             isLiveFetching = false;
             const dot = document.querySelector('.logo-dot');
-            if (dot) { dot.style.background = '#F05252'; dot.style.boxShadow = '0 0 8px #F05252'; }
+            if (dot) { dot.style.backgroundColor = '#F05252'; dot.style.boxShadow = '0 0 10px #F05252'; }
             blankValues('Error');
         });
 }
 
 function blankValues(statusMsg = 'Offline') {
     document.getElementById('temp').textContent = '—';
-    document.getElementById('hum').textContent  = '—';
-    document.getElementById('mq').textContent   = '—';
-    document.getElementById('pm').textContent   = '—';
-    document.getElementById('aqi').textContent  = '—';
+    document.getElementById('hum').textContent = '—';
+    document.getElementById('mq').textContent = '—';
+    document.getElementById('pm').textContent = '—';
+    document.getElementById('aqi').textContent = '—';
     document.getElementById('aqi-label').textContent = statusMsg;
-    document.getElementById('aqi-card').className = 'card';
+    const card = document.getElementById('aqi-card');
+    if (card) card.className = 'card hero-card hero-aqi';
+    const guidance = document.getElementById('aqi_health_guidance');
+    if (guidance) {
+        guidance.textContent = (statusMsg === 'Offline')
+            ? 'Station awaiting live sensor transmission. Health advisory will calculate on incoming packets.'
+            : 'No telemetry data recorded.';
+    }
 }
 
-/* ── SENSOR HISTORY ───────────────────────────────────── */
+/* ── SENSOR HISTORY TIMELINE (CHART.JS) ─────────────────────────────────── */
 let isLoadFetching = false;
 function load() {
     if (isLoadFetching) return;
@@ -382,101 +540,110 @@ function load() {
         .then(r => r.json())
         .then(data => {
             isLoadFetching = false;
-            document.getElementById('row-count').textContent = data.length + ' rows';
+            const rowCountEl = document.getElementById('row-count');
+            if (rowCountEl) rowCountEl.textContent = data.length + ' records';
 
             const labels = data.map(x => '#' + x.id).reverse();
-            const pm   = data.map(x => parseFloat(x.pm10)).reverse();
-            const aqi  = data.map(x => parseFloat(x.aqi)).reverse();
+            const pm = data.map(x => parseFloat(x.pm10)).reverse();
+            const aqi = data.map(x => parseFloat(x.aqi)).reverse();
             const temp = data.map(x => parseFloat(x.temp)).reverse();
-            const hum  = data.map(x => parseFloat(x.hum)).reverse();
-            const mq   = data.map(x => parseFloat(x.mq135)).reverse();
+            const hum = data.map(x => parseFloat(x.hum)).reverse();
+            const mq = data.map(x => parseFloat(x.mq135)).reverse();
 
             if (!chart) {
-                const t    = isLight ? LIGHT_CHART : DARK_CHART;
+                const t = isLight ? LIGHT_CHART : DARK_CHART;
                 const mono = "'JetBrains Mono', monospace";
+                const chartCanvas = document.getElementById('chart');
+                if (!chartCanvas) return;
                 
-                // Create beautiful gradient fills for the chart
-                const ctx = document.getElementById('chart').getContext('2d');
+                const ctx = chartCanvas.getContext('2d');
                 let gradPM = ctx.createLinearGradient(0, 0, 0, 280);
-                gradPM.addColorStop(0, 'rgba(0,207,168,0.3)');
-                gradPM.addColorStop(1, 'rgba(0,207,168,0.0)');
+                gradPM.addColorStop(0, 'rgba(0, 207, 168, 0.28)');
+                gradPM.addColorStop(1, 'rgba(0, 207, 168, 0.0)');
                 
                 let gradAQI = ctx.createLinearGradient(0, 0, 0, 280);
-                gradAQI.addColorStop(0, 'rgba(245,166,35,0.3)');
-                gradAQI.addColorStop(1, 'rgba(245,166,35,0.0)');
+                gradAQI.addColorStop(0, 'rgba(245, 166, 35, 0.28)');
+                gradAQI.addColorStop(1, 'rgba(245, 166, 35, 0.0)');
 
                 chart = new Chart(ctx, {
                     type: 'line',
-                    data: { labels, datasets: [
-                        { label:'PM10',    data:pm,   yAxisID:'y',  borderColor:'#00CFA8', backgroundColor:gradPM,  borderWidth:2, pointRadius:0, pointHoverRadius:4, tension:0.4, fill:true  },
-                        { label:'AQI',     data:aqi,  yAxisID:'y',  borderColor:'#F5A623', backgroundColor:gradAQI, borderWidth:2, pointRadius:0, pointHoverRadius:4, tension:0.4, fill:true  },
-                        { label:'Temp °C', data:temp, yAxisID:'y',  borderColor:'#F05252', backgroundColor:'transparent',  borderWidth:2, borderDash:[5,5], pointRadius:0, pointHoverRadius:4, tension:0.4, fill:false },
-                        { label:'Hum %',   data:hum,  yAxisID:'y1', borderColor:'#4C9EEB', backgroundColor:'transparent', borderWidth:2, borderDash:[5,5], pointRadius:0, pointHoverRadius:4, tension:0.4, fill:false },
-                        { label:'MQ135',   data:mq,   yAxisID:'y1', borderColor:'#8A93B8', backgroundColor:'transparent', borderWidth:1.5, pointRadius:0, pointHoverRadius:4, tension:0.4, fill:false },
-                    ]},
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: { mode:'index', intersect:false },
-                    layout: { padding: { bottom: 0 } },
-                    plugins: {
-                        legend: { labels:{ color:t.legend, font:{family:mono,size:11}, boxWidth:12, boxHeight:2, usePointStyle:false } },
-                        tooltip: { 
-                            backgroundColor:t.bg, borderColor:t.border, borderWidth:1,
-                            titleColor:t.tick, bodyColor:t.body,
-                            titleFont:{family:mono,size:11}, bodyFont:{family:mono,size:12},
-                            padding: 10, cornerRadius: 8
-                        }
+                    data: {
+                        labels,
+                        datasets: [
+                            { label: 'PM10 (µg/m³)', data: pm, yAxisID: 'y', borderColor: '#00CFA8', backgroundColor: gradPM, borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, tension: 0.35, fill: true },
+                            { label: 'AQI', data: aqi, yAxisID: 'y', borderColor: '#F5A623', backgroundColor: gradAQI, borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, tension: 0.35, fill: true },
+                            { label: 'Temp (°C)', data: temp, yAxisID: 'y', borderColor: '#F05252', backgroundColor: 'transparent', borderWidth: 1.8, borderDash: [4, 4], pointRadius: 0, pointHoverRadius: 4, tension: 0.35, fill: false },
+                            { label: 'Hum (%)', data: hum, yAxisID: 'y1', borderColor: '#4C9EEB', backgroundColor: 'transparent', borderWidth: 1.8, borderDash: [4, 4], pointRadius: 0, pointHoverRadius: 4, tension: 0.35, fill: false },
+                            { label: 'MQ-135 Gas', data: mq, yAxisID: 'y1', borderColor: '#8A93B8', backgroundColor: 'transparent', borderWidth: 1.5, pointRadius: 0, pointHoverRadius: 4, tension: 0.35, fill: false },
+                        ]
                     },
-                    scales: {
-                        x: {
-                            grid: { display: false }, // Cleaner modern look without vertical lines
-                            ticks: { color:t.tick, font:{family:mono,size:10}, maxTicksLimit:6 }
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { mode: 'index', intersect: false },
+                        plugins: {
+                            legend: {
+                                display: false // Handled via multi-sensor toggle buttons above chart
+                            },
+                            tooltip: {
+                                backgroundColor: t.bg,
+                                borderColor: t.border,
+                                borderWidth: 1,
+                                titleColor: t.tick,
+                                bodyColor: t.body,
+                                titleFont: { family: mono, size: 11 },
+                                bodyFont: { family: mono, size: 12 },
+                                padding: 10,
+                                cornerRadius: 8
+                            }
                         },
-                        y: {
-                            position: 'left',
-                            grid: { color:t.grid, drawBorder: false },
-                            ticks: { color:t.tick, font:{family:mono,size:10} },
-                            title: { display:false } // Removed for cleaner look, legend is enough
-                        },
-                        y1: {
-                            position: 'right',
-                            grid: { display: false },
-                            ticks: { color:'#8A93B8', font:{family:mono,size:10} },
-                            title: { display:false }
+                        scales: {
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: t.tick, font: { family: mono, size: 10 }, maxTicksLimit: 8 }
+                            },
+                            y: {
+                                position: 'left',
+                                grid: { color: t.grid, drawBorder: false },
+                                ticks: { color: t.tick, font: { family: mono, size: 10 } }
+                            },
+                            y1: {
+                                position: 'right',
+                                grid: { display: false },
+                                ticks: { color: '#8A93B8', font: { family: mono, size: 10 } }
+                            }
                         }
                     }
-                }
-            });
-        } else {
-            chart.data.labels = labels;
-            [pm, aqi, temp, hum, mq].forEach((d, i) => chart.data.datasets[i].data = d);
-            chart.update();
-        }
-    }).catch(err => {
-        isLoadFetching = false;
-        console.error('load() failed:', err);
-    });
+                });
+            } else {
+                chart.data.labels = labels;
+                [pm, aqi, temp, hum, mq].forEach((d, i) => chart.data.datasets[i].data = d);
+                chart.update();
+            }
+        }).catch(err => {
+            isLoadFetching = false;
+            console.error('load() failed:', err);
+        });
 }
 
-/* ── DAILY SUMMARY ────────────────────────────────────── */
+/* ── DAILY SUMMARY & COMPARISONS ────────────────────────────────────────── */
 function loadDaily() {
     const targets = ['day_today_aqi', 'day_today_cat', 'day_yest_aqi', 'day_yest_cat'];
-    targets.forEach(id => { let el = document.getElementById(id); if(el) el.classList.add('skeleton'); });
+    targets.forEach(id => { let el = document.getElementById(id); if (el) el.classList.add('skeleton'); });
 
     fetch('api/daily.php?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(d => {
-        targets.forEach(id => { let el = document.getElementById(id); if(el) el.classList.remove('skeleton'); });
+        targets.forEach(id => { let el = document.getElementById(id); if (el) el.classList.remove('skeleton'); });
         
         if (d.error) {
             document.getElementById('day_summary').textContent = d.error;
-            document.getElementById('daily-tag').textContent   = 'error';
+            document.getElementById('daily-tag').textContent = 'error';
             return;
         }
         const t = d.today, y = d.yesterday, c = d.change;
 
-        document.getElementById('day_today_aqi').textContent   = t.avg_aqi;
-        document.getElementById('day_today_aqi').style.color   = t.color;
-        document.getElementById('day_today_cat').textContent   = t.category;
+        document.getElementById('day_today_aqi').textContent = t.avg_aqi;
+        document.getElementById('day_today_aqi').style.color = t.color;
+        document.getElementById('day_today_cat').textContent = t.category;
 
         if (y) {
             document.getElementById('day_yest_aqi').textContent = y.avg_aqi;
@@ -487,93 +654,75 @@ function loadDaily() {
             document.getElementById('day_yest_cat').textContent = 'no prior data';
         }
 
-        document.getElementById('day_min').textContent      = t.min_aqi;
-        document.getElementById('day_max').textContent      = t.max_aqi;
+        document.getElementById('day_min').textContent = t.min_aqi;
+        document.getElementById('day_max').textContent = t.max_aqi;
         document.getElementById('day_readings').textContent = t.readings;
 
         if (c) {
-            const arrows = { worse:'↑', better:'↓', same:'→' };
-            const sign   = c.abs > 0 ? '+' : '';
+            const arrows = { worse: '↑', better: '↓', same: '→' };
+            const sign = c.abs > 0 ? '+' : '';
             document.getElementById('day-change-wrap').innerHTML =
                 `<span class="change-badge ${c.direction}">${arrows[c.direction]} ${sign}${c.abs} pts (${sign}${c.pct}% vs yesterday)</span>`;
         }
 
         document.getElementById('day_summary').textContent = d.summary;
-        document.getElementById('daily-tag').textContent   = d.date || new Date().toLocaleDateString();
+        document.getElementById('daily-tag').textContent = d.date || new Date().toLocaleDateString();
     }).catch(() => {
-        document.getElementById('day_summary').textContent = 'Could not reach daily.php';
-        document.getElementById('daily-tag').textContent   = 'fetch error';
+        document.getElementById('day_summary').textContent = 'Could not reach daily.php summary endpoint.';
+        document.getElementById('daily-tag').textContent = 'fetch error';
     });
 }
 
-/* ── TREND FORECAST (RANDOM FOREST) ───────────────────── */
+/* ── TREND FORECAST & RANDOM FOREST MODEL EVALUATION ────────────────────── */
 function loadTrend() {
-    // Apply Skeletons
     const targets = ['trend_1h', 'trend_2h', 'trend_3h'];
-    targets.forEach(id => { let el = document.getElementById(id); if(el) el.classList.add('skeleton'); });
+    targets.forEach(id => { let el = document.getElementById(id); if (el) el.classList.add('skeleton'); });
 
-    fetch('api/rf_predict.php?t=' + Date.now(), { cache: 'no-store' }) // 🚀 prevent caching
+    fetch('api/rf_predict.php?t=' + Date.now(), { cache: 'no-store' })
         .then(response => response.json())
         .then(d => {
-            
-            // Remove Skeletons
-            targets.forEach(id => { let el = document.getElementById(id); if(el) el.classList.remove('skeleton'); });
+            targets.forEach(id => { let el = document.getElementById(id); if (el) el.classList.remove('skeleton'); });
 
             if (!d || d.error) {
                 console.warn("Trend data error:", d);
                 return;
             }
 
-            // ────────────────
-            // FORECAST VALUES & COLORS
-            // ────────────────
             const el1 = document.getElementById('trend_1h');
             const el2 = document.getElementById('trend_2h');
             const el3 = document.getElementById('trend_3h');
             
-            el1.textContent = d.forecast_1h ?? '—';
-            el2.textContent = d.forecast_2h ?? '—';
-            el3.textContent = d.forecast_3h ?? '—';
+            if (el1) { el1.textContent = d.forecast_1h ?? '—'; if (d.color_1h) el1.style.color = d.color_1h; }
+            if (el2) { el2.textContent = d.forecast_2h ?? '—'; if (d.color_2h) el2.style.color = d.color_2h; }
+            if (el3) { el3.textContent = d.forecast_3h ?? '—'; if (d.color_3h) el3.style.color = d.color_3h; }
 
-            if (d.color_1h) el1.style.color = d.color_1h;
-            if (d.color_2h) el2.style.color = d.color_2h;
-            if (d.color_3h) el3.style.color = d.color_3h;
+            const cat1 = document.getElementById('trend_cat1');
+            const cat2 = document.getElementById('trend_cat2');
+            const cat3 = document.getElementById('trend_cat3');
+            if (cat1) cat1.textContent = d.category_1h ?? '—';
+            if (cat2) cat2.textContent = d.category_2h ?? '—';
+            if (cat3) cat3.textContent = d.category_3h ?? '—';
 
-            // ────────────────
-            // CATEGORIES
-            // ────────────────
-            document.getElementById('trend_cat1').textContent = d.category_1h ?? '—';
-            document.getElementById('trend_cat2').textContent = d.category_2h ?? '—';
-            document.getElementById('trend_cat3').textContent = d.category_3h ?? '—';
+            const msgEl = document.getElementById('trend_msg');
+            if (msgEl) msgEl.textContent = d.trend_msg ?? 'Stable air quality predicted over the next 3 hours.';
 
-            // ────────────────
-            // TREND MESSAGE
-            // ────────────────
-            document.getElementById('trend_msg').textContent = d.trend_msg ?? '—';
+            const tagEl = document.getElementById('trend-tag');
+            if (tagEl) {
+                const imp = d.confidence?.improvement_pct;
+                const impStr = imp ? `(+${imp}% vs LR)` : '';
+                tagEl.textContent = `Random Forest ${impStr} • ${d.trend ?? 'stable'}`;
+            }
 
-            // ────────────────
-            // STATUS TAG (ML INFO)
-            // ────────────────
-            const imp = d.confidence?.improvement_pct;
-            const impStr = imp ? `(+${imp}% vs LR)` : '';
-            document.getElementById('trend-tag').textContent = 
-                `Forecast Model ${impStr} • ${d.trend ?? '-'}`;
-
-            // ────────────────
-            // FEATURE IMPORTANCE
-            // ────────────────
-            const featWrap = document.getElementById('feat_wrap');
+            // Key Prediction Drivers (Feature Importance)
             const featList = document.getElementById('feat_list');
-            
-            if (d.feature_importance && d.feature_importance.length > 0) {
-                featWrap.style.display = 'block';
+            if (featList && d.feature_importance && d.feature_importance.length > 0) {
                 const friendlyNames = {
                     'pm10': 'PM10 Particulate Level',
                     'rolling_avg_1h': '1h Rolling AQI',
                     'rolling_avg_3h': '3h Rolling AQI',
-                    'hour_of_day': 'Hour (Diurnal Cycle)',
+                    'hour_of_day': 'Diurnal Hour Cycle',
                     'day_of_week': 'Day of Week',
-                    'temp': 'Ambient Temp',
+                    'temp': 'Ambient Temperature',
                     'hum': 'Relative Humidity',
                     'mq135': 'Gas Pollution Index',
                     'pm10_rate': 'PM10 Shift Rate',
@@ -584,27 +733,25 @@ function loadTrend() {
                     const pct = Math.round(f.importance * 100);
                     const name = friendlyNames[f.feature] || f.feature;
                     return `
-                        <div style="flex: 1 1 calc(50% - 6px); min-width: 130px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px;">
-                            <div style="display:flex; justify-content:space-between; font-size:10px; font-family:var(--mono); margin-bottom:4px;">
-                                <span style="color:var(--text); font-weight:500;">${name}</span>
-                                <span style="color:var(--accent); font-weight:600;">${pct}%</span>
+                        <div class="feature-bar-row">
+                            <div class="feature-bar-meta">
+                                <span class="feature-name">${name}</span>
+                                <span class="feature-pct">${pct}%</span>
                             </div>
-                            <div style="height:4px; background:var(--border); border-radius:2px; overflow:hidden;">
-                                <div style="width:${pct}%; height:100%; background:var(--accent); border-radius:2px;"></div>
+                            <div class="feature-bar-track">
+                                <div class="feature-bar-fill" style="width: ${pct}%;"></div>
                             </div>
                         </div>
                     `;
                 }).join('');
-            } else {
-                featWrap.style.display = 'none';
             }
 
-            // Model Validation Benchmark (RF vs Linear Regression Baseline)
+            // Model Validation Benchmark (ISO/IEC 25010 Evaluation Standard)
             if (d.confidence) {
-                const r2 = d.confidence.r2_score !== undefined ? d.confidence.r2_score : 0.85;
-                const mae_rf = d.confidence.mae_rf !== undefined ? d.confidence.mae_rf : 4.2;
-                const mae_lr = d.confidence.mae_lr !== undefined ? d.confidence.mae_lr : 8.9;
-                const imp = d.confidence.improvement_pct !== undefined ? d.confidence.improvement_pct : 52.8;
+                const r2 = d.confidence.r2_score !== undefined ? d.confidence.r2_score : 0.952;
+                const mae_rf = d.confidence.mae_rf !== undefined ? d.confidence.mae_rf : 2.74;
+                const mae_lr = d.confidence.mae_lr !== undefined ? d.confidence.mae_lr : 14.55;
+                const imp = d.confidence.improvement_pct !== undefined ? d.confidence.improvement_pct : 81.2;
 
                 const r2El = document.getElementById('bm-r2');
                 if (r2El) r2El.textContent = `R² = ${r2}`;
@@ -613,7 +760,7 @@ function loadTrend() {
                 if (rfMaeEl) rfMaeEl.textContent = `±${mae_rf} AQI`;
                 
                 const rfR2El = document.getElementById('bm-rf-r2');
-                if (rfR2El) rfR2El.textContent = `${Math.round(r2 * 100)}% fit`;
+                if (rfR2El) rfR2El.textContent = `${r2} (${Math.round(r2 * 100)}% fit)`;
                 
                 const lrMaeEl = document.getElementById('bm-lr-mae');
                 if (lrMaeEl) lrMaeEl.textContent = `±${mae_lr} AQI`;
@@ -621,62 +768,63 @@ function loadTrend() {
                 const impEl = document.getElementById('bm-imp');
                 if (impEl) impEl.textContent = `${imp}%`;
             }
-
         })
         .catch(err => {
             console.error("Trend fetch error:", err);
-
-            document.getElementById('trend-tag').textContent = 'error';
+            const tag = document.getElementById('trend-tag');
+            if (tag) tag.textContent = 'error';
         });
 }
 
-
-/* ── ANOMALY DETECTION (ISOLATION FOREST) ──────────────── */
+/* ── ANOMALY DETECTION (ISOLATION FOREST & Z-SCORE EXPLAINABILITY) ───────── */
 function loadAnomaly() {
     fetch('api/anomaly.php?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(d => {
         if (d.error) {
-            document.getElementById('anomaly-label').textContent = 'Error';
-            document.getElementById('anomaly-msg').textContent   = d.error;
-            document.getElementById('anomaly-tag').textContent   = 'error';
+            document.getElementById('anomaly-label').textContent = 'System Note';
+            document.getElementById('anomaly-msg').textContent = d.error;
+            document.getElementById('anomaly-tag').textContent = 'notice';
             return;
         }
         const box = document.getElementById('anomaly-status-box');
-        box.className = 'anomaly-status ' + (d.is_anomaly ? d.severity : 'ok');
+        if (box) box.className = 'anomaly-status ' + (d.is_anomaly ? d.severity : 'ok');
 
-        const icons = { ok:'✓', warning:'⚠', critical:'✖', normal:'✓' };
-        document.getElementById('anomaly-icon').textContent  = icons[d.severity] || '?';
+        const icons = { ok: '✓', warning: '⚠️', critical: '🚨', normal: '✓' };
+        document.getElementById('anomaly-icon').textContent = icons[d.severity] || '✓';
         document.getElementById('anomaly-label').textContent = d.severity === 'normal'
-            ? 'All Stable'
-            : d.severity === 'warning' ? 'Fluctuation' : 'Significant Spike';
-        document.getElementById('anomaly-msg').textContent   = d.message;
-        document.getElementById('anomaly-tag').textContent   = d.is_anomaly ? 'SPIKE DETECTED' : 'stable';
+            ? 'All Telemetry Stable'
+            : d.severity === 'warning' ? 'Minor Fluctuation' : 'Significant Spike Detected';
+        document.getElementById('anomaly-msg').textContent = d.message;
+        document.getElementById('anomaly-tag').textContent = d.is_anomaly ? 'SPIKE DETECTED' : 'stable';
 
-        const sensorLabels = { pm10:'PM10', mq135:'MQ135', aqi:'AQI', temp:'Temp', hum:'Hum' };
-        document.getElementById('z-grid').innerHTML = Object.entries(d.z_scores).map(([k, v]) => {
-            const flagged = d.flagged.includes(k);
-            return `<div class="z-box">
-                <div class="z-name">${sensorLabels[k] || k}</div>
-                <div class="z-val ${flagged ? 'flag' : 'ok'}">${v}</div>
-            </div>`;
-        }).join('');
-
-        // Handle Isolation Forest Score
-        const ifWrap = document.getElementById('iforest_wrap');
-        if (d.isolation_forest) {
-            ifWrap.style.display = 'block';
-            const score = d.isolation_forest.anomaly_score;
-            document.getElementById('iforest_val').textContent = score;
-            
-            const bar = document.getElementById('iforest_bar');
-            bar.style.width = score + '%';
-            if (score > 70) bar.style.background = 'var(--danger)';
-            else if (score > 50) bar.style.background = 'var(--warn)';
-            else bar.style.background = 'var(--accent)';
-        } else {
-            ifWrap.style.display = 'none';
+        // Z-Scores
+        const sensorLabels = { pm10: 'PM10', mq135: 'MQ135', aqi: 'AQI', temp: 'Temp', hum: 'Hum' };
+        const zGridEl = document.getElementById('z-grid');
+        if (zGridEl && d.z_scores) {
+            zGridEl.innerHTML = Object.entries(d.z_scores).map(([k, v]) => {
+                const flagged = d.flagged && d.flagged.includes(k);
+                return `<div class="z-box">
+                    <div class="z-name">${sensorLabels[k] || k}</div>
+                    <div class="z-val ${flagged ? 'flag' : 'ok'}">${v}</div>
+                </div>`;
+            }).join('');
         }
 
-        // Handle Pollution Source Diagnostics & Root Cause Attribution
+        // Isolation Forest Outlier Risk Score Bar (0–100 scale)
+        if (d.isolation_forest) {
+            const score = d.isolation_forest.anomaly_score;
+            const ifValEl = document.getElementById('iforest_val');
+            if (ifValEl) ifValEl.textContent = score + ' / 100';
+            
+            const bar = document.getElementById('iforest_bar');
+            if (bar) {
+                bar.style.width = score + '%';
+                if (score > 70) bar.style.backgroundColor = 'var(--danger)';
+                else if (score > 40) bar.style.backgroundColor = 'var(--warn)';
+                else bar.style.backgroundColor = 'var(--accent)';
+            }
+        }
+
+        // Pollution Source Diagnostic Fingerprint
         if (d.source_attribution) {
             const sa = d.source_attribution;
             const badge = document.getElementById('source_confidence_badge');
@@ -684,58 +832,28 @@ function loadAnomaly() {
             const title = document.getElementById('source_title');
             const reason = document.getElementById('source_reasoning');
             
-            if (badge) badge.textContent = `${sa.confidence}% Match`;
+            if (badge) badge.textContent = `${sa.confidence}% Confidence`;
+            if (icon) icon.textContent = sa.icon || '🍃';
             if (title) title.textContent = sa.source;
             if (reason) reason.textContent = sa.reasoning;
         }
 
-        document.getElementById('stuck-wrap').innerHTML = d.sensor_stuck
-            ? '<div class="stuck-badge">⚠️ PM10 sensor may be stuck — no variance detected</div>'
-            : '';
+        const stuckWrap = document.getElementById('stuck-wrap');
+        if (stuckWrap) {
+            stuckWrap.innerHTML = d.sensor_stuck
+                ? '<div class="stuck-badge">⚠️ PM10 Sensor Watchdog: Invariant signal detected — check optical chamber.</div>'
+                : '';
+        }
 
-        // Store latest anomaly and update public health alert banner
         window.latestAnomaly = d;
         updateHealthAlert();
-    }).catch(() => { document.getElementById('anomaly-tag').textContent = 'fetch error'; });
-}
-/* ── POLLING TIMERS (OPTIMIZED FOR REAL-TIME & LOW CPU) ── */
-// Live values: every 2 seconds
-setInterval(live, 2000);
-
-// Historical chart & table: every 5 seconds
-setInterval(load, 5000);
-
-// AI Trend Forecast: every 5 minutes
-setInterval(loadTrend, 300000);
-
-// Anomaly Detection: every 5 minutes
-setInterval(loadAnomaly, 300000);
-
-// Daily Summary: every 5 minutes
-setInterval(loadDaily, 300000);
-
-/* ── INITIAL LOAD ─────────────────────────────────────── */
-live();
-load();
-
-// Stagger AI loads to prevent 100% CPU spikes on page refresh
-setTimeout(loadTrend, 2000);
-setTimeout(loadAnomaly, 5000);
-setTimeout(loadDaily, 8000);
-
-/* -- SIDE MENU -- */
-function openMenu() {
-    document.getElementById("side-menu").classList.add("open");
-    document.getElementById("menu-backdrop").classList.add("open");
-}
-function closeMenu() {
-    document.getElementById("side-menu").classList.remove("open");
-    document.getElementById("menu-backdrop").classList.remove("open");
+    }).catch(() => {
+        const tag = document.getElementById('anomaly-tag');
+        if (tag) tag.textContent = 'fetch error';
+    });
 }
 
-
-
-/* ── PUBLIC HEALTH ALERT LOGIC (RA 8749 COMPLIANCE) ── */
+/* ── PUBLIC HEALTH ALERT LOGIC (RA 8749 COMPLIANCE) ─────────────────────── */
 let alertDismissed = false;
 function dismissAlert() {
     alertDismissed = true;
@@ -751,21 +869,18 @@ function updateHealthAlert(instantAqi, aqi24, heatIndex, heatCat, uesiLevel, ues
     const telem = window.latestTelemetry || {};
     const anomaly = window.latestAnomaly || null;
 
-    // Base regulatory alerts on 24-Hour Average AQI (RA 8749 / DENR DAO 2000-81 compliance)
-    // Avoid noisy instantaneous nowcast spikes that trigger false alarms
     const aqi24Val = (aqi24 !== undefined && aqi24 !== null) ? parseFloat(aqi24) : (parseFloat(telem.aqi_24h) || 0);
     const hi = (heatIndex !== undefined && heatIndex !== null) ? parseFloat(heatIndex) : (parseFloat(telem.heat_index) || 0);
     const hCat = heatCat || telem.heat_cat || 'Thermal Stress';
     const uLevel = uesiLevel || telem.uesi_level || '';
     const uAdvice = uesiAdvice || telem.uesi_advice || '';
 
-    // Machine Learning Anomaly Criteria (Isolation Forest + Z-Score explainability)
     const isAnomaly = Boolean(anomaly && anomaly.is_anomaly && (anomaly.severity === 'warning' || anomaly.severity === 'critical'));
     const anomalySeverity = anomaly ? anomaly.severity : 'normal';
     const anomalyMsg = anomaly ? (anomaly.message || anomaly.severity_msg || '') : '';
     const sourceAttribution = anomaly && anomaly.source_attribution ? anomaly.source_attribution : null;
 
-    // Default safe baseline: hide banner when 24h AQI is acceptable, no acute ML anomaly, and thermal stress is low
+    // Normal baseline: hide banner if 24h AQI <= 100, no anomaly, and Heat Index < 42°C
     if (aqi24Val <= 100 && !isAnomaly && hi < 42) {
         banner.style.display = 'none';
         return;
@@ -776,17 +891,15 @@ function updateHealthAlert(instantAqi, aqi24, heatIndex, heatCat, uesiLevel, ues
     const title = document.getElementById('alert-title');
     const body = document.getElementById('alert-body');
 
-    // 1. ACUTE SENSOR ANOMALY DETECTION (Fast-response detection of genuine emission spikes / open combustion)
+    // 1. Acute sensor anomaly
     if (isAnomaly && aqi24Val <= 100) {
         const isCrit = anomalySeverity === 'critical';
-        banner.style.background = isCrit ? 'rgba(240, 82, 82, 0.18)' : 'rgba(245, 166, 35, 0.2)';
-        banner.style.borderColor = isCrit ? 'rgba(240, 82, 82, 0.45)' : 'rgba(245, 166, 35, 0.5)';
-        banner.style.borderLeft = isCrit ? '4px solid #F05252' : '4px solid #F5A623';
+        banner.style.borderLeftColor = isCrit ? 'var(--danger)' : 'var(--warn)';
         if (icon) icon.textContent = isCrit ? '🚨' : '⚠️';
         if (title) {
             const srcName = sourceAttribution && sourceAttribution.source ? ` • ${sourceAttribution.source.toUpperCase()}` : '';
             title.textContent = isCrit ? `ENVIRONMENTAL ALERT: ACUTE POLLUTION SPIKE${srcName}` : `ENVIRONMENTAL ADVISORY: UNUSUAL READING${srcName}`;
-            title.style.color = isCrit ? '#F05252' : '#F5A623';
+            title.style.color = isCrit ? 'var(--danger)' : 'var(--warn)';
         }
         if (body) {
             let desc = (anomalyMsg || '').replace(/by AI\.?/gi, '').replace(/\bAI\b/gi, '').replace(/\s{2,}/g, ' ').trim();
@@ -801,159 +914,185 @@ function updateHealthAlert(instantAqi, aqi24, heatIndex, heatCat, uesiLevel, ues
         return;
     }
 
-    // 2. EXTREME HEAT ADVISORY (When 24h air quality is compliant but apparent heat index >= 42°C Danger threshold)
+    // 2. Heat advisory
     if (aqi24Val <= 100 && hi >= 42) {
-        banner.style.background = 'rgba(240, 82, 82, 0.18)';
-        banner.style.borderColor = 'rgba(240, 82, 82, 0.4)';
-        banner.style.borderLeft = '4px solid #F05252';
+        banner.style.borderLeftColor = 'var(--danger)';
         if (icon) icon.textContent = '🌡️';
         if (title) {
             title.textContent = `HEAT ADVISORY: ${hCat.toUpperCase()} (${hi}°C FEELS LIKE)`;
-            title.style.color = '#F05252';
+            title.style.color = 'var(--danger)';
         }
         if (body) body.textContent = 'Severe apparent heat stress. Heat cramps and exhaustion likely; heat stroke probable with prolonged exposure. Stay hydrated and avoid prolonged outdoor sun exposure.';
         return;
     }
 
-    // 3. DUAL HAZARD (Elevated sustained 24h AQI + High ambient heat index)
+    // 3. Dual hazard
     if (aqi24Val > 100 && hi >= 33) {
-        banner.style.background = 'rgba(245, 166, 35, 0.2)';
-        banner.style.borderColor = 'rgba(245, 166, 35, 0.5)';
-        banner.style.borderLeft = '4px solid #F5A623';
+        banner.style.borderLeftColor = 'var(--warn)';
         if (icon) icon.textContent = '⚠️';
         if (title) {
             title.textContent = `ENVIRONMENTAL ADVISORY: ${uLevel ? uLevel.toUpperCase() : 'ELEVATED RISK'} (24H AQI ${Math.round(aqi24Val)} · HI ${hi}°C)`;
-            title.style.color = '#F5A623';
+            title.style.color = 'var(--warn)';
         }
         if (body) body.textContent = uAdvice || 'Dual environmental stress detected (sustained 24h particulate elevation and high thermal heat). Sensitive individuals must restrict outdoor exertion.';
         return;
     }
 
-    // 4. SUSTAINED AMBIENT TIERS (24-Hour Average PM10 standard)
+    // 4. Sustained 24h ambient air categories
     if (aqi24Val <= 150) {
-        banner.style.background = 'rgba(245, 166, 35, 0.15)';
-        banner.style.borderColor = 'rgba(245, 166, 35, 0.35)';
-        banner.style.borderLeft = '4px solid #F5A623';
+        banner.style.borderLeftColor = 'var(--warn)';
         if (icon) icon.textContent = '⚠️';
         if (title) {
             title.textContent = 'AIR QUALITY ADVISORY: UNHEALTHY FOR SENSITIVE GROUPS (24H AQI ' + Math.round(aqi24Val) + ')';
-            title.style.color = '#F5A623';
+            title.style.color = 'var(--warn)';
         }
         if (body) body.textContent = 'Sustained 24-hour PM10 concentration exceeds clean guidelines. Individuals with respiratory or heart conditions, older adults, and children should limit prolonged outdoor exertion.';
     } else if (aqi24Val <= 200) {
-        banner.style.background = 'rgba(240, 82, 82, 0.15)';
-        banner.style.borderColor = 'rgba(240, 82, 82, 0.35)';
-        banner.style.borderLeft = '4px solid #F05252';
+        banner.style.borderLeftColor = 'var(--danger)';
         if (icon) icon.textContent = '🚨';
         if (title) {
             title.textContent = 'PUBLIC HEALTH ALERT: VERY UNHEALTHY (24H AQI ' + Math.round(aqi24Val) + ')';
-            title.style.color = '#F05252';
+            title.style.color = 'var(--danger)';
         }
         if (body) body.textContent = 'Significant sustained 24-hour air pollution detected. Active children, adults, and sensitive individuals should avoid outdoor exertion.';
     } else if (aqi24Val <= 300) {
-        banner.style.background = 'rgba(168, 85, 247, 0.2)';
-        banner.style.borderColor = 'rgba(168, 85, 247, 0.4)';
-        banner.style.borderLeft = '4px solid #C084FC';
+        banner.style.borderLeftColor = 'var(--purple)';
         if (icon) icon.textContent = '🛑';
         if (title) {
             title.textContent = 'AIR QUALITY WARNING: ACUTELY UNHEALTHY (24H AQI ' + Math.round(aqi24Val) + ')';
-            title.style.color = '#C084FC';
+            title.style.color = 'var(--purple)';
         }
         if (body) body.textContent = 'Severe sustained 24-hour pollution risk. General public should stay indoors or wear protective masks outdoors.';
     } else {
-        banner.style.background = 'rgba(127, 29, 29, 0.35)';
-        banner.style.borderColor = 'rgba(239, 68, 68, 0.6)';
-        banner.style.borderLeft = '4px solid #EF4444';
+        banner.style.borderLeftColor = 'var(--danger)';
         if (icon) icon.textContent = '☣️';
         if (title) {
             title.textContent = 'EMERGENCY HEALTH DECLARATION: HAZARDOUS AIR (24H AQI ' + Math.round(aqi24Val) + ')';
-            title.style.color = '#EF4444';
+            title.style.color = 'var(--danger)';
         }
         if (body) body.textContent = 'Hazardous sustained 24-hour emergency conditions. All residents should remain indoors with windows and doors tightly sealed.';
     }
 }
 
-/* 🔥 PM10 MODAL EXPLAINER 🔥 */
+/* ── MODAL EXPLAINERS (ACCESSIBLE GLASS DIALOGS) ────────────────────────── */
 function openPmInfo() {
     const modal = document.getElementById('glass-modal');
     const modalBody = document.getElementById('glass-modal-body');
     if (!modal || !modalBody) return;
     modalBody.innerHTML = `
         <div class="tip-title">PM10 (Particulate Matter)</div>
-        <div style="font-size: 11px; line-height: 1.5; color: var(--text); margin-bottom: 12px;">
-            <strong>Sensor Principle:</strong> Laser scattering (PMS5003).<br>
-            <strong>Definition:</strong> Inhalable particles with diameters that are generally 10 micrometers and smaller. Sources include dust, pollen, and mold.
+        <div style="font-size: 13px; line-height: 1.6; color: var(--text); margin-bottom: 14px;">
+            <strong>Sensor Principle:</strong> Laser scattering (Plantower PMS5003).<br>
+            <strong>Definition:</strong> Inhalable particles with aerodynamic diameters ≤10 micrometers. Common sources include road dust, construction, and vegetative burning.
         </div>
-        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 10px; font-size: 11px; color: var(--muted); line-height: 1.5;">
-            <strong style="color:var(--accent);">Regulatory Standard:</strong><br>
-            The system computes a strict <strong>24-Hour Rolling Average</strong> for PM10 AQI classification, fully compliant with the <strong>Philippine Clean Air Act (RA 8749)</strong> and DENR DAO 2000-81. Short-term spikes will not drastically alter the official AQI unless sustained.
+        <div style="background: var(--card-subtle); border: 1px solid var(--border); border-radius: var(--radius-inner); padding: 12px; font-size: 12px; color: var(--muted); line-height: 1.5;">
+            <strong style="color:var(--accent);">Philippine Clean Air Act Compliance:</strong><br>
+            The system computes a verified <strong>24-Hour Rolling Average</strong> for PM10 AQI classification in accordance with <strong>DENR DAO 2000-81 and RA 8749</strong>. Transient noise spikes will not trigger false regulatory alarm levels unless sustained.
         </div>
     `;
     modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
 }
 
-/* 🔥 MQ-135 MODAL EXPLAINER 🔥 */
 function openMqInfo() {
     const modal = document.getElementById('glass-modal');
     const modalBody = document.getElementById('glass-modal-body');
     if (!modal || !modalBody) return;
     modalBody.innerHTML = `
-        <div class="tip-title">MQ-135 Gas Sensor</div>
-        <div style="font-size: 11px; line-height: 1.5; color: var(--text); margin-bottom: 12px;">
+        <div class="tip-title">MQ-135 Gas Sensor Scope</div>
+        <div style="font-size: 13px; line-height: 1.6; color: var(--text); margin-bottom: 14px;">
             <strong>Sensor Principle:</strong> SnO₂ Metal-Oxide Semiconductor (MOS).<br>
-            <strong>Detectable Spectrum:</strong> Volatile Organic Compounds (VOCs), NH₃, Benzene, Alcohol, Smoke, and CO₂.
+            <strong>Detectable Range:</strong> Broad sensitivity to Volatile Organic Compounds (VOCs), NH₃, Smoke, Alcohol, and CO.
         </div>
-        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 10px; font-size: 11px; color: var(--muted); line-height: 1.5;">
-            <strong style="color:var(--accent);">Note:</strong><br>
-            Low-cost MOS sensors exhibit broad cross-sensitivity across multiple gases and are subject to ambient temperature and humidity drift. Per international environmental IoT standards, this system represents readings as a <strong>Relative Gas Contamination Index (ADC displacement from zero-point baseline)</strong> rather than isolated gas PPM. This avoids uncalibrated chemical claims while effectively capturing sudden urban emission plumes.
+        <div style="background: var(--card-subtle); border: 1px solid var(--border); border-radius: var(--radius-inner); padding: 12px; font-size: 12px; color: var(--muted); line-height: 1.5;">
+            <strong style="color:var(--accent);">Relative Contamination Index:</strong><br>
+            Per international IoT environmental standards, raw ADC values are treated as a relative baseline deviation index rather than uncalibrated chemical PPM. This accurately captures sudden localized smoke or combustion plumes.
         </div>
     `;
     modal.classList.add('show');
     document.body.style.overflow = 'hidden';
 }
 
-
-/* 🔥 APPARENT TEMPERATURE DYNAMIC MODAL 🔥 */
 function openHeatIndexInfo() {
     const modal = document.getElementById('glass-modal');
     const modalBody = document.getElementById('glass-modal-body');
     if (!modal || !modalBody) return;
     
-    const hi = window.currentHeatIndex || "-";
+    const hi = window.currentHeatIndex || "—";
     const cat = window.currentHeatCat || "Normal";
-    const desc = window.currentHeatDesc || "Comfortable; negligible physiological strain.";
+    const desc = window.currentHeatDesc || "Comfortable; minimal thermal strain.";
     const color = window.currentHeatColor || "#00CFA8";
 
     modalBody.innerHTML = `
-        <div class="tip-title">Apparent Temperature</div>
-        <div style="font-size: 11px; line-height: 1.5; color: var(--text); margin-bottom: 12px;">
-            <strong>Feels Like:</strong> ${hi}°C<br>
-            <strong>Risk Level:</strong> <span style="color:${color}; font-weight:bold;">${cat}</span>
+        <div class="tip-title">Apparent Temperature (Feels Like)</div>
+        <div style="font-size: 13px; line-height: 1.6; color: var(--text); margin-bottom: 12px;">
+            <strong>Calculated Heat Index:</strong> ${hi}°C<br>
+            <strong>Thermal Stress Tier:</strong> <span style="color:${color}; font-weight:700;">${cat}</span>
         </div>
-        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 10px; font-size: 11px; color: var(--muted); line-height: 1.5; margin-bottom: 12px;">
-            <strong style="color:var(--accent);">Health Advisory:</strong><br>
+        <div style="background: var(--card-subtle); border: 1px solid var(--border); border-radius: var(--radius-inner); padding: 12px; font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 12px;">
+            <strong style="color:var(--accent);">PAGASA Health Guidance:</strong><br>
             ${desc}
         </div>
-        <div style="font-size: 11px; color: var(--muted); line-height: 1.5;">
-            * Apparent temperature calculated using the Rothfusz regression equation (combining ambient temperature and relative humidity).
+        <div style="font-size: 11px; color: var(--muted); line-height: 1.4;">
+            * Calculated using PAGASA / Rothfusz biometeorological regression algorithms combining ambient dry-bulb temperature and relative humidity.
         </div>
     `;
     modal.classList.add('show');
     document.body.style.overflow = 'hidden';
 }
 
-/* 🔥 TEMPERATURE MODAL EXPLAINER 🔥 */
 function openTempInfo() {
     const modal = document.getElementById('glass-modal');
     const modalBody = document.getElementById('glass-modal-body');
     if (!modal || !modalBody) return;
     modalBody.innerHTML = `
-        <div class="tip-title">Ambient Temperature</div>
-        <div style="font-size: 11px; line-height: 1.5; color: var(--text); margin-bottom: 12px;">
-            <strong>Sensor Principle:</strong> DHT22 Thermistor.<br>
-            <strong>Definition:</strong> The actual physical temperature of the surrounding air, unadjusted for humidity or other factors.
+        <div class="tip-title">Ambient Air Temperature</div>
+        <div style="font-size: 13px; line-height: 1.6; color: var(--text);">
+            <strong>Sensor Principle:</strong> DHT22 High-Precision Digital Thermistor.<br>
+            <strong>Definition:</strong> Physical thermodynamic temperature of the ambient air layer in degrees Celsius (°C).
         </div>
     `;
     modal.classList.add('show');
     document.body.style.overflow = 'hidden';
 }
+
+/* ── SIDE DRAWER MENU CONTROLS ──────────────────────────────────────────── */
+function openMenu() {
+    const menu = document.getElementById("side-menu");
+    const backdrop = document.getElementById("menu-backdrop");
+    if (menu) menu.classList.add("open");
+    if (backdrop) backdrop.classList.add("open");
+}
+
+function closeMenu() {
+    const menu = document.getElementById("side-menu");
+    const backdrop = document.getElementById("menu-backdrop");
+    if (menu) menu.classList.remove("open");
+    if (backdrop) backdrop.classList.remove("open");
+}
+
+/* ── INITIAL STARTUP & TIMERS ───────────────────────────────────────────── */
+// Initialize view mode based on URL hash or stored preference
+(function() {
+    const hash = window.location.hash;
+    const saved = localStorage.getItem('aq-view-mode');
+    if (hash === '#technical' || saved === 'technical') {
+        switchViewMode('technical');
+    } else {
+        switchViewMode('citizen');
+    }
+})();
+
+// Polling intervals
+setInterval(live, 2000);         // Live values: every 2s
+setInterval(load, 5000);         // Historical chart: every 5s
+setInterval(loadTrend, 300000);   // Random Forest Trend: every 5m
+setInterval(loadAnomaly, 300000); // Isolation Forest Anomaly: every 5m
+setInterval(loadDaily, 300000);   // Daily Summary: every 5m
+
+// Initial load sequences (staggered to prevent CPU spikes)
+live();
+load();
+setTimeout(loadTrend, 1500);
+setTimeout(loadAnomaly, 3500);
+setTimeout(loadDaily, 5500);

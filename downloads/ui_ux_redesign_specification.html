@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>UI/UX Redesign Specification & Master Prompt - Eco Quality</title>
+<style>
+  @page {
+    size: A4 portrait;
+    margin: 14mm 14mm 14mm 14mm;
+  }
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #1e293b;
+    background-color: #ffffff;
+    line-height: 1.45;
+    font-size: 9pt;
+    margin: 0;
+    padding: 0;
+  }
+  .header-institution {
+    border-bottom: 2px solid #00a884;
+    padding-bottom: 6px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .inst-title {
+    font-size: 10.5pt;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .inst-sub {
+    font-size: 8pt;
+    color: #64748b;
+  }
+  .doc-tag {
+    font-size: 7.5pt;
+    background: #e6f7f3;
+    color: #008768;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-family: Consolas, monospace;
+    letter-spacing: 0.05em;
+  }
+  h1 {
+    font-size: 15pt;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 3px 0;
+    line-height: 1.2;
+  }
+  .doc-subtitle {
+    font-size: 8.8pt;
+    color: #475569;
+    margin-bottom: 10px;
+    line-height: 1.35;
+  }
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 6px 10px;
+    margin-bottom: 14px;
+    font-size: 8pt;
+  }
+  .meta-item strong {
+    display: block;
+    color: #64748b;
+    font-size: 7pt;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .meta-item span {
+    color: #0f172a;
+    font-weight: 600;
+  }
+  h2 {
+    font-size: 10.5pt;
+    font-weight: 700;
+    color: #0f172a;
+    border-left: 3.5px solid #00a884;
+    padding-left: 8px;
+    margin: 14px 0 6px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  p {
+    margin: 0 0 6px 0;
+    text-align: justify;
+  }
+  ol, ul {
+    margin: 0 0 8px 0;
+    padding-left: 18px;
+  }
+  li {
+    margin-bottom: 2px;
+  }
+  .callout-alert {
+    background: #fffbeb;
+    border-left: 3.5px solid #f59e0b;
+    padding: 6px 10px;
+    border-radius: 0 6px 6px 0;
+    margin: 8px 0;
+    font-size: 8.5pt;
+  }
+  .callout-alert .callout-title {
+    font-weight: 700;
+    color: #92400e;
+    margin-bottom: 2px;
+  }
+  .callout-green {
+    background: #f0fdf4;
+    border-left: 3.5px solid #10b981;
+    padding: 6px 10px;
+    border-radius: 0 6px 6px 0;
+    margin: 8px 0;
+    font-size: 8.5pt;
+  }
+  .callout-green .callout-title {
+    font-weight: 700;
+    color: #065f46;
+    margin-bottom: 2px;
+  }
+  .arch-diagram {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 8px;
+    margin: 10px 0;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 7pt;
+    line-height: 1.35;
+    color: #334155;
+  }
+  .arch-diagram table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+  }
+  .arch-diagram td {
+    border: 1px dashed #94a3b8;
+    padding: 5px 8px;
+    vertical-align: top;
+    background: #ffffff;
+  }
+  .arch-header {
+    background: #0f172a !important;
+    color: #ffffff;
+    font-weight: bold;
+    text-align: center;
+    padding: 4px !important;
+  }
+  .arch-banner {
+    background: #fef2f2 !important;
+    color: #991b1b;
+    text-align: center;
+    font-weight: bold;
+    font-size: 6.8pt;
+  }
+  .table-matrix {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0 10px 0;
+    font-size: 7.8pt;
+  }
+  .table-matrix th, .table-matrix td {
+    padding: 4px 6px;
+    border: 1px solid #cbd5e1;
+    text-align: left;
+  }
+  .table-matrix th {
+    background-color: #f1f5f9;
+    font-weight: 700;
+    color: #0f172a;
+  }
+  .table-matrix tr:nth-child(even) td {
+    background-color: #f8fafc;
+  }
+  .badge {
+    display: inline-block;
+    padding: 1.5px 5px;
+    border-radius: 3px;
+    font-size: 6.8pt;
+    font-weight: 700;
+    font-family: Consolas, monospace;
+  }
+  .badge-retained { background: #dcfce7; color: #166534; }
+  .badge-refined { background: #e0e7ff; color: #3730a3; }
+
+  /* Prompt Container */
+  .prompt-box {
+    background: #0b1120;
+    color: #e2e8f0;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 7.4pt;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-break: break-word;
+    border: 1px solid #1e293b;
+    margin: 8px 0;
+  }
+  .page-break {
+    page-break-before: always;
+  }
+  .footer-note {
+    border-top: 1px solid #e2e8f0;
+    padding-top: 6px;
+    margin-top: 12px;
+    font-size: 7pt;
+    color: #94a3b8;
+    display: flex;
+    justify-content: space-between;
+  }
+</style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- PAGE 1: EXECUTIVE CONTEXT & ARCHITECTURE          -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="header-institution">
+    <div>
+      <div class="inst-title">Eastern Samar State University</div>
+      <div class="inst-sub">College of Computer Studies • Borongan City, Eastern Samar</div>
+    </div>
+    <div class="doc-tag">THESIS DEFENSE ENHANCEMENT</div>
+  </div>
+
+  <h1>UI/UX Redesign Specification & Master AI Prompt</h1>
+  <div class="doc-subtitle">
+    <strong>Capstone Project:</strong> AI-Driven Environmental Monitoring System for Urban Air Quality Assessment and Prediction<br>
+    <strong>Core Challenge:</strong> Eliminating Cognitive Overload via Progressive Disclosure while Preserving 100% of Academic Deliverables
+  </div>
+
+  <div class="meta-grid">
+    <div class="meta-item">
+      <strong>Target Platform</strong>
+      <span>Eco Quality Web System</span>
+    </div>
+    <div class="meta-item">
+      <strong>Evaluation Standard</strong>
+      <span>ISO/IEC 25010 &amp; IBM CSUQ</span>
+    </div>
+    <div class="meta-item">
+      <strong>Feature Retention</strong>
+      <span>100% Fully Preserved</span>
+    </div>
+    <div class="meta-item">
+      <strong>Primary Methodology</strong>
+      <span>Progressive Disclosure</span>
+    </div>
+  </div>
+
+  <h2>1. Executive Summary &amp; Panel Critique Alignment</h2>
+  <div class="callout-alert">
+    <div class="callout-title">The Thesis Defense Panel's Core Finding:</div>
+    <em>"The web dashboard is overwhelming and cluttered. Too many raw metrics, multi-sensor Z-score deviations, isolation forest outlier bars, feature importance distributions, and regression evaluation tables compete for visual attention simultaneously on a single viewport."</em>
+  </div>
+
+  <p>
+    An urban air quality monitoring system serves two distinct user classes with differing cognitive needs:
+  </p>
+  <ol>
+    <li>
+      <strong>Community Stakeholders (Residents, Barangay Officials, Students, Vendors):</strong> Evaluated using the <em>IBM Computer Usability Satisfaction Questionnaire (CSUQ)</em>. They need immediate, non-technical clarity: <em>"Is the air safe right now?"</em> and <em>"What will the air quality be in 1 to 3 hours?"</em>
+    </li>
+    <li>
+      <strong>Technical Experts &amp; Defense Panelists (IT Developers, System Admins, Environmental Scientists):</strong> Evaluated using the <em>ISO/IEC 25010 Software Quality Standard</em>. They require transparent verification of underlying algorithms ($R^2 = 0.952$, MAE comparison, Isolation Forest anomaly attribution, and multi-sensor telemetry).
+    </li>
+  </ol>
+  <p>
+    <strong>The Solution:</strong> Rather than stripping away features, this specification applies <strong>Progressive Disclosure</strong>. We decouple the interface into a primary, calming <strong>Citizen Overview</strong> layer and an on-demand <strong>Technical &amp; AI Diagnostics</strong> layer.
+  </p>
+
+  <h2>2. Dual-Mode Information Architecture</h2>
+  <div class="arch-diagram">
+    <table>
+      <tr>
+        <td colspan="4" class="arch-header">
+          TOP BAR: [● Eco Quality Brand] &nbsp;&nbsp;|&nbsp;&nbsp; [ 👤 Citizen Overview &nbsp;│&nbsp; 🔬 Technical Diagnostics ] &nbsp;&nbsp;|&nbsp;&nbsp; [☾ Theme] [☰ Menu]
+        </td>
+      </tr>
+      <tr>
+        <td colspan="4" class="arch-banner">
+          🚨 PUBLIC HEALTH ADVISORY BANNER (Appears conditionally on 24h sustained hazard or active sensor anomaly)
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="width: 50%;">
+          <strong>HERO A: PRIMARY AIR QUALITY GAUGE</strong><br>
+          • Big NowCast AQI Score (e.g. 10 - Good)<br>
+          • Clear Health Advisory (Safe for outdoor activities)<br>
+          • 24-Hour Sustained Average & DENR DAO 2000-81 Standard
+        </td>
+        <td colspan="2" style="width: 50%;">
+          <strong>HERO B: 3-HOUR PREDICTIVE OUTLOOK</strong><br>
+          • Step Forecast: +1h [10 Good] &bull; +2h [12 Good] &bull; +3h [11 Good]<br>
+          • Random Forest Trend: "Stable air quality predicted"<br>
+          • Quick-access Driver Insight link
+        </td>
+      </tr>
+      <tr>
+        <td style="width: 25%;">
+          <strong>🌡 Temperature</strong><br>
+          28.4 °C<br>
+          <small>Feels Like: 32°C (Modal)</small>
+        </td>
+        <td style="width: 25%;">
+          <strong>💧 Humidity</strong><br>
+          74.0 % RH<br>
+          <small>Comfort: Standard Band</small>
+        </td>
+        <td style="width: 25%;">
+          <strong>🌫 Particulate PM10</strong><br>
+          8.5 µg/m³<br>
+          <small>Laser Scattering (≤10µm)</small>
+        </td>
+        <td style="width: 25%;">
+          <strong>☣ Gas Contaminants</strong><br>
+          Normal Relative ADC<br>
+          <small>MQ-135 (CO, NH3, Smoke)</small>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="4">
+          <strong>PROGRESSIVE DISCLOSURE TABS / EXPANDABLE DIAGNOSTICS:</strong><br>
+          <strong>[ Tab 1: Daily Comparisons & Sensor Timeline Chart ]</strong> &nbsp;&bull;&nbsp; Today vs Yesterday Avg, Min/Max AQI, and Full Chart.js History<br>
+          <strong>[ Tab 2: Machine Learning & Anomaly Diagnostics ]</strong> &nbsp;&bull;&nbsp; Key Drivers (PM10, 3h Rolling, Diurnal, Temp), Isolation Forest Z-Scores, Source Fingerprint, and Model Evaluation ($R^2 = 0.952$, MAE comparison table)
+        </td>
+      </tr>
+      <tr>
+        <td colspan="4" style="text-align: center; font-size: 6.5pt; background: #f1f5f9;">
+          CITIZEN FOOTER: RA 8749 / DENR DAO 2000-81 Mandate • 24/7 Continuous IoT Station • Admin Portal Access
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="footer-note">
+    <span>Eco Quality Research • Eastern Samar State University</span>
+    <span>Page 1 of 4 • Document Ref: EQ-UIUX-2026</span>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- PAGE 2: FEATURE RETENTION MATRIX & DESIGN TOKENS   -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="page-break"></div>
+
+  <h2>3. Retained Features &amp; Backend Integration Matrix (100% Retention)</h2>
+  <p>
+    Every backend endpoint, machine learning script, and telemetry parameter is preserved. Nothing is eliminated:
+  </p>
+
+  <table class="table-matrix">
+    <thead>
+      <tr>
+        <th style="width: 22%;">Feature Component</th>
+        <th style="width: 32%;">Backend / Model Integration</th>
+        <th style="width: 34%;">Redesigned UX Presentation</th>
+        <th style="width: 12%;">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Live AQI &amp; NowCast</strong></td>
+        <td><code>telemetry_raw</code> via <code>insert.php</code>; RA 8749 / DENR DAO 2000-81 breakpoints</td>
+        <td>Hero Card with large numerical index, color-coded health tag, and 24h average</td>
+        <td><span class="badge badge-retained">Retained</span></td>
+      </tr>
+      <tr>
+        <td><strong>Environmental Sensors</strong></td>
+        <td>PM10 (PMS5003), MQ-135 (Gas), DHT22 (Temp &amp; Humidity)</td>
+        <td>Four clean telemetry cards with modal info tooltips on click</td>
+        <td><span class="badge badge-retained">Retained</span></td>
+      </tr>
+      <tr>
+        <td><strong>Public Advisory Banner</strong></td>
+        <td>24h sustained AQI computation + acute anomaly alerts in <code>dashboard.js</code></td>
+        <td>Non-alarmist, color-accented banner with plain-language guidance</td>
+        <td><span class="badge badge-refined">Refined</span></td>
+      </tr>
+      <tr>
+        <td><strong>Random Forest Forecast</strong></td>
+        <td><code>ai/rf_predictor.py</code> (100 trees, +1h, +2h, +3h forecasts)</td>
+        <td>Forecast card with step outlooks, trend badges, and confidence badges</td>
+        <td><span class="badge badge-retained">Retained</span></td>
+      </tr>
+      <tr>
+        <td><strong>Key Prediction Drivers</strong></td>
+        <td>Feature importances (PM10, 3h rolling AQI, diurnal cycle, temp)</td>
+        <td>Clean horizontal progress bars nested in Technical Diagnostics view</td>
+        <td><span class="badge badge-refined">Organized</span></td>
+      </tr>
+      <tr>
+        <td><strong>Model Evaluation</strong></td>
+        <td>Random Forest vs. Linear Regression MAE &amp; $R^2$ score ($0.952$)</td>
+        <td>Benchmark comparison table inside expandable diagnostics</td>
+        <td><span class="badge badge-retained">Retained</span></td>
+      </tr>
+      <tr>
+        <td><strong>Anomaly Detection</strong></td>
+        <td>Hybrid Isolation Forest in <code>ai/detect_anomaly.py</code></td>
+        <td>Status badge and outlier risk score bar (0–100 scale)</td>
+        <td><span class="badge badge-retained">Retained</span></td>
+      </tr>
+      <tr>
+        <td><strong>Z-Score Explainability</strong></td>
+        <td>Z-score standard deviation calculations per sensor</td>
+        <td>Mini sensor deviation grid explaining root cause of anomaly</td>
+        <td><span class="badge badge-retained">Retained</span></td>
+      </tr>
+      <tr>
+        <td><strong>Pollution Fingerprint</strong></td>
+        <td>Covariance attribution (traffic, biomass, industrial, baseline)</td>
+        <td>Fingerprint card with emission classification and confidence</td>
+        <td><span class="badge badge-retained">Retained</span></td>
+      </tr>
+      <tr>
+        <td><strong>Daily Summary</strong></td>
+        <td><code>api/daily.php</code> (Today vs. Yesterday, Min/Max/Readings)</td>
+        <td>Historical analysis tab with compact metric comparison pills</td>
+        <td><span class="badge badge-retained">Retained</span></td>
+      </tr>
+      <tr>
+        <td><strong>Interactive History Chart</strong></td>
+        <td>Chart.js time-series rendering raw and aggregated readings</td>
+        <td>Full-width interactive chart with multi-sensor toggle buttons</td>
+        <td><span class="badge badge-retained">Retained</span></td>
+      </tr>
+      <tr>
+        <td><strong>CSV Data Export</strong></td>
+        <td><code>export.php</code> (May 6 inception date, downsampled logs)</td>
+        <td>Quick access link in drawer menu and analytics tab</td>
+        <td><span class="badge badge-retained">Retained</span></td>
+      </tr>
+      <tr>
+        <td><strong>Theme Engine</strong></td>
+        <td>Anti-FOUC LocalStorage script for Dark and Light modes</td>
+        <td>Header toggle with smooth CSS theme transitions</td>
+        <td><span class="badge badge-retained">Retained</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>4. Ergonomics, Spacing &amp; Design System Tokens</h2>
+  <div class="meta-grid">
+    <div class="meta-item">
+      <strong>Primary Dark BG</strong>
+      <span>#0B0F17 (Deep Slate)</span>
+    </div>
+    <div class="meta-item">
+      <strong>Card Surface (Dark)</strong>
+      <span>#141C2B (Elevated Navy)</span>
+    </div>
+    <div class="meta-item">
+      <strong>Primary Light BG</strong>
+      <span>#F8FAFC (Warm Neutral)</span>
+    </div>
+    <div class="meta-item">
+      <strong>Accent Color</strong>
+      <span>#00CFA8 (Mint Emerald)</span>
+    </div>
+  </div>
+
+  <ul>
+    <li><strong>Concentric Border Radii:</strong> Outer card containers use <code>border-radius: 16px</code>; inner badges, progress bars, and pills use <code>border-radius: 8px</code> to create optical harmony.</li>
+    <li><strong>Tabular Numerals:</strong> Dynamic sensor readings apply <code>font-variant-numeric: tabular-nums</code> so numbers update every few seconds without layout twitching.</li>
+    <li><strong>Breathable Whitespace:</strong> Card inner padding is elevated to <code>20px–24px</code> with a grid gap of <code>16px</code>, preventing the cramped visual density of the previous layout.</li>
+    <li><strong>Accessible Hit Targets:</strong> All buttons, modal triggers, and navigation elements have at least <code>44px × 44px</code> touch areas.</li>
+  </ul>
+
+  <div class="footer-note">
+    <span>Eco Quality Research • Eastern Samar State University</span>
+    <span>Page 2 of 4 • Document Ref: EQ-UIUX-2026</span>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- PAGE 3: MASTER IMPLEMENTATION PROMPT              -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="page-break"></div>
+
+  <h2>5. Master AI &amp; Frontend Implementation Prompt</h2>
+  <p>
+    Copy the prompt below directly into AI development environments (v0.dev, Lovable, Claude 3.5 Sonnet, Cursor) or hand it to a frontend engineer:
+  </p>
+
+  <div class="prompt-box">Act as an elite Senior UI/UX Engineer and Frontend Architect.
+
+You are tasked with redesigning the frontend interface for an IoT and Machine Learning urban air quality monitoring system ("Eco Quality") deployed for Eastern Samar State University (ESSU).
+
+### CONTEXT & PROBLEM STATEMENT:
+During thesis evaluation, the academic defense panel noted that the interface is "OVERWHELMING AND CLUTTERED." The screen currently shows raw sensor telemetry, multi-sensor Z-score grids, isolation forest risk bars, Random Forest feature importance bars, and regression evaluation tables all at once on a single dense viewport.
+
+### OBJECTIVE:
+Re-architect the web dashboard into a clean, calm, modern, and highly intuitive interface utilizing PROGRESSIVE DISCLOSURE, while RETAINING 100% OF ALL EXISTING FEATURES, METRICS, AND BACKEND APIS.
+
+### USER PERSONAS TO SATISFY:
+1. CITIZEN STAKEHOLDERS (IBM CSUQ Questionnaire): Need an immediate, clear answer: "Is the air safe right now?" and "What is the 3-hour forecast?" Requires large typography, breathable spacing, and actionable health guidance.
+2. TECHNICAL EXPERTS & PANELISTS (ISO/IEC 25010 Quality Model): Need access to model evaluations (R² = 0.952, MAE comparison), Random Forest feature importance drivers, Isolation Forest anomaly Z-scores, and pollution fingerprints.
+
+### INFORMATION ARCHITECTURE:
+Implement a dual-mode layout via a smooth Segmented View Control in the header or clean tabbed structure:
+- MODE 1: "CITIZEN OVERVIEW" (Default)
+  - Sticky Top Bar: Brand, Live Sensor Connection Pulse, Segmented View Switch, Theme Toggle (Dark/Light), Menu Drawer.
+  - Conditional Alert Banner: Rendered only when 24h sustained AQI exceeds healthy thresholds or when an acute anomaly occurs.
+  - Hero Section (2-Column Desktop, Stacked Mobile):
+    * Column A: Primary AQI Card with large number, RA 8749 category badge, health action guidance, and 24h average.
+    * Column B: 3-Hour Predictive Outlook (+1h, +2h, +3h) with category tags and Random Forest trend direction.
+  - Clean Telemetry Row (4 Cards):
+    * Temperature (°C, Feels Like apparent temperature modal trigger)
+    * Humidity (% RH, comfort level badge)
+    * PM10 Particulate (µg/m³, laser scattering PMS5003 scope)
+    * Gas Contaminants (MQ-135 relative ADC index, target gases info modal)
+
+- MODE 2: "TECHNICAL & AI DIAGNOSTICS" (Expandable or Tabbed)
+  - Daily Summary Panel: Today vs. Yesterday average AQI, Min AQI, Max AQI, Total Readings.
+  - Anomaly Detection Center: Isolation Forest status, Anomaly Risk Bar (0–100), Z-Score Explainability Grid, Stuck Sensor Watchdog.
+  - Pollution Source Diagnostic: Attributed emission fingerprint (traffic, biomass burning, industrial, baseline) with confidence badge and rationale.
+  - Predictive Drivers (Feature Importance): Horizontal distribution bars (PM10 Level %, 3h Rolling AQI %, Diurnal Hour %, Ambient Temp %).
+  - Model Evaluation Benchmark: Comparative table between Random Forest (100 Trees, MAE ±2.74, R² 0.952) and Baseline Linear Regression (MAE ±14.55), displaying the 81.2% error reduction badge.
+  - Interactive Sensor History Chart: Chart.js timeline with toggleable sensor series.
+
+### DESIGN TOKENS & ERGONOMICS:
+- Typography: Inter or SF Pro Display for headings with text-wrap: balance; font-variant-numeric: tabular-nums for all updating live numbers.
+- Radii: Outer cards 16px radius, inner badges 8px radius (concentric harmony).
+- Color Scheme (Dark): Background #0B0F17, Cards #141C2B, Borders rgba(255,255,255,0.08), Accent #00CFA8.
+- Color Scheme (Light): Background #F8FAFC, Cards #FFFFFF, Borders rgba(0,0,0,0.06), Accent #00A884.
+- Touch Targets: Minimum 44px x 44px hit areas on all buttons and modals.
+
+Deliver clean, semantic HTML5, modern CSS3 (with CSS variables), and vanilla JavaScript matching existing PHP data endpoints.</div>
+
+  <div class="footer-note">
+    <span>Eco Quality Research • Eastern Samar State University</span>
+    <span>Page 3 of 4 • Document Ref: EQ-UIUX-2026</span>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- PAGE 4: DEFENSE PRESENTATION & JUSTIFICATION       -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="page-break"></div>
+
+  <h2>6. Panel Defense Presentation &amp; Justification Script</h2>
+  <p>
+    When presenting this redesigned interface to your thesis panel, use these structured talking points to explain how their feedback was systematically resolved:
+  </p>
+
+  <div class="callout-green">
+    <div class="callout-title">Opening Statement for System Demo:</div>
+    <em>"Honorable members of the panel, during our previous review, you provided a critical insight regarding cognitive load—specifically that our initial interface presented too much raw data and technical diagnostics all at once. In response, we conducted a rigorous UX re-architecting process based on the <strong>ISO/IEC 25010 Usability standard</strong> and the <strong>IBM Computer Usability Satisfaction Questionnaire (CSUQ)</strong>."</em>
+  </div>
+
+  <div class="callout-green">
+    <div class="callout-title">Key Defense Talking Points:</div>
+    <ul style="margin: 0; padding-left: 16px;">
+      <li>
+        <strong>Application of Progressive Disclosure:</strong> Rather than stripping away features or dumbing down our capstone deliverables, we implemented the industry-standard principle of <em>Progressive Disclosure</em>. The interface now features a two-tiered hierarchy.
+      </li>
+      <li>
+        <strong>Solving the Problem for General Citizens:</strong> Everyday barangay stakeholders first experience the <em>Citizen Overview</em>. In less than 3 seconds, they see clear, color-coded air safety guidance, RA 8749 health advisories, and an immediate 3-hour predictive outlook without being overwhelmed by mathematical equations or sensor drift parameters.
+      </li>
+      <li>
+        <strong>Full Retention for Technical Evaluators:</strong> For technical experts and the defense panel, our <em>Technical &amp; AI Diagnostics Center</em> is accessible with a single click. It houses 100% of our academic benchmarks—including our Random Forest $R^2 = 0.952$ score, the 81.2% MAE error reduction over Linear Regression, our Isolation Forest anomaly risk score, and our multi-sensor Z-score attribution grids.
+      </li>
+      <li>
+        <strong>Empirical Evaluation Readiness:</strong> This architecture allows both our non-technical respondents (via CSUQ) and technical experts (via ISO 25010) to rate the system with top scores without conflicting usability requirements.
+      </li>
+    </ul>
+  </div>
+
+  <h2>7. Verification &amp; Quality Sign-Off</h2>
+  <p>
+    This specification ensures that the development team can proceed with implementation with zero ambiguity, ensuring total alignment with Eastern Samar State University's academic research standards:
+  </p>
+
+  <table class="table-matrix">
+    <thead>
+      <tr>
+        <th>Evaluation Dimension</th>
+        <th>Quality Benchmark</th>
+        <th>Compliance Verification</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Information Architecture</strong></td>
+        <td>Progressive Disclosure &bull; Dual Persona Separation</td>
+        <td>Verified: Public Hero View separated from Technical Diagnostics</td>
+      </tr>
+      <tr>
+        <td><strong>Backend Compatibility</strong></td>
+        <td>Zero Breaking Changes to PHP APIs or Python Scripts</td>
+        <td>Verified: Preserves all endpoints (<code>api/rf_predict.php</code>, <code>api/anomaly.php</code>, <code>api/daily.php</code>)</td>
+      </tr>
+      <tr>
+        <td><strong>Accessibility &amp; Touch</strong></td>
+        <td>WCAG 2.1 Contrast &bull; 44px Minimum Touch Target</td>
+        <td>Verified: High-contrast semantic tokens with responsive hit areas</td>
+      </tr>
+      <tr>
+        <td><strong>Defense Deliverables</strong></td>
+        <td>Full visibility of $R^2$, MAE, and Isolation Forest</td>
+        <td>Verified: Model evaluation benchmark and drivers prominently accessible</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="footer-note" style="margin-top: 30px;">
+    <span>Eco Quality Research • Eastern Samar State University</span>
+    <span>Page 4 of 4 • Document Ref: EQ-UIUX-2026</span>
+  </div>
+
+</body>
+</html>
