@@ -454,6 +454,16 @@ body.light .seg-btn.active {
     transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
     position: relative;
     overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.panel-body {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
 }
 
 .card:hover,
@@ -1060,11 +1070,17 @@ body.light .forecast-summary-box {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
 }
 
 /* Sub-Tab 1: Daily Trends & History Chart */
 .diag-panel {
     margin-bottom: 20px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
 }
 
 .panel-actions {
@@ -1300,14 +1316,20 @@ body.light .forecast-summary-box {
 /* Sub-Tab 2: Machine Learning & Anomaly Diagnostics Grid */
 .diagnostics-split-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 20px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
 }
 
 .diag-column {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
 }
 
 /* Feature Importance Progress Bars */
@@ -1315,6 +1337,9 @@ body.light .forecast-summary-box {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
 }
 
 .feature-bar-row {
@@ -1325,6 +1350,10 @@ body.light .forecast-summary-box {
     display: flex;
     flex-direction: column;
     gap: 6px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 .feature-bar-meta {
@@ -1333,6 +1362,8 @@ body.light .forecast-summary-box {
     justify-content: space-between;
     font-size: 0.78rem;
     font-family: var(--font-mono);
+    width: 100%;
+    min-width: 0;
 }
 
 .feature-name {
@@ -1350,6 +1381,8 @@ body.light .forecast-summary-box {
     background: rgba(255, 255, 255, 0.06);
     border-radius: var(--radius-inner);
     overflow: hidden;
+    width: 100%;
+    min-width: 0;
 }
 
 body.light .feature-bar-track {
@@ -1365,14 +1398,18 @@ body.light .feature-bar-track {
 
 /* Model Benchmark Table */
 .benchmark-table-wrap {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     margin-bottom: 14px;
+    border-radius: var(--radius-inner);
 }
 
 .benchmark-table {
     width: 100%;
-    min-width: 440px;
+    min-width: 380px;
     border-collapse: collapse;
     font-size: 0.8rem;
     text-align: left;
@@ -1386,6 +1423,7 @@ body.light .feature-bar-track {
     color: var(--muted);
     border-bottom: 1px solid var(--border);
     letter-spacing: 0.03em;
+    white-space: nowrap;
 }
 
 .benchmark-table td {
@@ -1402,6 +1440,7 @@ body.light .feature-bar-track {
     display: flex;
     flex-direction: column;
     gap: 2px;
+    min-width: 0;
 }
 
 .arch-sub {
@@ -1417,6 +1456,7 @@ body.light .feature-bar-track {
     font-family: var(--font-mono);
     font-size: 0.72rem;
     font-weight: 600;
+    white-space: nowrap;
 }
 
 .eval-badge.active {
@@ -1438,6 +1478,10 @@ body.light .feature-bar-track {
     border: 1px solid var(--border);
     border-radius: var(--radius-inner);
     padding: 12px 14px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 .improvement-badge {
@@ -1461,52 +1505,66 @@ body.light .feature-bar-track {
 /* Anomaly Detection Center */
 .anomaly-status {
     display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 14px;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
     border-radius: var(--radius-inner);
     border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
     background: var(--card-subtle);
     margin-bottom: 16px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 .anomaly-status.ok {
     border-color: rgba(0, 207, 168, 0.3);
+    border-left-color: var(--accent);
     background: var(--accent-tint);
 }
 
 .anomaly-status.warning {
     border-color: rgba(245, 166, 35, 0.4);
+    border-left-color: var(--warn);
     background: var(--warn-tint);
 }
 
 .anomaly-status.critical {
     border-color: rgba(240, 82, 82, 0.4);
+    border-left-color: var(--danger);
     background: var(--danger-tint);
 }
 
 .anomaly-icon {
-    font-size: 1.6rem;
-    line-height: 1;
+    font-size: 1.35rem;
+    line-height: 1.1;
     flex-shrink: 0;
+    margin-top: 1px;
 }
 
 .anomaly-details {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 3px;
+    flex: 1;
+    min-width: 0;
 }
 
 .anomaly-label {
     font-size: 0.86rem;
     font-weight: 700;
     color: var(--text);
+    line-height: 1.25;
 }
 
 .anomaly-msg {
     font-size: 0.78rem;
     color: var(--muted);
-    line-height: 1.35;
+    line-height: 1.4;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 /* Isolation Forest Risk Bar */
@@ -1514,6 +1572,9 @@ body.light .feature-bar-track {
     margin-bottom: 18px;
     padding-bottom: 16px;
     border-bottom: 1px solid var(--border);
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
 }
 
 .risk-bar-header {
@@ -1541,6 +1602,9 @@ body.light .feature-bar-track {
     border: 1px solid var(--border);
     border-radius: var(--radius-inner);
     overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
 }
 
 .risk-bar-fill {
@@ -1553,6 +1617,9 @@ body.light .feature-bar-track {
 /* Z-Score Explainability Grid */
 .zscore-section {
     margin-bottom: 12px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
 }
 
 .zscore-title {
@@ -1569,6 +1636,9 @@ body.light .feature-bar-track {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 8px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
 }
 
 .z-box {
@@ -1580,6 +1650,9 @@ body.light .feature-bar-track {
     display: flex;
     flex-direction: column;
     gap: 3px;
+    min-width: 0;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 .z-name {
@@ -1587,12 +1660,18 @@ body.light .feature-bar-track {
     font-family: var(--font-mono);
     color: var(--muted);
     text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .z-val {
     font-size: 0.88rem;
     font-family: var(--font-mono);
     font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .z-val.ok {
@@ -1618,6 +1697,10 @@ body.light .feature-bar-track {
     padding: 8px 12px;
     border-radius: var(--radius-inner);
     margin-top: 10px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 /* Pollution Source Diagnostic Card */
@@ -1629,23 +1712,30 @@ body.light .feature-bar-track {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 .source-head {
     display: flex;
     align-items: center;
     gap: 10px;
+    min-width: 0;
 }
 
 .source-icon {
     font-size: 1.4rem;
     line-height: 1;
+    flex-shrink: 0;
 }
 
 .source-title {
     font-size: 0.92rem;
     color: var(--text);
     font-weight: 700;
+    line-height: 1.3;
 }
 
 .source-reasoning {
@@ -1653,6 +1743,8 @@ body.light .feature-bar-track {
     color: var(--muted);
     font-family: var(--font-mono);
     line-height: 1.45;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 /* ── CITIZEN FOOTER ─────────────────────────────────────────────────────── */
@@ -2134,11 +2226,20 @@ body.light .skeleton::after {
 
 @media (max-width: 960px) {
     .hero-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .diagnostics-split-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .diag-column {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
     }
 }
 
@@ -2224,6 +2325,10 @@ body.light .skeleton::after {
     .panel {
         padding: 16px 14px;
         border-radius: var(--radius-outer);
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
     }
 
     .daily-metrics-grid {
@@ -2263,64 +2368,202 @@ body.light .skeleton::after {
         display: inline;
     }
 
-    .z-grid {
-        grid-template-columns: repeat(5, 1fr);
-        gap: 5px;
-    }
-
-    .z-box {
-        padding: 8px 2px;
+    .diagnostics-split-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+        width: 100%;
+        max-width: 100%;
         min-width: 0;
     }
 
+    .diag-column {
+        gap: 16px;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .panel-header {
+        margin-bottom: 12px;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .panel-title {
+        font-size: 0.84rem;
+    }
+
+    .panel-title-group {
+        gap: 8px;
+        flex-wrap: wrap;
+        min-width: 0;
+        flex: 1;
+    }
+
+    .z-grid {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 4px;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .z-box {
+        padding: 6px 2px;
+        min-width: 0;
+        box-sizing: border-box;
+    }
+
     .z-name {
-        font-size: 0.62rem;
+        font-size: 0.60rem;
         letter-spacing: 0.02em;
     }
 
     .z-val {
-        font-size: 0.82rem;
+        font-size: 0.80rem;
     }
 
     .anomaly-status {
-        padding: 12px;
+        display: flex;
+        align-items: flex-start;
+        padding: 11px 12px;
         gap: 10px;
         margin-bottom: 14px;
+        border-radius: var(--radius-inner);
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--accent);
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+    }
+
+    .anomaly-status.ok {
+        border-color: rgba(0, 207, 168, 0.25);
+        border-left-color: var(--accent);
+        background: var(--accent-tint);
+    }
+
+    .anomaly-status.warning {
+        border-color: rgba(245, 166, 35, 0.35);
+        border-left-color: var(--warn);
+        background: var(--warn-tint);
+    }
+
+    .anomaly-status.critical {
+        border-color: rgba(240, 82, 82, 0.35);
+        border-left-color: var(--danger);
+        background: var(--danger-tint);
     }
 
     .anomaly-icon {
-        font-size: 1.35rem;
+        font-size: 1.25rem;
+        line-height: 1.1;
+        margin-top: 1px;
+        flex-shrink: 0;
+    }
+
+    .anomaly-details {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        flex: 1;
+        min-width: 0;
     }
 
     .anomaly-label {
         font-size: 0.82rem;
+        font-weight: 700;
+        line-height: 1.25;
     }
 
     .anomaly-msg {
-        font-size: 0.75rem;
+        font-size: 0.74rem;
+        line-height: 1.35;
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }
+
+    .iforest-container {
+        margin-bottom: 14px;
+        padding-bottom: 14px;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .risk-bar-header {
+        font-size: 0.72rem;
     }
 
     .benchmark-table-wrap {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        overflow-x: auto;
         -webkit-overflow-scrolling: touch;
         margin-bottom: 12px;
+        border-radius: var(--radius-inner);
+    }
+
+    .benchmark-table {
+        min-width: 340px;
+        font-size: 0.75rem;
+    }
+
+    .benchmark-table th {
+        padding: 8px 6px;
+        font-size: 0.65rem;
+    }
+
+    .benchmark-table td {
+        padding: 8px 6px;
+    }
+
+    .arch-cell strong {
+        font-size: 0.78rem;
+    }
+
+    .arch-sub {
+        font-size: 0.65rem;
+    }
+
+    .eval-badge {
+        padding: 2px 6px;
+        font-size: 0.65rem;
     }
 
     .benchmark-improvement-callout {
         gap: 10px;
         padding: 10px 12px;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
     }
 
     .improvement-badge {
         font-size: 1.2rem;
     }
 
+    .improvement-text {
+        font-size: 0.74rem;
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }
+
     .source-card {
         padding: 12px 14px;
         gap: 6px;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
     }
 
     .source-head {
         gap: 8px;
+        min-width: 0;
     }
 
     .source-icon {
@@ -2333,6 +2576,8 @@ body.light .skeleton::after {
 
     .source-reasoning {
         font-size: 0.75rem;
+        word-break: break-word;
+        overflow-wrap: break-word;
     }
 
     .disclosure-callout-card {
@@ -2389,6 +2634,11 @@ body.light .skeleton::after {
     .telemetry-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 10px;
+    }
+
+    .card,
+    .panel {
+        padding: 14px 12px;
     }
 
     .telemetry-card {
@@ -2527,6 +2777,11 @@ body.light .skeleton::after {
 }
 
 @media (max-width: 360px) {
+    .card,
+    .panel {
+        padding: 12px 10px;
+    }
+
     .telemetry-grid {
         grid-template-columns: 1fr;
     }
