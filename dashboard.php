@@ -170,7 +170,7 @@ if (isset($_GET['latest'])) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="assets/css/dashboard.css?v=36" rel="stylesheet">
+<link href="assets/css/dashboard.css?v=37" rel="stylesheet">
 <script>
     // System Validation: Early Device Theme Detection (Anti-FOUC)
     (function() {
@@ -501,9 +501,9 @@ if (isset($_GET['latest'])) {
                         <span class="badge-pill" id="daily-tag">loading…</span>
                     </div>
                     <div class="panel-actions">
-                        <a href="export.php" class="btn-subtle-export" title="Export CSV Data Logs">
+                        <button type="button" class="btn-subtle-export" onclick="openExportModal()" title="Export CSV Data Logs">
                             <span class="icon">↓</span> CSV Export
-                        </a>
+                        </button>
                         <button type="button" class="btn-info-circle" onclick="toggleTip(this)" title="Methodology info" aria-label="Daily summary info">i</button>
                         <div class="info-tip">
                             <div class="tip-title">Daily Summary Methodology</div>
@@ -810,10 +810,10 @@ if (isset($_GET['latest'])) {
             <span class="icon">🔗</span>
             <span>Share Live Air Quality</span>
         </button>
-        <a href="export.php" class="menu-link" onclick="closeMenu();">
+        <button type="button" class="menu-link" onclick="openExportModal(); closeMenu();">
             <span class="icon">↓</span>
             <span>Export Historical Logs (CSV)</span>
-        </a>
+        </button>
         <hr class="menu-divider">
         <button onclick="openFeedback(); closeMenu();" class="menu-link">
             <span class="icon">💬</span>
@@ -864,6 +864,56 @@ $feedback_next_url = (strpos($current_host, 'localhost') !== false || strpos($cu
     </div>
 </div>
 
+<!-- Glassmorphism Modal for Data Export (CSV) -->
+<div id="export-modal" class="glass-modal" onclick="closeExportModal(event)" role="dialog" aria-modal="true">
+    <div class="glass-modal-content export-modal-content" onclick="event.stopPropagation()">
+        <button class="close-modal-btn" onclick="closeExportModal(event)" aria-label="Close export dialog">&times;</button>
+        <div class="tip-title" style="display: flex; align-items: center; gap: 8px;">
+            <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export Telemetry &amp; AI Logs (CSV)
+        </div>
+        <p style="font-size: 12px; color: var(--muted); margin-bottom: 14px; line-height: 1.4;">
+            Download structured sensor telemetry, including raw PM10, gas readings, and synchronized machine learning predictions.
+        </p>
+
+        <div class="archive-info" style="display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 11px; color: var(--muted); margin-bottom: 16px; padding: 8px 12px; background: rgba(0, 207, 168, 0.05); border: 1px solid rgba(0, 207, 168, 0.2); border-radius: 8px;">
+            <span class="archive-dot" style="width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 6px var(--accent); flex-shrink: 0;"></span>
+            <span>Data collection active since <strong>May 6, 2026</strong></span>
+        </div>
+
+        <form method="GET" action="export.php" id="modalExportForm" onsubmit="handleExportSubmit(event)">
+            <input type="hidden" name="export" value="1">
+
+            <div class="quick-presets" style="display: flex; gap: 8px; margin-bottom: 16px;">
+                <button type="button" class="preset-btn" onclick="setExportPreset(7)">Last 7 Days</button>
+                <button type="button" class="preset-btn" onclick="setExportPreset(30)">Last 30 Days</button>
+                <button type="button" class="preset-btn" onclick="setExportPreset('all')">All Time (Since May 6)</button>
+            </div>
+
+            <div class="date-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+                <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                    <label style="font-size: 11px; color: var(--muted); font-family: var(--font-mono); text-transform: uppercase;">From Date</label>
+                    <input type="date" name="from" id="modal_export_from" class="fb-input" value="<?= date('Y-m-d', strtotime('-7 days')) ?>" min="2026-05-06" max="<?= date('Y-m-d') ?>" onchange="updateExportPreview()" required>
+                </div>
+                <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                    <label style="font-size: 11px; color: var(--muted); font-family: var(--font-mono); text-transform: uppercase;">To Date</label>
+                    <input type="date" name="to" id="modal_export_to" class="fb-input" value="<?= date('Y-m-d') ?>" min="2026-05-06" max="<?= date('Y-m-d') ?>" onchange="updateExportPreview()" required>
+                </div>
+            </div>
+
+            <div class="preview-box" id="modalPreviewBox" style="background: rgba(0, 207, 168, 0.05); border: 1px solid rgba(0, 207, 168, 0.2); border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
+                <div class="preview-text" style="font-size: 13px; color: var(--text);">Records in selection:</div>
+                <div class="preview-count" id="modalPreviewCount" style="font-family: var(--font-mono); font-size: 15px; font-weight: 700; color: var(--accent);">Calculating…</div>
+            </div>
+
+            <button type="submit" class="fb-submit" id="modalDlBtn" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span id="modalDlBtnText">Download CSV Dataset</span>
+            </button>
+        </form>
+    </div>
+</div>
+
 <!-- Custom PWA Install Prompt -->
 <div id="install-prompt" class="install-prompt">
     <div class="install-content">
@@ -878,11 +928,11 @@ $feedback_next_url = (strpos($current_host, 'localhost') !== false || strpos($cu
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=36" defer></script>
+<script src="assets/js/dashboard.js?v=37" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=30')
+        navigator.serviceWorker.register('./sw.js?update=31')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update();

@@ -997,9 +997,11 @@ body.light .forecast-summary-box {
     border: 1px solid var(--border);
     border-radius: var(--radius-inner);
     color: var(--text);
+    font-family: inherit;
     font-size: 0.76rem;
     font-weight: 600;
     text-decoration: none;
+    cursor: pointer;
     transition: all 0.2s;
 }
 
@@ -1746,6 +1748,36 @@ body.light .feature-bar-track {
 
 .fb-submit:hover {
     background: var(--accent-hover);
+}
+
+/* Export Modal Controls */
+.preset-btn {
+    flex: 1;
+    background: var(--card-subtle);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 7px 8px;
+    border-radius: var(--radius-inner);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.preset-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(0, 207, 168, 0.08);
+}
+
+@media (max-width: 480px) {
+    .quick-presets {
+        flex-direction: column !important;
+    }
+    .date-row {
+        grid-template-columns: 1fr !important;
+    }
 }
 
 /* ── SIDE DRAWER MENU ───────────────────────────────────────────────────── */

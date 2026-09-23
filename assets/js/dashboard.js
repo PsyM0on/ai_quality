@@ -152,11 +152,123 @@ function closeFeedback(e) {
     document.body.style.overflow = '';
 }
 
+/* ── CSV EXPORT MODAL ─────────────────────────────────────────────────────── */
+function openExportModal() {
+    const modal = document.getElementById('export-modal');
+    if (modal) {
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+        updateExportPreview();
+    }
+}
+
+function closeExportModal(e) {
+    if (e && e.type === 'click' && e.target.classList.contains('glass-modal-content')) return;
+    const modal = document.getElementById('export-modal');
+    if (modal) modal.classList.remove('show');
+    document.body.style.overflow = '';
+}
+
+function setExportPreset(val) {
+    const minDate = "2026-05-06";
+    const fromEl = document.getElementById('modal_export_from');
+    const toEl   = document.getElementById('modal_export_to');
+    if (!fromEl || !toEl) return;
+
+    const today = new Date().toISOString().split('T')[0];
+    toEl.value = today;
+    if (val === 'all') {
+        fromEl.value = minDate;
+    } else {
+        const d = new Date();
+        d.setDate(d.getDate() - parseInt(val, 10));
+        let str = d.toISOString().split('T')[0];
+        if (str < minDate) str = minDate;
+        fromEl.value = str;
+    }
+    updateExportPreview();
+}
+
+function updateExportPreview() {
+    const minDate = "2026-05-06";
+    const fromEl = document.getElementById('modal_export_from');
+    const toEl   = document.getElementById('modal_export_to');
+    const countEl = document.getElementById('modalPreviewCount');
+    const dlBtn   = document.getElementById('modalDlBtn');
+    if (!fromEl || !toEl || !countEl) return;
+
+    let from = fromEl.value;
+    let to   = toEl.value;
+    if (!from || !to) return;
+    if (from < minDate) {
+        from = minDate;
+        fromEl.value = minDate;
+    }
+    if (from > to) {
+        countEl.textContent = "Invalid (From > To)";
+        if (dlBtn) dlBtn.disabled = true;
+        return;
+    }
+
+    countEl.textContent = "Calculating…";
+
+    fetch(`export_preview.php?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`)
+        .then(r => r.json())
+        .then(data => {
+            const count = data.count || 0;
+            countEl.textContent = count.toLocaleString() + " rows";
+            if (dlBtn) dlBtn.disabled = (count === 0);
+        })
+        .catch(() => {
+            countEl.textContent = "Ready to download";
+            if (dlBtn) dlBtn.disabled = false;
+        });
+}
+
+function handleExportSubmit(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const fromEl = document.getElementById('modal_export_from');
+    const toEl   = document.getElementById('modal_export_to');
+    const btn    = document.getElementById('modalDlBtn');
+    const btnText= document.getElementById('modalDlBtnText');
+
+    if (!fromEl || !toEl) return;
+    const from = fromEl.value;
+    const to   = toEl.value;
+
+    if (btnText) btnText.textContent = "Preparing CSV…";
+    if (btn) btn.disabled = true;
+
+    // Trigger download via temporary anchor to prevent navigation away from dashboard
+    const downloadUrl = `export.php?export=1&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
+    const tempLink = document.createElement('a');
+    tempLink.href = downloadUrl;
+    tempLink.setAttribute('download', '');
+    document.body.appendChild(tempLink);
+    tempLink.click();
+    document.body.removeChild(tempLink);
+
+    setTimeout(() => {
+        if (btnText) btnText.textContent = "Download CSV Dataset";
+        if (btn) btn.disabled = false;
+        closeExportModal();
+    }, 1200);
+}
+
+// Attach export modal date input listeners
+(function() {
+    const mFrom = document.getElementById('modal_export_from');
+    const mTo   = document.getElementById('modal_export_to');
+    if (mFrom) mFrom.addEventListener('input', updateExportPreview);
+    if (mTo)   mTo.addEventListener('input', updateExportPreview);
+})();
+
 // ESC key closes any open modal
 document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
         closeModal();
         closeFeedback();
+        closeExportModal();
         closeMenu();
     }
 });
