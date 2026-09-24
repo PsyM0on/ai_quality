@@ -180,7 +180,7 @@ if (isset($_GET['latest'])) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="assets/css/dashboard.css?v=46" rel="stylesheet">
+<link href="assets/css/dashboard.css?v=47" rel="stylesheet">
 <script>
     // System Validation: Early Device Theme Detection (Default: Light Mode)
     (function() {
@@ -281,6 +281,17 @@ if (isset($_GET['latest'])) {
     <!-- ───────────────────────────────────────────────────────────────────── -->
     <section id="view-citizen" class="view-section active" role="tabpanel" aria-labelledby="btn-citizen">
         
+        <!-- Minimal Deployment Location Indicator -->
+        <div class="overview-station-strip">
+            <div class="station-chip" title="Physical environmental sensor node deployed at Maypangdan, Borongan City">
+                <span class="station-pulse-dot" id="station-live-dot" aria-hidden="true"></span>
+                <svg class="icon-svg pin-icon" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>
+                <span class="station-loc-label">Sensor Location:</span>
+                <span class="station-loc-name">Maypangdan, Borongan City</span>
+                <span class="station-node-badge" id="station-node-badge">Online</span>
+            </div>
+        </div>
+
         <!-- Hero Section (2-Column Desktop Grid, Stacked Mobile) -->
         <div class="hero-grid">
             <!-- Hero A: Primary Air Quality Gauge -->
@@ -986,11 +997,11 @@ $feedback_next_url = (strpos($current_host, 'localhost') !== false || strpos($cu
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=46" defer></script>
+<script src="assets/js/dashboard.js?v=47" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=40')
+        navigator.serviceWorker.register('./sw.js?update=41')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update();

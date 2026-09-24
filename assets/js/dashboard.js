@@ -605,6 +605,11 @@ function live() {
             } else {
                 if (dot) { dot.style.backgroundColor = 'var(--accent)'; dot.style.boxShadow = '0 0 10px var(--accent)'; }
 
+                const stDot = document.getElementById('station-live-dot');
+                const stBadge = document.getElementById('station-node-badge');
+                if (stDot) { stDot.style.backgroundColor = 'var(--accent)'; stDot.style.boxShadow = '0 0 8px var(--accent)'; }
+                if (stBadge) { stBadge.textContent = 'Online'; stBadge.style.color = 'var(--accent)'; }
+
                 const aqiBadge = document.getElementById('aqi-mode-badge');
                 if (aqiBadge) aqiBadge.textContent = d.interval_mode ? (d.interval_mode + ' INTERVAL') : '5-MIN INTERVAL';
 
@@ -695,6 +700,18 @@ function live() {
 }
 
 function blankValues(statusMsg = 'Offline') {
+    const stDot = document.getElementById('station-live-dot');
+    const stBadge = document.getElementById('station-node-badge');
+    if (stDot) {
+        const c = (statusMsg === 'Offline' ? '#F05252' : '#F5A623');
+        stDot.style.backgroundColor = c;
+        stDot.style.boxShadow = '0 0 8px ' + c;
+    }
+    if (stBadge) {
+        stBadge.textContent = statusMsg;
+        stBadge.style.color = (statusMsg === 'Offline' ? 'var(--danger)' : 'var(--warn)');
+    }
+
     document.getElementById('temp').textContent = '—';
     document.getElementById('hum').textContent = '—';
     document.getElementById('mq').textContent = '—';

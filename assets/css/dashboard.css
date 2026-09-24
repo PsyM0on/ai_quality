@@ -563,6 +563,95 @@ body.light .seg-btn.active {
     background: var(--accent-tint);
 }
 
+/* ── MINIMAL STATION LOCATION INDICATOR (OVERVIEW TAB) ── */
+.overview-station-strip {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 14px;
+}
+
+.station-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: var(--card-subtle);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-full);
+    font-size: 0.74rem;
+    color: var(--muted);
+    letter-spacing: 0.01em;
+    backdrop-filter: var(--glass-blur);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.station-chip:hover {
+    border-color: var(--accent);
+    background: var(--card);
+}
+
+.station-pulse-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    flex-shrink: 0;
+    display: inline-block;
+}
+
+.station-chip .pin-icon {
+    color: var(--accent);
+    flex-shrink: 0;
+}
+
+.station-loc-label {
+    font-weight: 500;
+    color: var(--muted);
+}
+
+.station-loc-name {
+    font-weight: 700;
+    color: var(--text);
+    font-family: var(--font-sans);
+}
+
+.station-node-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    background: var(--accent-tint);
+    border: 1px solid rgba(0, 207, 168, 0.25);
+    padding: 2px 7px;
+    border-radius: var(--radius-full);
+    margin-left: 2px;
+}
+
+body.light .station-chip {
+    background: #FFFFFF;
+    border-color: #E2E8F0;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+body.light .station-node-badge {
+    border-color: rgba(0, 150, 119, 0.3);
+}
+
+@media (max-width: 480px) {
+    .overview-station-strip {
+        margin-bottom: 10px;
+    }
+    .station-chip {
+        padding: 5px 11px;
+        font-size: 0.7rem;
+        gap: 6px;
+    }
+}
+
 /* ── MODE 1: HERO SECTION (2-COLUMN DESKTOP, STACKED MOBILE) ────────────── */
 .hero-grid {
     display: grid;
