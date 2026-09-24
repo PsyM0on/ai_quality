@@ -1116,9 +1116,9 @@ body.light .forecast-summary-box {
 
 .daily-metrics-grid {
     display: grid;
-    grid-template-columns: 1.2fr 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 16px;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 .daily-compare-card {
@@ -1169,6 +1169,7 @@ body.light .forecast-summary-box {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
+    margin-bottom: 16px;
 }
 
 .metric-pill {
@@ -1920,6 +1921,73 @@ body.light .fb-submit {
 }
 
 /* Export Modal Controls */
+.export-type-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.export-type-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--card-subtle);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-inner);
+    color: var(--text);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body.light .export-type-btn {
+    background: #FFFFFF;
+    border-color: #E2E8F0;
+}
+
+.export-type-btn:hover {
+    border-color: var(--accent);
+    background: var(--accent-tint);
+}
+
+.export-type-btn.active {
+    background: rgba(0, 207, 168, 0.12);
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 12px rgba(0, 207, 168, 0.15);
+}
+
+body.light .export-type-btn.active {
+    background: rgba(0, 168, 136, 0.08);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.export-type-desc {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.export-type-desc .type-name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.export-type-desc .type-hint {
+    font-size: 0.68rem;
+    color: var(--muted);
+    line-height: 1.2;
+}
+
+.export-type-btn.active .type-hint {
+    color: var(--text);
+}
+
 .quick-presets {
     display: flex;
     gap: 8px;
@@ -1963,6 +2031,9 @@ body.light .preset-btn {
 }
 
 @media (max-width: 480px) {
+    .export-type-selector {
+        grid-template-columns: 1fr;
+    }
     .quick-presets {
         flex-direction: column;
     }

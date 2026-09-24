@@ -3,44 +3,121 @@ import numpy as np
 import mysql.connector
 import json
 import warnings
-from datetime import date, timedelta
+from datetime import datetime, date, timedelta
 warnings.filterwarnings("ignore")
 
 import sys, os
 sys.path.insert(0, os.path.dirname(__file__))
 from utils import get_conn, get_category, get_color, get_advice
 
-# ── STEP 1: try timestamp-based query ────────────────
+# ── STEP 1: try timestamp-based query with dynamic anchor ────────────────
 use_timestamp = False
 today_df     = pd.DataFrame()
 yesterday_df = pd.DataFrame()
+weekly_stats = None
+monthly_stats = None
+anchor_date_str = str(date.today())
 
 try:
     conn = get_conn()
-    query = """
-        SELECT temp, hum, mq135, pm10, aqi,
-               DATE(`timestamp`) AS day,
-               HOUR(`timestamp`) AS hour
-        FROM telemetry_raw
-        WHERE `timestamp` >= NOW() - INTERVAL 48 HOUR
-        ORDER BY `timestamp` ASC
-    """
-    df = pd.read_sql(query, conn)
+    cur = conn.cursor(dictionary=True)
+    
+    # 1. Discover latest telemetry timestamp
+    cur.execute("SELECT MAX(`timestamp`) AS max_ts FROM telemetry_raw")
+    max_row = cur.fetchone()
+    max_ts = max_row['max_ts'] if max_row else None
+    
+    if max_ts:
+        today_date = date.today()
+        # Anchor to today if live data is present today; otherwise anchor to latest record's date
+        if max_ts.date() == today_date:
+            anchor_date = today_date
+            ref_ts = datetime.now()
+        else:
+            anchor_date = max_ts.date()
+            ref_ts = max_ts
+            
+        anchor_date_str = str(anchor_date)
+        yesterday_date = anchor_date - timedelta(days=1)
+        yesterday_date_str = str(yesterday_date)
+
+        # 2. Compute Weekly (7-day) and Monthly (30-day) Aggregates directly in SQL
+        cur.execute("""
+            SELECT 
+                ROUND(AVG(aqi), 1) as avg_aqi,
+                MIN(aqi) as min_aqi,
+                MAX(aqi) as max_aqi,
+                ROUND(AVG(pm10), 2) as avg_pm10,
+                ROUND(AVG(temp), 1) as avg_temp,
+                ROUND(AVG(hum), 1) as avg_hum,
+                COUNT(*) as readings
+            FROM telemetry_raw
+            WHERE `timestamp` >= %s - INTERVAL 7 DAY AND `timestamp` <= %s
+        """, (ref_ts, ref_ts))
+        w_row = cur.fetchone()
+        if w_row and w_row['readings'] and w_row['avg_aqi'] is not None:
+            w_avg = round(float(w_row['avg_aqi']), 1)
+            weekly_stats = {
+                "avg_aqi": w_avg,
+                "min_aqi": int(w_row['min_aqi']) if w_row['min_aqi'] is not None else None,
+                "max_aqi": int(w_row['max_aqi']) if w_row['max_aqi'] is not None else None,
+                "avg_pm10": round(float(w_row['avg_pm10']), 2) if w_row['avg_pm10'] is not None else None,
+                "readings": int(w_row['readings']),
+                "category": get_category(w_avg),
+                "color": get_color(w_avg)
+            }
+
+        cur.execute("""
+            SELECT 
+                ROUND(AVG(aqi), 1) as avg_aqi,
+                MIN(aqi) as min_aqi,
+                MAX(aqi) as max_aqi,
+                ROUND(AVG(pm10), 2) as avg_pm10,
+                ROUND(AVG(temp), 1) as avg_temp,
+                ROUND(AVG(hum), 1) as avg_hum,
+                COUNT(*) as readings
+            FROM telemetry_raw
+            WHERE `timestamp` >= %s - INTERVAL 30 DAY AND `timestamp` <= %s
+        """, (ref_ts, ref_ts))
+        m_row = cur.fetchone()
+        if m_row and m_row['readings'] and m_row['avg_aqi'] is not None:
+            m_avg = round(float(m_row['avg_aqi']), 1)
+            monthly_stats = {
+                "avg_aqi": m_avg,
+                "min_aqi": int(m_row['min_aqi']) if m_row['min_aqi'] is not None else None,
+                "max_aqi": int(m_row['max_aqi']) if m_row['max_aqi'] is not None else None,
+                "avg_pm10": round(float(m_row['avg_pm10']), 2) if m_row['avg_pm10'] is not None else None,
+                "readings": int(m_row['readings']),
+                "category": get_category(m_avg),
+                "color": get_color(m_avg)
+            }
+
+        # 3. Fetch 48-Hour window for Today vs Yesterday comparison
+        win_start = datetime.combine(yesterday_date, datetime.min.time())
+        win_end = datetime.combine(anchor_date, datetime.max.time())
+        query = """
+            SELECT temp, hum, mq135, pm10, aqi,
+                   DATE(`timestamp`) AS day,
+                   HOUR(`timestamp`) AS hour
+            FROM telemetry_raw
+            WHERE `timestamp` >= %s AND `timestamp` <= %s
+            ORDER BY `timestamp` ASC
+        """
+        df = pd.read_sql(query, conn, params=[win_start, win_end])
+        df = df.dropna()
+        df = df[df['pm10'] >= 0]
+
+        if not df.empty and 'day' in df.columns:
+            df['day'] = df['day'].astype(str)
+            today_df = df[df['day'] == anchor_date_str].copy()
+            yesterday_df = df[df['day'] == yesterday_date_str].copy()
+            if not today_df.empty:
+                use_timestamp = True
+    
+    cur.close()
     conn.close()
-    df = df.dropna()
-    df = df[df['pm10'] >= 0]
-
-    if not df.empty and 'day' in df.columns:
-        df['day'] = df['day'].astype(str)
-        today_str     = str(date.today())
-        yesterday_str = str(date.today() - timedelta(days=1))
-
-        today_df     = df[df['day'] == today_str].copy()
-        yesterday_df = df[df['day'] == yesterday_str].copy()
-        use_timestamp = True
-
 except Exception:
-    pass  # fall through to id-based fallback
+    pass  # fall through to fallback
 
 # ── STEP 2: fallback if timestamp failed OR today_df still empty ──
 if not use_timestamp or today_df.empty:
@@ -71,7 +148,6 @@ if today_df.empty:
     print(json.dumps({"error": "No data available yet."}))
     exit()
 
-# ── AQI HELPERS ───────────────────────────────────────
 # ── TODAY STATS ───────────────────────────────────────
 t_avg      = round(float(today_df['aqi'].mean()), 1)
 t_min      = int(today_df['aqi'].min())
@@ -89,6 +165,21 @@ if has_yesterday:
     y_max = int(yesterday_df['aqi'].max())
 else:
     y_avg = y_min = y_max = None
+
+# If weekly/monthly wasn't populated from SQL (e.g. fallback mode), populate from available data
+if weekly_stats is None:
+    weekly_stats = {
+        "avg_aqi": t_avg,
+        "min_aqi": t_min,
+        "max_aqi": t_max,
+        "avg_pm10": t_pm,
+        "readings": t_readings,
+        "category": get_category(t_avg),
+        "color": get_color(t_avg)
+    }
+
+if monthly_stats is None:
+    monthly_stats = weekly_stats.copy()
 
 # ── CHANGE ────────────────────────────────────────────
 change = None
@@ -145,11 +236,13 @@ result = {
         "category": get_category(y_avg) if y_avg is not None else None,
         "color":    get_color(y_avg)    if y_avg is not None else None,
     } if has_yesterday else None,
+    "weekly":  weekly_stats,
+    "monthly": monthly_stats,
     "change":  change,
     "summary": summary,
     "hourly":  hourly,
     "mode":    "timestamp" if use_timestamp else "id-order",
-    "date":    str(date.today())
+    "date":    anchor_date_str
 }
 
 print(json.dumps(result))

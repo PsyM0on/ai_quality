@@ -3,6 +3,7 @@ include("includes/db.php");
 
 $date_from = $_GET['from'] ?? date('Y-m-d', strtotime('-7 days'));
 $date_to   = $_GET['to']   ?? date('Y-m-d');
+$type      = $_GET['type'] ?? 'raw';
 
 if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date_from)) $date_from = date('Y-m-d', strtotime('-7 days'));
 if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date_to))   $date_to   = date('Y-m-d');
@@ -29,15 +30,23 @@ if ($to_ts - $from_ts > (365 * 86400)) {
 $from_str = date('Y-m-d 00:00:00', $from_ts);
 $to_str   = date('Y-m-d 23:59:59', $to_ts);
 
-$stmt = $conn->prepare("SELECT COUNT(*) AS cnt FROM telemetry_raw WHERE `timestamp` BETWEEN ? AND ?");
+if ($type === 'daily') {
+    $stmt = $conn->prepare("SELECT COUNT(DISTINCT DATE(`timestamp`)) AS cnt FROM telemetry_raw WHERE `timestamp` BETWEEN ? AND ?");
+} else {
+    $stmt = $conn->prepare("SELECT COUNT(*) AS cnt FROM telemetry_raw WHERE `timestamp` BETWEEN ? AND ?");
+}
+
 $stmt->bind_param("ss", $from_str, $to_str);
 $stmt->execute();
 $row = $stmt->get_result()->fetch_assoc();
-$count = $row['cnt'] ?? 0;
+$count = intval($row['cnt'] ?? 0);
 
 $stmt->close();
 $conn->close();
 
 header('Content-Type: application/json');
-echo json_encode(['count' => $count]);
-
+echo json_encode([
+    'count' => $count,
+    'type'  => $type,
+    'unit'  => ($type === 'daily' ? 'days' : 'rows')
+]);

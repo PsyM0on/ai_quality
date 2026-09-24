@@ -180,7 +180,7 @@ if (isset($_GET['latest'])) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="assets/css/dashboard.css?v=45" rel="stylesheet">
+<link href="assets/css/dashboard.css?v=46" rel="stylesheet">
 <script>
     // System Validation: Early Device Theme Detection (Default: Light Mode)
     (function() {
@@ -566,20 +566,34 @@ if (isset($_GET['latest'])) {
                                 <span class="compare-cat" id="day_yest_cat">AQI</span>
                             </div>
                         </div>
-                        
-                        <div class="daily-pills-row">
-                            <div class="metric-pill">
-                                <span class="pill-lbl">Min AQI</span>
-                                <span class="pill-val" id="day_min">—</span>
+
+                        <div class="daily-compare-card">
+                            <div class="compare-col">
+                                <span class="compare-lbl">7-Day Weekly Avg</span>
+                                <div class="compare-val" id="day_weekly_aqi">—</div>
+                                <span class="compare-cat" id="day_weekly_cat">AQI</span>
                             </div>
-                            <div class="metric-pill">
-                                <span class="pill-lbl">Max AQI</span>
-                                <span class="pill-val" id="day_max">—</span>
+                            <div class="compare-divider"></div>
+                            <div class="compare-col">
+                                <span class="compare-lbl">30-Day Monthly Avg</span>
+                                <div class="compare-val" id="day_monthly_aqi">—</div>
+                                <span class="compare-cat" id="day_monthly_cat">AQI</span>
                             </div>
-                            <div class="metric-pill">
-                                <span class="pill-lbl">Readings</span>
-                                <span class="pill-val" id="day_readings">—</span>
-                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="daily-pills-row">
+                        <div class="metric-pill">
+                            <span class="pill-lbl">Min AQI</span>
+                            <span class="pill-val" id="day_min">—</span>
+                        </div>
+                        <div class="metric-pill">
+                            <span class="pill-lbl">Max AQI</span>
+                            <span class="pill-val" id="day_max">—</span>
+                        </div>
+                        <div class="metric-pill">
+                            <span class="pill-lbl">Readings</span>
+                            <span class="pill-val" id="day_readings">—</span>
                         </div>
                     </div>
 
@@ -908,6 +922,25 @@ $feedback_next_url = (strpos($current_host, 'localhost') !== false || strpos($cu
 
         <form method="GET" action="export.php" id="modalExportForm" onsubmit="handleExportSubmit(event)">
             <input type="hidden" name="export" value="1">
+            <input type="hidden" name="type" id="modal_export_type" value="raw">
+
+            <!-- Dual Report Type Selector -->
+            <div class="export-type-selector" role="radiogroup" aria-label="Export Report Type">
+                <button type="button" class="export-type-btn active" id="btn-modal-raw" onclick="setExportReportType('raw')" role="radio" aria-checked="true">
+                    <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    <div class="export-type-desc">
+                        <span class="type-name">Raw Telemetry</span>
+                        <span class="type-hint">Granular 5-min readings</span>
+                    </div>
+                </button>
+                <button type="button" class="export-type-btn" id="btn-modal-daily" onclick="setExportReportType('daily')" role="radio" aria-checked="false">
+                    <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    <div class="export-type-desc">
+                        <span class="type-name">Daily Summary</span>
+                        <span class="type-hint">Calculated daily averages</span>
+                    </div>
+                </button>
+            </div>
 
             <div class="quick-presets">
                 <button type="button" class="preset-btn" onclick="setExportPreset(7)">Last 7 Days</button>
@@ -927,13 +960,13 @@ $feedback_next_url = (strpos($current_host, 'localhost') !== false || strpos($cu
             </div>
 
             <div class="preview-box" id="modalPreviewBox" style="background: rgba(0, 207, 168, 0.05); border: 1px solid rgba(0, 207, 168, 0.2); border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
-                <div class="preview-text" style="font-size: 13px; color: var(--text);">Records in selection:</div>
+                <div class="preview-text" id="modalPreviewLabel" style="font-size: 13px; color: var(--text);">Records in selection:</div>
                 <div class="preview-count" id="modalPreviewCount" style="font-family: var(--font-mono); font-size: 15px; font-weight: 700; color: var(--accent);">Calculating…</div>
             </div>
 
             <button type="submit" class="fb-submit" id="modalDlBtn" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                <span id="modalDlBtnText">Download CSV Dataset</span>
+                <span id="modalDlBtnText">Download Raw CSV Dataset</span>
             </button>
         </form>
     </div>
@@ -953,11 +986,11 @@ $feedback_next_url = (strpos($current_host, 'localhost') !== false || strpos($cu
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=45" defer></script>
+<script src="assets/js/dashboard.js?v=46" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=39')
+        navigator.serviceWorker.register('./sw.js?update=40')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update();

@@ -169,6 +169,30 @@ function closeExportModal(e) {
     document.body.style.overflow = '';
 }
 
+function setExportReportType(type) {
+    const typeInput = document.getElementById('modal_export_type');
+    if (typeInput) typeInput.value = type;
+
+    const btnRaw = document.getElementById('btn-modal-raw');
+    const btnDaily = document.getElementById('btn-modal-daily');
+    const label = document.getElementById('modalPreviewLabel');
+    const dlBtnText = document.getElementById('modalDlBtnText');
+
+    if (type === 'daily') {
+        if (btnDaily) { btnDaily.classList.add('active'); btnDaily.setAttribute('aria-checked', 'true'); }
+        if (btnRaw) { btnRaw.classList.remove('active'); btnRaw.setAttribute('aria-checked', 'false'); }
+        if (label) label.textContent = 'Days in selection:';
+        if (dlBtnText) dlBtnText.textContent = 'Download Daily Summary CSV';
+    } else {
+        if (btnRaw) { btnRaw.classList.add('active'); btnRaw.setAttribute('aria-checked', 'true'); }
+        if (btnDaily) { btnDaily.classList.remove('active'); btnDaily.setAttribute('aria-checked', 'false'); }
+        if (label) label.textContent = 'Records in selection:';
+        if (dlBtnText) dlBtnText.textContent = 'Download Raw CSV Dataset';
+    }
+
+    updateExportPreview();
+}
+
 function setExportPreset(val) {
     const minDate = "2026-05-06";
     const fromEl = document.getElementById('modal_export_from');
@@ -195,6 +219,9 @@ function updateExportPreview() {
     const toEl   = document.getElementById('modal_export_to');
     const countEl = document.getElementById('modalPreviewCount');
     const dlBtn   = document.getElementById('modalDlBtn');
+    const typeInput = document.getElementById('modal_export_type');
+    const reportType = typeInput ? typeInput.value : 'raw';
+
     if (!fromEl || !toEl || !countEl) return;
 
     let from = fromEl.value;
@@ -212,11 +239,12 @@ function updateExportPreview() {
 
     countEl.textContent = "Calculating…";
 
-    fetch(`export_preview.php?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`)
+    fetch(`export_preview.php?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&type=${encodeURIComponent(reportType)}`)
         .then(r => r.json())
         .then(data => {
             const count = data.count || 0;
-            countEl.textContent = count.toLocaleString() + " rows";
+            const unit = data.unit || (reportType === 'daily' ? 'days' : 'rows');
+            countEl.textContent = count.toLocaleString() + (reportType === 'daily' ? ` ${unit} (calculated)` : ` ${unit}`);
             if (dlBtn) dlBtn.disabled = (count === 0);
         })
         .catch(() => {
@@ -229,18 +257,20 @@ function handleExportSubmit(e) {
     if (e && e.preventDefault) e.preventDefault();
     const fromEl = document.getElementById('modal_export_from');
     const toEl   = document.getElementById('modal_export_to');
+    const typeEl = document.getElementById('modal_export_type');
     const btn    = document.getElementById('modalDlBtn');
     const btnText= document.getElementById('modalDlBtnText');
 
     if (!fromEl || !toEl) return;
     const from = fromEl.value;
     const to   = toEl.value;
+    const reportType = typeEl ? typeEl.value : 'raw';
 
     if (btnText) btnText.textContent = "Preparing CSV…";
     if (btn) btn.disabled = true;
 
     // Trigger download via temporary anchor to prevent navigation away from dashboard
-    const downloadUrl = `export.php?export=1&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
+    const downloadUrl = `export.php?export=1&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&type=${encodeURIComponent(reportType)}`;
     const tempLink = document.createElement('a');
     tempLink.href = downloadUrl;
     tempLink.setAttribute('download', '');
@@ -249,7 +279,7 @@ function handleExportSubmit(e) {
     document.body.removeChild(tempLink);
 
     setTimeout(() => {
-        if (btnText) btnText.textContent = "Download CSV Dataset";
+        if (btnText) btnText.textContent = (reportType === 'daily') ? "Download Daily Summary CSV" : "Download Raw CSV Dataset";
         if (btn) btn.disabled = false;
         closeExportModal();
     }, 1200);
@@ -801,7 +831,12 @@ function load() {
 
 /* ── DAILY SUMMARY & COMPARISONS ────────────────────────────────────────── */
 function loadDaily() {
-    const targets = ['day_today_aqi', 'day_today_cat', 'day_yest_aqi', 'day_yest_cat'];
+    const targets = [
+        'day_today_aqi', 'day_today_cat', 
+        'day_yest_aqi', 'day_yest_cat',
+        'day_weekly_aqi', 'day_weekly_cat',
+        'day_monthly_aqi', 'day_monthly_cat'
+    ];
     targets.forEach(id => { let el = document.getElementById(id); if (el) el.classList.add('skeleton'); });
 
     fetch('api/daily.php?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(d => {
@@ -814,17 +849,43 @@ function loadDaily() {
         }
         const t = d.today, y = d.yesterday, c = d.change;
 
-        document.getElementById('day_today_aqi').textContent = t.avg_aqi;
-        document.getElementById('day_today_aqi').style.color = t.color;
-        document.getElementById('day_today_cat').textContent = t.category;
+        // Today's Stats
+        const tAqiEl = document.getElementById('day_today_aqi');
+        const tCatEl = document.getElementById('day_today_cat');
+        if (tAqiEl) { tAqiEl.textContent = t.avg_aqi; tAqiEl.style.color = t.color; }
+        if (tCatEl) { tCatEl.textContent = t.category; }
 
+        // Yesterday's Stats
+        const yAqiEl = document.getElementById('day_yest_aqi');
+        const yCatEl = document.getElementById('day_yest_cat');
         if (y) {
-            document.getElementById('day_yest_aqi').textContent = y.avg_aqi;
-            document.getElementById('day_yest_aqi').style.color = y.color;
-            document.getElementById('day_yest_cat').textContent = y.category;
+            if (yAqiEl) { yAqiEl.textContent = y.avg_aqi; yAqiEl.style.color = y.color; }
+            if (yCatEl) { yCatEl.textContent = y.category; }
         } else {
-            document.getElementById('day_yest_aqi').textContent = 'N/A';
-            document.getElementById('day_yest_cat').textContent = 'no prior data';
+            if (yAqiEl) { yAqiEl.textContent = 'N/A'; yAqiEl.style.color = 'var(--muted)'; }
+            if (yCatEl) { yCatEl.textContent = 'no prior data'; }
+        }
+
+        // Weekly (7-Day) Summary Stats
+        const wAqiEl = document.getElementById('day_weekly_aqi');
+        const wCatEl = document.getElementById('day_weekly_cat');
+        if (d.weekly) {
+            if (wAqiEl) { wAqiEl.textContent = d.weekly.avg_aqi ?? '—'; wAqiEl.style.color = d.weekly.color; }
+            if (wCatEl) { wCatEl.textContent = d.weekly.category ?? 'AQI'; }
+        } else {
+            if (wAqiEl) { wAqiEl.textContent = 'N/A'; wAqiEl.style.color = 'var(--muted)'; }
+            if (wCatEl) { wCatEl.textContent = 'no weekly data'; }
+        }
+
+        // Monthly (30-Day) Summary Stats
+        const mAqiEl = document.getElementById('day_monthly_aqi');
+        const mCatEl = document.getElementById('day_monthly_cat');
+        if (d.monthly) {
+            if (mAqiEl) { mAqiEl.textContent = d.monthly.avg_aqi ?? '—'; mAqiEl.style.color = d.monthly.color; }
+            if (mCatEl) { mCatEl.textContent = d.monthly.category ?? 'AQI'; }
+        } else {
+            if (mAqiEl) { mAqiEl.textContent = 'N/A'; mAqiEl.style.color = 'var(--muted)'; }
+            if (mCatEl) { mCatEl.textContent = 'no monthly data'; }
         }
 
         document.getElementById('day_min').textContent = t.min_aqi;
