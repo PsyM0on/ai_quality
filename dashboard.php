@@ -182,7 +182,7 @@ if (isset($_GET['latest'])) {
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="assets/css/dashboard.css?v=49" rel="stylesheet">
+<link href="assets/css/dashboard.css?v=50" rel="stylesheet">
 <script>
     // System Validation: Early Device Theme Detection (Default: Light Mode)
     (function() {
@@ -1050,11 +1050,11 @@ $feedback_next_url = (strpos($current_host, 'localhost') !== false || strpos($cu
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=49" defer></script>
+<script src="assets/js/dashboard.js?v=50" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=42')
+        navigator.serviceWorker.register('./sw.js?update=43')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update();

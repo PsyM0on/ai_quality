@@ -1451,21 +1451,32 @@ function initSensorMap() {
     try {
         if (typeof L === 'undefined') return;
         
-        sensorLeafletMap = L.map('sensor-map', {
-            center: [lat, lng],
-            zoom: 15,
-            zoomControl: false,
-            scrollWheelZoom: true
+        // Base Layer 1: OpenStreetMap Standard (100% Free, No API Key Required)
+        const streetLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        });
+
+        // Base Layer 2: Esri World Imagery (Satellite, 100% Free, No API Key Required)
+        const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Earthstar Geographics',
+            maxZoom: 19
         });
         
-        const isDark = document.documentElement.classList.contains('dark');
-        const styleName = isDark ? 'dark_all' : 'light_all';
-        
-        const tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/' + styleName + '/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            subdomains: 'abcd',
-            maxZoom: 20
-        }).addTo(sensorLeafletMap);
+        sensorLeafletMap = L.map('sensor-map', {
+            center: [lat, lng],
+            zoom: 16,
+            zoomControl: false,
+            scrollWheelZoom: true,
+            layers: [streetLayer]
+        });
+
+        // Layer switch control (Street vs Satellite)
+        const baseMaps = {
+            "🗺️ Street Map": streetLayer,
+            "🛰️ Satellite": satelliteLayer
+        };
+        L.control.layers(baseMaps, null, { position: 'topright' }).addTo(sensorLeafletMap);
 
         L.control.zoom({ position: 'bottomright' }).addTo(sensorLeafletMap);
         
@@ -1477,19 +1488,21 @@ function initSensorMap() {
         });
         
         const marker = L.marker([lat, lng], { icon: pulseIcon }).addTo(sensorLeafletMap);
-        marker.bindPopup('<div style="font-family: \'Inter\', sans-serif; text-align: center; padding: 4px;"><strong style="display: block; font-size: 13px; margin-bottom: 2px;">Sensor Node #1 (Online)</strong><span style="font-size: 11px; color: #555;">Maypangdan Bridge, Borongan City</span><br><span style="font-size: 10px; color: #888;">11.6115° N, 125.4331° E</span></div>');
-        
-        // Watch for theme changes to dynamically swap tile layers
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.attributeName === 'class') {
-                    const isNowDark = document.documentElement.classList.contains('dark');
-                    const updatedStyle = isNowDark ? 'dark_all' : 'light_all';
-                    tileLayer.setUrl('https://{s}.basemaps.cartocdn.com/' + updatedStyle + '/{z}/{x}/{y}{r}.png');
-                }
-            });
-        });
-        observer.observe(document.documentElement, { attributes: true });
+        marker.bindPopup(`
+            <div style="font-family: 'Inter', -apple-system, sans-serif; text-align: center; padding: 6px 4px; min-width: 175px;">
+                <div style="display: inline-flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                    <span style="display: inline-block; width: 8px; height: 8px; background: #00CFA8; border-radius: 50%;"></span>
+                    <strong style="font-size: 13px; color: #111;">Sensor Node #1</strong>
+                </div>
+                <div style="font-size: 11px; color: #444; line-height: 1.4;">
+                    Maypangdan Bridge<br>
+                    Borongan City, Eastern Samar
+                </div>
+                <div style="font-size: 10px; font-family: monospace; color: #666; margin-top: 5px; background: rgba(0,0,0,0.06); padding: 2px 6px; border-radius: 4px;">
+                    11.6115° N, 125.4331° E
+                </div>
+            </div>
+        `).openPopup();
 
         window.sensorLeafletMap = sensorLeafletMap;
     } catch (e) {

@@ -3016,3 +3016,27 @@ body.light .skeleton::after {
         opacity: 0;
     }
 }
+
+.dark .leaflet-control-layers,
+.dark .leaflet-bar a {
+    background: var(--card) !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+}
+
+.dark .leaflet-control-layers {
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+.dark .leaflet-control-layers label {
+    color: var(--text) !important;
+}
+
+.dark .leaflet-bar a:hover {
+    background: var(--card-subtle) !important;
+    color: var(--accent) !important;
+}
