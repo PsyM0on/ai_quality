@@ -838,7 +838,7 @@ if (isset($_GET['latest'])) {
                         <span class="badge-pill" id="map-station-badge">Node #1 Active</span>
                     </div>
                     <div class="panel-actions">
-                        <span class="badge-pill" style="font-family: var(--font-mono); font-size: 11px;">11.6115° N, 125.4331° E</span>
+                        <span class="badge-pill" style="font-family: var(--font-mono); font-size: 11px;">11.6560° N, 125.4461° E</span>
                     </div>
                 </div>
 
@@ -1050,11 +1050,11 @@ $feedback_next_url = (strpos($current_host, 'localhost') !== false || strpos($cu
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=50" defer></script>
+<script src="assets/js/dashboard.js?v=51" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=43')
+        navigator.serviceWorker.register('./sw.js?update=44')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update();

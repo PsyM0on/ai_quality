@@ -1444,9 +1444,9 @@ function initSensorMap() {
     const mapContainer = document.getElementById('sensor-map');
     if (!mapContainer || window.sensorLeafletMap) return;
     
-    // Coordinates for Maypangdan, Borongan City
-    const lat = 11.6115;
-    const lng = 125.4331;
+    // Exact coordinates for Maypangdan Bridge (B00581SM), Borongan City
+    const lat = 11.656005;
+    const lng = 125.446138;
     
     try {
         if (typeof L === 'undefined') return;
@@ -1465,7 +1465,7 @@ function initSensorMap() {
         
         sensorLeafletMap = L.map('sensor-map', {
             center: [lat, lng],
-            zoom: 16,
+            zoom: 17,
             zoomControl: false,
             scrollWheelZoom: true,
             layers: [streetLayer]
@@ -1499,7 +1499,7 @@ function initSensorMap() {
                     Borongan City, Eastern Samar
                 </div>
                 <div style="font-size: 10px; font-family: monospace; color: #666; margin-top: 5px; background: rgba(0,0,0,0.06); padding: 2px 6px; border-radius: 4px;">
-                    11.6115° N, 125.4331° E
+                    11.6560° N, 125.4461° E
                 </div>
             </div>
         `).openPopup();
