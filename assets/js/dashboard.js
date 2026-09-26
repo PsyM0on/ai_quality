@@ -46,13 +46,21 @@ function switchViewMode(mode, targetSubTab) {
             }
         } catch (e) {}
 
-        // Handle direct deep jump (e.g. from Hero B Driver Insight link)
+        // Handle direct deep jump (e.g. from Hero B Driver Insight link or Station Location chip)
         if (targetSubTab === 'ml') {
             switchTechTab('ml-anomaly');
             setTimeout(() => {
                 const driversPanel = document.getElementById('drivers-panel');
                 if (driversPanel) {
                     driversPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 100);
+        } else if (targetSubTab === 'map') {
+            switchTechTab('sensor-map');
+            setTimeout(() => {
+                const mapPane = document.getElementById('tech-pane-sensor-map');
+                if (mapPane) {
+                    mapPane.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             }, 100);
         } else {
@@ -71,19 +79,24 @@ function switchViewMode(mode, targetSubTab) {
 function switchTechTab(tabId) {
     const paneDaily = document.getElementById('tech-pane-daily-chart');
     const paneMl = document.getElementById('tech-pane-ml-anomaly');
+    const paneMap = document.getElementById('tech-pane-sensor-map');
     const btnDaily = document.getElementById('subtab-daily-chart');
     const btnMl = document.getElementById('subtab-ml-anomaly');
+    const btnMap = document.getElementById('subtab-sensor-map');
+
+    if (paneDaily) paneDaily.style.display = 'none';
+    if (paneMl) paneMl.style.display = 'none';
+    if (paneMap) paneMap.style.display = 'none';
+
+    if (btnDaily) { btnDaily.classList.remove('active'); btnDaily.setAttribute('aria-selected', 'false'); }
+    if (btnMl) { btnMl.classList.remove('active'); btnMl.setAttribute('aria-selected', 'false'); }
+    if (btnMap) { btnMap.classList.remove('active'); btnMap.setAttribute('aria-selected', 'false'); }
 
     if (tabId === 'daily-chart') {
         if (paneDaily) paneDaily.style.display = 'flex';
-        if (paneMl) paneMl.style.display = 'none';
         if (btnDaily) {
             btnDaily.classList.add('active');
             btnDaily.setAttribute('aria-selected', 'true');
-        }
-        if (btnMl) {
-            btnMl.classList.remove('active');
-            btnMl.setAttribute('aria-selected', 'false');
         }
         if (chart) {
             setTimeout(() => {
@@ -91,17 +104,26 @@ function switchTechTab(tabId) {
                 chart.update();
             }, 60);
         }
-    } else {
-        if (paneDaily) paneDaily.style.display = 'none';
+    } else if (tabId === 'ml-anomaly') {
         if (paneMl) paneMl.style.display = 'flex';
-        if (btnDaily) {
-            btnDaily.classList.remove('active');
-            btnDaily.setAttribute('aria-selected', 'false');
-        }
         if (btnMl) {
             btnMl.classList.add('active');
             btnMl.setAttribute('aria-selected', 'true');
         }
+    } else if (tabId === 'sensor-map') {
+        if (paneMap) paneMap.style.display = 'flex';
+        if (btnMap) {
+            btnMap.classList.add('active');
+            btnMap.setAttribute('aria-selected', 'true');
+        }
+        if (!window.sensorLeafletMap) {
+            initSensorMap();
+        }
+        setTimeout(() => {
+            if (window.sensorLeafletMap) {
+                window.sensorLeafletMap.invalidateSize();
+            }
+        }, 120);
     }
 }
 
@@ -1415,34 +1437,37 @@ setTimeout(loadTrend, 1500);
 setTimeout(loadAnomaly, 3500);
 setTimeout(loadDaily, 5500);
 
-// Initialize Leaflet Map
-(function initSensorMap() {
-    document.addEventListener('DOMContentLoaded', () => {
-        const mapContainer = document.getElementById('sensor-map');
-        if (!mapContainer) return;
+// Initialize Leaflet Map for Diagnostics Tab
+let sensorLeafletMap = null;
+
+function initSensorMap() {
+    const mapContainer = document.getElementById('sensor-map');
+    if (!mapContainer || window.sensorLeafletMap) return;
+    
+    // Coordinates for Maypangdan, Borongan City
+    const lat = 11.6115;
+    const lng = 125.4331;
+    
+    try {
+        if (typeof L === 'undefined') return;
         
-        // Coordinates for Maypangdan, Borongan City
-        const lat = 11.6115;
-        const lng = 125.4331;
-        
-        // Initialize map
-        const map = L.map('sensor-map', {
+        sensorLeafletMap = L.map('sensor-map', {
             center: [lat, lng],
             zoom: 15,
             zoomControl: false,
-            scrollWheelZoom: false
+            scrollWheelZoom: true
         });
         
         const isDark = document.documentElement.classList.contains('dark');
+        const styleName = isDark ? 'dark_all' : 'light_all';
         
-        const tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/{style}/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> contributors',
+        const tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/' + styleName + '/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
             subdomains: 'abcd',
-            maxZoom: 20,
-            style: isDark ? 'dark_all' : 'light_all'
-        }).addTo(map);
+            maxZoom: 20
+        }).addTo(sensorLeafletMap);
 
-        L.control.zoom({ position: 'bottomright' }).addTo(map);
+        L.control.zoom({ position: 'bottomright' }).addTo(sensorLeafletMap);
         
         const pulseIcon = L.divIcon({
             className: 'custom-map-marker',
@@ -1451,27 +1476,30 @@ setTimeout(loadDaily, 5500);
             iconAnchor: [12, 12]
         });
         
-        const marker = L.marker([lat, lng], { icon: pulseIcon }).addTo(map);
-        marker.bindPopup('<div style="font-family: \'Inter\', sans-serif; text-align: center;"><strong style="display: block; font-size: 13px; margin-bottom: 4px;">Sensor Node #1</strong><span style="font-size: 11px; color: #666;">Maypangdan Bridge</span><br><span style="font-size: 11px; color: #666;">Borongan City</span></div>');
+        const marker = L.marker([lat, lng], { icon: pulseIcon }).addTo(sensorLeafletMap);
+        marker.bindPopup('<div style="font-family: \'Inter\', sans-serif; text-align: center; padding: 4px;"><strong style="display: block; font-size: 13px; margin-bottom: 2px;">Sensor Node #1 (Online)</strong><span style="font-size: 11px; color: #555;">Maypangdan Bridge, Borongan City</span><br><span style="font-size: 10px; color: #888;">11.6115° N, 125.4331° E</span></div>');
         
-        // Watch for theme changes
+        // Watch for theme changes to dynamically swap tile layers
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 if (mutation.attributeName === 'class') {
                     const isNowDark = document.documentElement.classList.contains('dark');
-                    const newStyle = isNowDark ? 'dark_all' : 'light_all';
-                    tileLayer.setUrl(\https://{s}.basemaps.cartocdn.com/\/{z}/{x}/{y}{r}.png\);
+                    const updatedStyle = isNowDark ? 'dark_all' : 'light_all';
+                    tileLayer.setUrl('https://{s}.basemaps.cartocdn.com/' + updatedStyle + '/{z}/{x}/{y}{r}.png');
                 }
             });
         });
         observer.observe(document.documentElement, { attributes: true });
 
-        // Fix rendering when in tabs
-        setTimeout(() => { map.invalidateSize(); }, 500);
-        
-        // Also invalidate when window resizes
-        window.addEventListener('resize', () => {
-            map.invalidateSize();
-        });
-    });
-})();
+        window.sensorLeafletMap = sensorLeafletMap;
+    } catch (e) {
+        console.warn('Map initialization failed:', e);
+    }
+}
+
+// Global window resize handler for Leaflet
+window.addEventListener('resize', () => {
+    if (window.sensorLeafletMap) {
+        window.sensorLeafletMap.invalidateSize();
+    }
+});

@@ -182,7 +182,7 @@ if (isset($_GET['latest'])) {
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="assets/css/dashboard.css?v=48" rel="stylesheet">
+<link href="assets/css/dashboard.css?v=49" rel="stylesheet">
 <script>
     // System Validation: Early Device Theme Detection (Default: Light Mode)
     (function() {
@@ -285,12 +285,13 @@ if (isset($_GET['latest'])) {
         
         <!-- Minimal Deployment Location Indicator -->
         <div class="overview-station-strip">
-            <div class="station-chip" title="Physical environmental sensor node deployed at Maypangdan, Borongan City">
+            <div class="station-chip" onclick="switchViewMode('technical', 'map')" role="button" tabindex="0" title="Click to view live sensor node map in Diagnostics" style="cursor: pointer;">
                 <span class="station-pulse-dot" id="station-live-dot" aria-hidden="true"></span>
                 <svg class="icon-svg pin-icon" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>
                 <span class="station-loc-label">Sensor Location:</span>
                 <span class="station-loc-name">Maypangdan, Borongan City</span>
                 <span class="station-node-badge" id="station-node-badge">Online</span>
+                <span style="font-size: 10px; color: var(--accent); margin-left: 2px; opacity: 0.85;">View Map ↗</span>
             </div>
         </div>
 
@@ -382,16 +383,6 @@ if (isset($_GET['latest'])) {
                     </button>
                 </div>
             </div>
-        </div>
-
-        <!-- Live Sensor Map -->
-        <div class="section-heading mt-4" style="margin-top: 24px;">
-            <h2 class="section-title">Deployment Location</h2>
-            <span class="section-subtitle">Real-time geographical context of the sensor node</span>
-        </div>
-        
-        <div class="card map-card" style="padding: 0; overflow: hidden; margin-bottom: 32px; border: 1px solid var(--border); border-radius: 16px; height: 350px; z-index: 1;">
-            <div id="sensor-map" style="width: 100%; height: 100%;"></div>
         </div>
 
         <!-- Clean Telemetry Row (4 Cards) -->
@@ -540,6 +531,11 @@ if (isset($_GET['latest'])) {
                 <svg class="icon-svg tab-svg" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
                 <span class="tab-label-full">Machine Learning & Anomaly Diagnostics</span>
                 <span class="tab-label-short">ML & Diagnostics</span>
+            </button>
+            <button class="sub-tab-btn" id="subtab-sensor-map" role="tab" aria-selected="false" onclick="switchTechTab('sensor-map')">
+                <svg class="icon-svg tab-svg" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
+                <span class="tab-label-full">Geospatial Station Map</span>
+                <span class="tab-label-short">Station Map</span>
             </button>
         </div>
 
@@ -829,6 +825,51 @@ if (isset($_GET['latest'])) {
                 </div>
             </div>
         </div>
+
+        <!-- SUB-TAB 3: Geospatial Deployment Map -->
+        <div id="tech-pane-sensor-map" class="tech-sub-pane" style="display: none;">
+            <div class="panel diag-panel" style="padding: 0; overflow: hidden;">
+                <div class="panel-header" style="padding: 16px 20px; border-bottom: 1px solid var(--border);">
+                    <div class="panel-title-group">
+                        <span class="panel-title">
+                            <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
+                            Geospatial Station Deployment & Microclimate Anchor
+                        </span>
+                        <span class="badge-pill" id="map-station-badge">Node #1 Active</span>
+                    </div>
+                    <div class="panel-actions">
+                        <span class="badge-pill" style="font-family: var(--font-mono); font-size: 11px;">11.6115° N, 125.4331° E</span>
+                    </div>
+                </div>
+
+                <!-- Live Map Canvas Container -->
+                <div style="height: 460px; width: 100%; position: relative;">
+                    <div id="sensor-map" style="width: 100%; height: 100%; z-index: 1;"></div>
+                </div>
+
+                <!-- Deployment Metadata Footer -->
+                <div style="padding: 16px 20px; background: var(--card-subtle); border-top: 1px solid var(--border);">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; font-size: 12px;">
+                        <div>
+                            <span style="display: block; color: var(--muted); font-size: 11px; text-transform: uppercase; font-family: var(--font-mono); margin-bottom: 2px;">Deployment Site</span>
+                            <strong style="color: var(--text);">Maypangdan Bridge (Borongan City)</strong>
+                        </div>
+                        <div>
+                            <span style="display: block; color: var(--muted); font-size: 11px; text-transform: uppercase; font-family: var(--font-mono); margin-bottom: 2px;">Microclimate Classification</span>
+                            <strong style="color: var(--text);">Coastal Urban / Arterial Highway</strong>
+                        </div>
+                        <div>
+                            <span style="display: block; color: var(--muted); font-size: 11px; text-transform: uppercase; font-family: var(--font-mono); margin-bottom: 2px;">Sensor Node Package</span>
+                            <strong style="color: var(--text);">PMS5003 + MQ-135 + DHT22</strong>
+                        </div>
+                        <div>
+                            <span style="display: block; color: var(--muted); font-size: 11px; text-transform: uppercase; font-family: var(--font-mono); margin-bottom: 2px;">Transmission Cadence</span>
+                            <strong style="color: var(--accent);">5-Minute Periodic Ingestion</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 
 </main>
@@ -1009,11 +1050,11 @@ $feedback_next_url = (strpos($current_host, 'localhost') !== false || strpos($cu
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=48" defer></script>
+<script src="assets/js/dashboard.js?v=49" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=41')
+        navigator.serviceWorker.register('./sw.js?update=42')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update();

@@ -2502,7 +2502,7 @@ body.light .skeleton::after {
 
     .sub-tab-bar {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(3, 1fr);
         gap: 6px;
         width: 100%;
         padding-bottom: 6px;
@@ -2513,11 +2513,11 @@ body.light .skeleton::after {
     .sub-tab-btn {
         width: 100%;
         justify-content: center;
-        padding: 8px 6px;
-        font-size: 0.78rem;
+        padding: 8px 4px;
+        font-size: 0.74rem;
         min-height: 40px;
         text-align: center;
-        gap: 6px;
+        gap: 4px;
     }
 
     .tab-label-full {
