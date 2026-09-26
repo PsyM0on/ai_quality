@@ -1451,30 +1451,39 @@ function initSensorMap() {
     try {
         if (typeof L === 'undefined') return;
         
-        // Base Layer 1: OpenStreetMap Standard (100% Free, No API Key Required)
+        // Base Layer 1: OpenStreetMap Standard (100% Free, Keyless)
         const streetLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors',
-            maxZoom: 19
+            maxZoom: 20
         });
 
-        // Base Layer 2: Esri World Imagery (Satellite, 100% Free, No API Key Required)
-        const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        // Base Layer 2: Google Satellite Hybrid (Ultra-High Res Aerial + Road Overlays up to Zoom 20)
+        const googleSatLayer = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+            attribution: '&copy; Google Maps',
+            maxZoom: 20
+        });
+
+        // Base Layer 3: Esri World Imagery (Clean Satellite, with maxNativeZoom:17 to prevent grey tiles)
+        const esriSatLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Tiles &copy; Esri &mdash; Earthstar Geographics',
-            maxZoom: 19
+            maxNativeZoom: 17,
+            maxZoom: 20
         });
         
         sensorLeafletMap = L.map('sensor-map', {
             center: [lat, lng],
             zoom: 17,
+            maxZoom: 20,
             zoomControl: false,
             scrollWheelZoom: true,
-            layers: [streetLayer]
+            layers: [googleSatLayer] // default to Google Satellite Hybrid so user sees crisp aerial view immediately
         });
 
-        // Layer switch control (Street vs Satellite)
+        // Layer switch control (Hybrid Satellite vs Street Map vs Clean Aerial)
         const baseMaps = {
+            "🛰️ Satellite (Hybrid)": googleSatLayer,
             "🗺️ Street Map": streetLayer,
-            "🛰️ Satellite": satelliteLayer
+            "🌍 Satellite (Terrain)": esriSatLayer
         };
         L.control.layers(baseMaps, null, { position: 'topright' }).addTo(sensorLeafletMap);
 

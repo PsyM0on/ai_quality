@@ -1050,11 +1050,11 @@ $feedback_next_url = (strpos($current_host, 'localhost') !== false || strpos($cu
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=51" defer></script>
+<script src="assets/js/dashboard.js?v=52" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=44')
+        navigator.serviceWorker.register('./sw.js?update=45')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update();
