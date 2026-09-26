@@ -189,39 +189,44 @@ z_mq = z_scores.get('mq135', 0.0)
 # Decision Matrix based on environmental signatures:
 if (z_pm > 1.8 or pm10_rate > 15) and (latest['hum'] < 82) and (z_mq > 0.8 or latest['mq135'] > 180):
     source_type = "Biomass / Open Waste Combustion"
-    source_icon = "🔥"
+    source_icon = "biomass"
     source_tag = "Combustion Signature"
     confidence = min(96, int(75 + abs(z_pm) * 5 + (5 if pm10_rate > 20 else 0)))
     reasoning = f"Rapid particulate surge (rate: {pm10_rate:+.1f} µg/m³) accompanied by combustion gas signature under {latest['hum']:.0f}% humidity indicates localized open waste or biomass burning."
     recommendation = "LGU anti-open burning enforcement; downwind residents keep windows closed."
+    distribution = {"vehicular": 18, "biomass": 72, "marine": 10}
 elif is_rush_hour and (latest['mq135'] > 160 or z_mq > 1.2 or z_pm > 1.0):
     source_type = "Vehicular Traffic Dispersion"
-    source_icon = "🚗"
+    source_icon = "traffic"
     source_tag = "Traffic Plume"
     confidence = min(92, int(70 + (10 if is_rush_hour else 0) + abs(z_mq) * 6))
     reasoning = f"Synchronized elevation in gas contaminants ({latest['mq135']:.0f} ADC) and PM10 aligning with urban peak commuting hours ({hour:02d}:00)."
     recommendation = "Traffic pacing recommended; pedestrians avoid high-density roadside corridors."
+    distribution = {"vehicular": 72, "biomass": 18, "marine": 10}
 elif latest['hum'] >= 85 and latest['pm10'] > 45 and abs(pm10_rate) < 10:
     source_type = "Atmospheric Inversion / Humidity Trapping"
-    source_icon = "🌫️"
+    source_icon = "inversion"
     source_tag = "Microclimate Trapping"
     confidence = min(90, int(65 + (latest['hum'] - 85) * 2 + (10 if latest['temp'] < 26 else 0)))
     reasoning = f"High relative humidity ({latest['hum']:.0f}%) suppresses atmospheric vertical mixing, trapping suspended ambient particulate matter near ground level."
     recommendation = "Atmospheric dispersal is constrained; expect dissipation as temperature rises and humidity drops."
+    distribution = {"vehicular": 35, "biomass": 20, "marine": 45}
 elif latest['aqi'] > 100 or is_anomaly:
     source_type = "Mixed Urban Industrial / Commercial Plume"
-    source_icon = "🏭"
+    source_icon = "urban"
     source_tag = "Urban Emissions"
     confidence = 78
     reasoning = f"Compound elevation across multiple environmental parameters (AQI {latest['aqi']:.0f}) indicating mixed anthropogenic urban activity."
     recommendation = "General public health advisory in effect; sensitive groups limit prolonged outdoor activities."
+    distribution = {"vehicular": 48, "biomass": 32, "marine": 20}
 else:
     source_type = "Clean Baseline / Normal Urban Dispersion"
-    source_icon = "🍃"
+    source_icon = "clean"
     source_tag = "Normal Dispersion"
     confidence = 94
     reasoning = f"Particulate concentration ({latest['pm10']:.1f} µg/m³) and gas index are well within expected baseline limits with active atmospheric dispersion."
     recommendation = "Air quality is suitable for all regular outdoor activities."
+    distribution = {"vehicular": 30, "biomass": 12, "marine": 58}
 
 source_attribution = {
     "source": source_type,
@@ -230,6 +235,7 @@ source_attribution = {
     "confidence": confidence,
     "reasoning": reasoning,
     "recommendation": recommendation,
+    "distribution": distribution,
     "pm10_rate": round(pm10_rate, 2),
     "mq_rate": round(mq_rate, 2)
 }

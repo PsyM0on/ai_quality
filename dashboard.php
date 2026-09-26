@@ -182,7 +182,7 @@ if (isset($_GET['latest'])) {
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="assets/css/dashboard.css?v=50" rel="stylesheet">
+<link href="assets/css/dashboard.css?v=53" rel="stylesheet">
 <script>
     // System Validation: Early Device Theme Detection (Default: Light Mode)
     (function() {
@@ -241,7 +241,7 @@ if (isset($_GET['latest'])) {
                 <svg id="theme-icon-svg" class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
                 </svg>
-                <span id="theme-icon" style="display: none;">☾</span>
+                <span id="theme-icon" style="display: none;"></span>
                 <span id="theme-label" style="display: none;">Light</span>
             </button>
             <button class="btn-icon-action" onclick="openMenu()" title="System Navigation Menu" aria-label="Open Navigation Menu">
@@ -256,15 +256,18 @@ if (isset($_GET['latest'])) {
 </header>
 
 <?php if($maint_mode === "ON"): ?>
-<div style="background: var(--warn); color: #111; text-align: center; padding: 10px 16px; font-size: 13px; font-weight: 700; letter-spacing: 0.04em;">
-    ⚠️ SYSTEM UNDER MAINTENANCE: Telemetry readings may be undergoing calibration.
+<div style="background: var(--warn); color: #111; text-align: center; padding: 10px 16px; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; display: flex; align-items: center; justify-content: center; gap: 8px;">
+    <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    <span>SYSTEM UNDER MAINTENANCE: Telemetry readings may be undergoing calibration.</span>
 </div>
 <?php endif; ?>
 
-<!-- 🚨 CONDITIONAL PUBLIC HEALTH ALERT BANNER -->
+<!-- CONDITIONAL PUBLIC HEALTH ALERT BANNER -->
 <div id="health-alert-banner" class="health-alert-banner" style="display: none;" role="alert">
     <div class="alert-content">
-        <span class="alert-icon" id="alert-icon">⚠️</span>
+        <span class="alert-icon" id="alert-icon">
+            <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </span>
         <div class="alert-text">
             <strong id="alert-title">AIR QUALITY ADVISORY</strong>
             <span id="alert-body">Air pollution levels require attention.</span>
@@ -297,7 +300,7 @@ if (isset($_GET['latest'])) {
 
         <!-- Hero Section (2-Column Desktop Grid, Stacked Mobile) -->
         <div class="hero-grid">
-            <!-- Hero A: Primary Air Quality Gauge -->
+            <!-- Hero A: Primary Air Quality Radial Gauge & Action Matrix -->
             <div class="card hero-card hero-aqi" id="aqi-card">
                 <div class="card-header">
                     <div class="card-title-group">
@@ -309,19 +312,107 @@ if (isset($_GET['latest'])) {
                     </div>
                 </div>
                 
-                <div class="aqi-score-container">
-                    <div class="aqi-value skeleton" id="aqi">000</div>
-                    <div class="aqi-status-pill skeleton" id="aqi-label">Loading Data</div>
+                <!-- Semi-Circular Radial Arc Gauge -->
+                <div class="aqi-gauge-wrapper">
+                    <svg class="aqi-arc-svg" viewBox="0 0 220 125" preserveAspectRatio="xMidYMid meet">
+                        <defs>
+                            <linearGradient id="aqiGaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#00CFA8"/>
+                                <stop offset="25%" stop-color="#4C9EEB"/>
+                                <stop offset="50%" stop-color="#F5A623"/>
+                                <stop offset="75%" stop-color="#F05252"/>
+                                <stop offset="100%" stop-color="#9B51E0"/>
+                            </linearGradient>
+                        </defs>
+                        <!-- Background Inactive Track -->
+                        <path class="gauge-bg-track" d="M 25 115 A 85 85 0 0 1 195 115" fill="none" stroke="var(--border)" stroke-width="12" stroke-linecap="round"/>
+                        <!-- Dynamic Active Progress Track -->
+                        <path id="aqi-gauge-meter" class="gauge-val-track" d="M 25 115 A 85 85 0 0 1 195 115" fill="none" stroke="url(#aqiGaugeGrad)" stroke-width="12" stroke-linecap="round" stroke-dasharray="267" stroke-dashoffset="267"/>
+                    </svg>
+                    <!-- Score Display Inside Arc -->
+                    <div class="aqi-center-display">
+                        <span class="aqi-value skeleton" id="aqi">000</span>
+                        <span class="aqi-sub-unit">AQI INDEX</span>
+                        <span class="aqi-status-pill skeleton" id="aqi-label">Loading Data</span>
+                    </div>
                 </div>
 
-                <div class="aqi-guidance-box" id="aqi-guidance-box">
-                    <div class="guidance-icon">
-                        <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <!-- Continuous RA 8749 Spectrum Bar with Pointer -->
+                <div class="aqi-spectrum-track" title="Philippine Clean Air Act (RA 8749) AQI Range Scale">
+                    <div class="spectrum-segments">
+                        <span class="spec-seg" style="background:#00CFA8;" title="Good (0–50)"></span>
+                        <span class="spec-seg" style="background:#4C9EEB;" title="Fair (51–100)"></span>
+                        <span class="spec-seg" style="background:#F5A623;" title="Unhealthy for Sensitive (101–150)"></span>
+                        <span class="spec-seg" style="background:#F05252;" title="Very Unhealthy (151–200)"></span>
+                        <span class="spec-seg" style="background:#9B51E0;" title="Acutely Unhealthy (201–300)"></span>
+                        <span class="spec-seg" style="background:#7E0023;" title="Emergency (301+)"></span>
                     </div>
-                    <div class="guidance-content">
-                        <span class="guidance-title">Health Action Guidance</span>
-                        <p class="guidance-text" id="aqi_health_guidance">Analyzing atmospheric conditions...</p>
+                    <div class="spectrum-marker-wrap">
+                        <div id="spectrum-pointer" class="spectrum-pointer" style="left: 4%;">
+                            <div class="pointer-tip"></div>
+                        </div>
                     </div>
+                    <div class="spectrum-ticks">
+                        <span>0</span>
+                        <span>50</span>
+                        <span>100</span>
+                        <span>150</span>
+                        <span>200</span>
+                        <span>300+</span>
+                    </div>
+                </div>
+
+                <!-- 4 Action-Oriented Health Guidance Chips (SVG Icons, Zero Emojis) -->
+                <div class="action-chips-grid">
+                    <!-- Chip 1: Outdoor Activity -->
+                    <div class="action-chip" id="chip-outdoor">
+                        <div class="chip-icon">
+                            <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 4a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/><path d="m14 13-3-3 2-4-4 2-2 4"/><path d="m7 16 3-2 2 4 4 4"/><path d="m11 21-2-5"/></svg>
+                        </div>
+                        <div class="chip-details">
+                            <span class="chip-label">Outdoors</span>
+                            <span class="chip-status safe" id="status-outdoor">Permitted</span>
+                        </div>
+                    </div>
+
+                    <!-- Chip 2: Ventilation / Windows -->
+                    <div class="action-chip" id="chip-ventilation">
+                        <div class="chip-icon">
+                            <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 3v18"/><path d="M3 12h18"/></svg>
+                        </div>
+                        <div class="chip-details">
+                            <span class="chip-label">Ventilation</span>
+                            <span class="chip-status safe" id="status-ventilation">Open Windows</span>
+                        </div>
+                    </div>
+
+                    <!-- Chip 3: Sensitive Groups -->
+                    <div class="action-chip" id="chip-vulnerable">
+                        <div class="chip-icon">
+                            <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        </div>
+                        <div class="chip-details">
+                            <span class="chip-label">Sensitive</span>
+                            <span class="chip-status safe" id="status-vulnerable">Low Risk</span>
+                        </div>
+                    </div>
+
+                    <!-- Chip 4: Mask Protection -->
+                    <div class="action-chip" id="chip-mask">
+                        <div class="chip-icon">
+                            <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h18v3a6 6 0 0 1-6 6h-6a6 6 0 0 1-6-6v-3z"/><path d="M3 13 1 12"/><path d="M21 13l2-1"/></svg>
+                        </div>
+                        <div class="chip-details">
+                            <span class="chip-label">Facemask</span>
+                            <span class="chip-status safe" id="status-mask">Not Required</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 1-Sentence Health Summary Line -->
+                <div class="aqi-guidance-line" id="aqi-guidance-line">
+                    <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent); flex-shrink: 0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                    <span id="aqi_health_guidance">Analyzing atmospheric conditions...</span>
                 </div>
 
                 <div class="card-footer-meta" id="aqi-compliance-wrap">
@@ -336,7 +427,7 @@ if (isset($_GET['latest'])) {
                 </div>
             </div>
 
-            <!-- Hero B: 3-Hour Predictive Outlook -->
+            <!-- Hero B: 3-Hour Predictive Outlook with Connected Trajectory -->
             <div class="card hero-card hero-forecast" id="forecast-hero-card">
                 <div class="card-header">
                     <div class="card-title-group">
@@ -353,17 +444,35 @@ if (isset($_GET['latest'])) {
                         <div class="step-hour">+1 Hour</div>
                         <div class="step-aqi skeleton" id="trend_1h">—</div>
                         <div class="step-cat" id="trend_cat1">—</div>
+                        <div class="step-delta" id="trend_delta1">━ 0</div>
                     </div>
                     <div class="forecast-step-card">
                         <div class="step-hour">+2 Hours</div>
                         <div class="step-aqi skeleton" id="trend_2h">—</div>
                         <div class="step-cat" id="trend_cat2">—</div>
+                        <div class="step-delta" id="trend_delta2">━ 0</div>
                     </div>
                     <div class="forecast-step-card">
                         <div class="step-hour">+3 Hours</div>
                         <div class="step-aqi skeleton" id="trend_3h">—</div>
                         <div class="step-cat" id="trend_cat3">—</div>
+                        <div class="step-delta" id="trend_delta3">━ 0</div>
                     </div>
+                </div>
+
+                <!-- Visual Trajectory Flow Connector -->
+                <div class="forecast-trajectory-strip">
+                    <div class="trajectory-header">
+                        <span class="traj-label">Predictive Trajectory Curve:</span>
+                        <span class="traj-state" id="traj-trend-indicator">Steady Path</span>
+                    </div>
+                    <svg class="trajectory-svg" id="forecast-trajectory-svg" viewBox="0 0 300 40" preserveAspectRatio="none">
+                        <path id="traj-path" d="M 20 20 C 100 20, 200 20, 280 20" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/>
+                        <circle id="traj-dot-0" cx="20" cy="20" r="4" fill="var(--accent)"/>
+                        <circle id="traj-dot-1" cx="106" cy="20" r="4" fill="var(--accent)"/>
+                        <circle id="traj-dot-2" cx="193" cy="20" r="4" fill="var(--accent)"/>
+                        <circle id="traj-dot-3" cx="280" cy="20" r="4" fill="var(--accent)"/>
+                    </svg>
                 </div>
 
                 <div class="forecast-summary-box">
@@ -385,7 +494,7 @@ if (isset($_GET['latest'])) {
             </div>
         </div>
 
-        <!-- Clean Telemetry Row (4 Cards) -->
+        <!-- Clean Telemetry Row (4 Cards) with Sparklines -->
         <div class="section-heading">
             <h2 class="section-title">Environmental Telemetry</h2>
             <span class="section-subtitle">Real-time localized ambient microclimate metrics</span>
@@ -409,6 +518,11 @@ if (isset($_GET['latest'])) {
                         <span class="telemetry-unit">°C</span>
                     </div>
                     <div class="telemetry-sub">Ambient Temperature</div>
+                </div>
+                <!-- Sparkline Trend Row -->
+                <div class="telemetry-spark-row">
+                    <svg class="telemetry-sparkline" id="spark-temp" viewBox="0 0 120 32" preserveAspectRatio="none"></svg>
+                    <span class="spark-badge" id="trend-badge-temp">━ Steady</span>
                 </div>
                 <div class="telemetry-footer" id="heat-index-wrap">
                     <div class="meta-row">
@@ -437,6 +551,11 @@ if (isset($_GET['latest'])) {
                     </div>
                     <div class="telemetry-sub">Relative Humidity</div>
                 </div>
+                <!-- Sparkline Trend Row -->
+                <div class="telemetry-spark-row">
+                    <svg class="telemetry-sparkline" id="spark-hum" viewBox="0 0 120 32" preserveAspectRatio="none"></svg>
+                    <span class="spark-badge" id="trend-badge-hum">━ Steady</span>
+                </div>
                 <div class="telemetry-footer">
                     <div class="meta-row">
                         <span class="meta-label">Comfort:</span>
@@ -463,6 +582,11 @@ if (isset($_GET['latest'])) {
                     </div>
                     <div class="telemetry-sub">Laser Scattering (PMS5003)</div>
                 </div>
+                <!-- Sparkline Trend Row -->
+                <div class="telemetry-spark-row">
+                    <svg class="telemetry-sparkline" id="spark-pm" viewBox="0 0 120 32" preserveAspectRatio="none"></svg>
+                    <span class="spark-badge" id="trend-badge-pm">━ Steady</span>
+                </div>
                 <div class="telemetry-footer">
                     <div class="meta-row">
                         <span class="meta-label">Scope:</span>
@@ -488,6 +612,11 @@ if (isset($_GET['latest'])) {
                         <span class="telemetry-unit">ADC Index</span>
                     </div>
                     <div class="telemetry-sub" id="mq-status-label">Relative Baseline</div>
+                </div>
+                <!-- Sparkline Trend Row -->
+                <div class="telemetry-spark-row">
+                    <svg class="telemetry-sparkline" id="spark-mq" viewBox="0 0 120 32" preserveAspectRatio="none"></svg>
+                    <span class="spark-badge" id="trend-badge-mq">━ Steady</span>
                 </div>
                 <div class="telemetry-footer">
                     <div class="meta-row">
@@ -771,7 +900,9 @@ if (isset($_GET['latest'])) {
                         </div>
                         <div class="panel-body">
                             <div class="anomaly-status ok" id="anomaly-status-box">
-                                <div class="anomaly-icon" id="anomaly-icon">✓</div>
+                                <div class="anomaly-icon" id="anomaly-icon">
+                                    <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                </div>
                                 <div class="anomaly-details">
                                     <div class="anomaly-label" id="anomaly-label">Checking System…</div>
                                     <div class="anomaly-msg" id="anomaly-msg">Evaluating continuous telemetry parameters</div>
@@ -813,12 +944,50 @@ if (isset($_GET['latest'])) {
                         <div class="panel-body">
                             <div class="source-card">
                                 <div class="source-head">
-                                    <span class="source-icon" id="source_icon">🍃</span>
+                                    <span class="source-icon" id="source_icon">
+                                        <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.5 2.8C2 11 2 11.2 2 11.5V16c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>
+                                    </span>
                                     <strong class="source-title" id="source_title">Assessing Covariance…</strong>
                                 </div>
                                 <p class="source-reasoning" id="source_reasoning">
                                     Analyzing multi-sensor covariance, emission rate of change, and diurnal cycles…
                                 </p>
+                            </div>
+
+                            <!-- Visual Source Attribution Stacked Distribution -->
+                            <div class="source-distribution-card">
+                                <div class="dist-header">
+                                    <span class="dist-title">Multi-Sensor Covariance Attribution</span>
+                                    <span class="dist-subtitle" id="dist-summary-tag">Heuristic Confidence</span>
+                                </div>
+                                <div class="dist-bar-track">
+                                    <div id="src-bar-vehicular" class="dist-seg vehicular" style="width: 72%;" title="Vehicular Transit: 72%"></div>
+                                    <div id="src-bar-biomass" class="dist-seg biomass" style="width: 18%;" title="Biomass & Solid Fuel: 18%"></div>
+                                    <div id="src-bar-marine" class="dist-seg marine" style="width: 10%;" title="Marine Aerosol & Ambient: 10%"></div>
+                                </div>
+                                <div class="dist-legend-grid">
+                                    <div class="dist-legend-item">
+                                        <div class="legend-color-chip" style="background: var(--accent);"></div>
+                                        <div class="legend-details">
+                                            <span class="legend-label">Vehicular Exhaust</span>
+                                            <span class="legend-val" id="src-pct-vehicular">72%</span>
+                                        </div>
+                                    </div>
+                                    <div class="dist-legend-item">
+                                        <div class="legend-color-chip" style="background: var(--warn);"></div>
+                                        <div class="legend-details">
+                                            <span class="legend-label">Biomass Combustion</span>
+                                            <span class="legend-val" id="src-pct-biomass">18%</span>
+                                        </div>
+                                    </div>
+                                    <div class="dist-legend-item">
+                                        <div class="legend-color-chip" style="background: var(--cyan);"></div>
+                                        <div class="legend-details">
+                                            <span class="legend-label">Marine / Background</span>
+                                            <span class="legend-val" id="src-pct-marine">10%</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1040,7 +1209,10 @@ $feedback_next_url = (strpos($current_host, 'localhost') !== false || strpos($cu
 <div id="install-prompt" class="install-prompt">
     <div class="install-content">
         <div class="install-text">
-            <strong>📲 Install Eco Quality</strong>
+            <strong style="display: flex; align-items: center; gap: 6px;">
+                <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                <span>Install Eco Quality</span>
+            </strong>
             <span>Add to home screen for quick mobile access</span>
         </div>
         <div class="install-actions">
@@ -1050,11 +1222,11 @@ $feedback_next_url = (strpos($current_host, 'localhost') !== false || strpos($cu
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=52" defer></script>
+<script src="assets/js/dashboard.js?v=53" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=45')
+        navigator.serviceWorker.register('./sw.js?update=46')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update();

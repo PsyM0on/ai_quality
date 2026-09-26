@@ -334,9 +334,11 @@ document.addEventListener('keydown', e => {
                 setTimeout(() => {
                     const modal = document.getElementById('glass-modal');
                     const modalBody = document.getElementById('glass-modal-body');
-                    if (modal && modalBody) {
                         modalBody.innerHTML = `
-                            <div class="tip-title" style="color: var(--accent);">✓ Feedback Delivered</div>
+                            <div class="tip-title" style="color: var(--accent); display: flex; align-items: center; gap: 8px;">
+                                <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>Feedback Delivered</span>
+                            </div>
                             <div style="font-size: 13px; line-height: 1.6; color: var(--text); margin-bottom: 14px;">
                                 Thank you! Your observation has been recorded and submitted to the Eastern Samar State University research team.
                             </div>
@@ -460,7 +462,7 @@ function applyTheme(light) {
     document.documentElement.classList.toggle('dark', !light);
     
     const iconEl = document.getElementById('theme-icon');
-    if (iconEl) iconEl.textContent = light ? '☼' : '☾';
+    if (iconEl) iconEl.textContent = '';
 
     const iconSvg = document.getElementById('theme-icon-svg');
     if (iconSvg) {
@@ -673,6 +675,24 @@ function live() {
                     aqiGuidanceEl.textContent = info.guidance;
                 }
 
+                // Semi-Circular Radial Arc Gauge Progress (Arc length = 267)
+                const meterEl = document.getElementById('aqi-gauge-meter');
+                if (meterEl && !isNaN(aqi)) {
+                    const clampedAqi = Math.min(Math.max(aqi, 0), 300);
+                    const offset = 267 - (clampedAqi / 300) * 267;
+                    meterEl.style.strokeDashoffset = offset;
+                }
+
+                // Continuous Spectrum Marker Pointer Needle
+                const pointerEl = document.getElementById('spectrum-pointer');
+                if (pointerEl && !isNaN(aqi)) {
+                    const pct = Math.min(Math.max((aqi / 300) * 100, 2), 98);
+                    pointerEl.style.left = pct + '%';
+                }
+
+                // Visual Action-Oriented Health Guidance Matrix
+                updateActionChips(aqi);
+
                 // 24-Hour Rolling Average (RA 8749 Compliance Standard)
                 if (d.aqi_24h !== undefined) {
                     const info24 = aqiInfo(d.aqi_24h);
@@ -770,6 +790,9 @@ function load() {
             const temp = data.map(x => parseFloat(x.temp)).reverse();
             const hum = data.map(x => parseFloat(x.hum)).reverse();
             const mq = data.map(x => parseFloat(x.mq135)).reverse();
+
+            // Render Inline Telemetry Sparklines & Momentum Indicators
+            renderTelemetrySparklines(temp, hum, pm, mq);
 
             if (!chart) {
                 const t = isLight ? LIGHT_CHART : DARK_CHART;
@@ -946,6 +969,184 @@ function loadDaily() {
     });
 }
 
+/* ── UI VISUAL UPGRADES (ACTION CHIPS, SPARKLINES, TRAJECTORY) ──────────── */
+function updateActionChips(aqi) {
+    const out = document.getElementById('status-outdoor');
+    const vent = document.getElementById('status-ventilation');
+    const vuln = document.getElementById('status-vulnerable');
+    const mask = document.getElementById('status-mask');
+    if (!out || isNaN(aqi)) return;
+
+    if (aqi <= 50) {
+        out.textContent = 'Permitted'; out.className = 'chip-status safe';
+        vent.textContent = 'Open Windows'; vent.className = 'chip-status safe';
+        vuln.textContent = 'Low Risk'; vuln.className = 'chip-status safe';
+        mask.textContent = 'Not Required'; mask.className = 'chip-status safe';
+    } else if (aqi <= 100) {
+        out.textContent = 'Moderate'; out.className = 'chip-status fair';
+        vent.textContent = 'Normal'; vent.className = 'chip-status fair';
+        vuln.textContent = 'Acceptable'; vuln.className = 'chip-status fair';
+        mask.textContent = 'Optional'; mask.className = 'chip-status fair';
+    } else if (aqi <= 150) {
+        out.textContent = 'Limit Prolonged'; out.className = 'chip-status caution';
+        vent.textContent = 'Filtered / Close'; vent.className = 'chip-status caution';
+        vuln.textContent = 'Reduce Exertion'; vuln.className = 'chip-status caution';
+        mask.textContent = 'Recommended'; mask.className = 'chip-status caution';
+    } else {
+        out.textContent = 'Avoid Outdoors'; out.className = 'chip-status danger';
+        vent.textContent = 'Keep Closed'; vent.className = 'chip-status danger';
+        vuln.textContent = 'Stay Indoors'; vuln.className = 'chip-status danger';
+        mask.textContent = 'Wear N95 Mask'; mask.className = 'chip-status danger';
+    }
+}
+
+function renderTelemetrySparklines(tempArr, humArr, pmArr, mqArr) {
+    renderSparkline('spark-temp', 'trend-badge-temp', tempArr, '#F05252', '°C', 1);
+    renderSparkline('spark-hum', 'trend-badge-hum', humArr, '#38BDF8', '%', 1);
+    renderSparkline('spark-pm', 'trend-badge-pm', pmArr, '#00CFA8', ' µg', 1);
+    renderSparkline('spark-mq', 'trend-badge-mq', mqArr, '#F5A623', ' ADC', 0);
+}
+
+function renderSparkline(svgId, badgeId, dataArr, strokeColor, unit, decimals) {
+    const svg = document.getElementById(svgId);
+    const badge = document.getElementById(badgeId);
+    if (!svg || !dataArr || dataArr.length < 2) return;
+
+    // Focus on recent 12-15 entries
+    const slice = dataArr.slice(-15);
+    const valid = slice.filter(v => !isNaN(v));
+    if (valid.length < 2) return;
+
+    let min = Math.min(...valid);
+    let max = Math.max(...valid);
+    if (max - min < 0.001) { min -= 1; max += 1; }
+
+    const width = 105;
+    const height = 24;
+    const padTop = 3;
+    const padBottom = 3;
+    const availH = height - padTop - padBottom;
+
+    const n = valid.length;
+    const points = valid.map((v, i) => {
+        const x = (i / (n - 1)) * width;
+        const y = (height - padBottom) - ((v - min) / (max - min)) * availH;
+        return { x: x.toFixed(1), y: y.toFixed(1) };
+    });
+
+    const polylinePts = points.map(p => `${p.x},${p.y}`).join(' ');
+    const polygonPts = `0,${height} ${polylinePts} ${width},${height}`;
+
+    svg.innerHTML = `
+        <defs>
+            <linearGradient id="grad-${svgId}" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="${strokeColor}" stop-opacity="0.32"/>
+                <stop offset="100%" stop-color="${strokeColor}" stop-opacity="0.0"/>
+            </linearGradient>
+        </defs>
+        <polygon points="${polygonPts}" fill="url(#grad-${svgId})"/>
+        <polyline points="${polylinePts}" fill="none" stroke="${strokeColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="${points[points.length-1].x}" cy="${points[points.length-1].y}" r="2.5" fill="${strokeColor}"/>
+    `;
+
+    if (badge) {
+        const first = valid[0];
+        const last = valid[valid.length - 1];
+        const delta = last - first;
+        const absD = Math.abs(delta);
+        const threshold = decimals === 0 ? 2 : 0.2;
+
+        if (absD < threshold) {
+            badge.textContent = '━ Steady';
+            badge.className = 'spark-badge steady';
+        } else if (delta > 0) {
+            badge.textContent = `▲ +${delta.toFixed(decimals)}${unit}`;
+            badge.className = 'spark-badge up';
+        } else {
+            badge.textContent = `▼ ${delta.toFixed(decimals)}${unit}`;
+            badge.className = 'spark-badge down';
+        }
+    }
+}
+
+function updateForecastDeltas(c0, f1, f2, f3) {
+    const d1 = f1 - c0;
+    const d2 = f2 - f1;
+    const d3 = f3 - f2;
+
+    const setDelta = (id, delta) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const rounded = Math.round(delta);
+        if (Math.abs(rounded) < 1) {
+            el.textContent = '━ 0';
+            el.className = 'step-delta flat';
+        } else if (rounded > 0) {
+            el.textContent = `▲ +${rounded}`;
+            el.className = 'step-delta up';
+        } else {
+            el.textContent = `▼ ${rounded}`;
+            el.className = 'step-delta down';
+        }
+    };
+
+    setDelta('trend_delta1', d1);
+    setDelta('trend_delta2', d2);
+    setDelta('trend_delta3', d3);
+}
+
+function renderForecastTrajectory(c0, f1, f2, f3) {
+    const svg = document.getElementById('forecast-trajectory-svg');
+    const stateEl = document.getElementById('traj-trend-indicator');
+    if (!svg) return;
+
+    const vals = [c0, f1, f2, f3];
+    let min = Math.min(...vals);
+    let max = Math.max(...vals);
+    if (max - min < 6) { min -= 3; max += 3; }
+
+    const xCoords = [20, 106, 193, 280];
+    const yCoords = vals.map(v => {
+        const norm = (v - min) / (max - min);
+        // Map 0 -> y=29, 1 -> y=9
+        return 29 - norm * 20;
+    });
+
+    const path = document.getElementById('traj-path');
+    if (path) {
+        // Smooth continuous cubic bezier curve
+        const dStr = `M ${xCoords[0]} ${yCoords[0].toFixed(1)} ` +
+            `C ${(xCoords[0]+xCoords[1])/2} ${yCoords[0].toFixed(1)}, ${(xCoords[0]+xCoords[1])/2} ${yCoords[1].toFixed(1)}, ${xCoords[1]} ${yCoords[1].toFixed(1)} ` +
+            `C ${(xCoords[1]+xCoords[2])/2} ${yCoords[1].toFixed(1)}, ${(xCoords[1]+xCoords[2])/2} ${yCoords[2].toFixed(1)}, ${xCoords[2]} ${yCoords[2].toFixed(1)} ` +
+            `C ${(xCoords[2]+xCoords[3])/2} ${yCoords[2].toFixed(1)}, ${(xCoords[2]+xCoords[3])/2} ${yCoords[3].toFixed(1)}, ${xCoords[3]} ${yCoords[3].toFixed(1)}`;
+        path.setAttribute('d', dStr);
+        path.setAttribute('stroke', aqiInfo(f3).color || 'var(--accent)');
+    }
+
+    vals.forEach((v, idx) => {
+        const dot = document.getElementById(`traj-dot-${idx}`);
+        if (dot) {
+            dot.setAttribute('cx', xCoords[idx]);
+            dot.setAttribute('cy', yCoords[idx].toFixed(1));
+            dot.setAttribute('fill', aqiInfo(v).color || 'var(--accent)');
+        }
+    });
+
+    if (stateEl) {
+        const netDelta = f3 - c0;
+        if (netDelta > 4) {
+            stateEl.textContent = `Rising Path (+${Math.round(netDelta)})`;
+            stateEl.style.color = 'var(--danger)';
+        } else if (netDelta < -4) {
+            stateEl.textContent = `Improving Path (${Math.round(netDelta)})`;
+            stateEl.style.color = 'var(--accent)';
+        } else {
+            stateEl.textContent = 'Steady Trajectory (━ 0)';
+            stateEl.style.color = 'var(--muted)';
+        }
+    }
+}
+
 /* ── TREND FORECAST & RANDOM FOREST MODEL EVALUATION ────────────────────── */
 function applyTrendFallback(curAqi) {
     const fallbackAqi = (!isNaN(curAqi) && curAqi > 0) ? Math.round(curAqi) : 42;
@@ -964,6 +1165,9 @@ function applyTrendFallback(curAqi) {
     if (cat1) { cat1.textContent = info.label; cat1.style.color = info.color; }
     if (cat2) { cat2.textContent = info.label; cat2.style.color = info.color; }
     if (cat3) { cat3.textContent = info.label; cat3.style.color = info.color; }
+
+    updateForecastDeltas(fallbackAqi, fallbackAqi, fallbackAqi, fallbackAqi);
+    renderForecastTrajectory(fallbackAqi, fallbackAqi, fallbackAqi, fallbackAqi);
 
     const msgEl = document.getElementById('trend_msg');
     if (msgEl) msgEl.textContent = 'Projections indicate steady air quality across the 3-hour forecast window.';
@@ -1041,6 +1245,17 @@ function loadTrend() {
             if (cat1) { cat1.textContent = d.category_1h ?? '—'; if (color1) cat1.style.color = color1; }
             if (cat2) { cat2.textContent = d.category_2h ?? '—'; if (color2) cat2.style.color = color2; }
             if (cat3) { cat3.textContent = d.category_3h ?? '—'; if (color3) cat3.style.color = color3; }
+
+            // Visual Predictive Deltas and Connected Trajectory Curve
+            const curAqi = (window.latestTelemetry && !isNaN(window.latestTelemetry.aqi)) 
+                ? parseFloat(window.latestTelemetry.aqi) 
+                : (parseFloat(document.getElementById('aqi')?.textContent) || 42);
+            const f1 = (d.forecast_1h !== undefined && d.forecast_1h !== null) ? parseFloat(d.forecast_1h) : curAqi;
+            const f2 = (d.forecast_2h !== undefined && d.forecast_2h !== null) ? parseFloat(d.forecast_2h) : f1;
+            const f3 = (d.forecast_3h !== undefined && d.forecast_3h !== null) ? parseFloat(d.forecast_3h) : f2;
+
+            updateForecastDeltas(curAqi, f1, f2, f3);
+            renderForecastTrajectory(curAqi, f1, f2, f3);
 
             const msgEl = document.getElementById('trend_msg');
             if (msgEl) msgEl.textContent = d.trend_msg ?? 'Stable air quality predicted over the next 3 hours.';
@@ -1128,8 +1343,16 @@ function loadAnomaly() {
         const box = document.getElementById('anomaly-status-box');
         if (box) box.className = 'anomaly-status ' + (d.is_anomaly ? d.severity : 'ok');
 
-        const icons = { ok: '✓', warning: '⚠️', critical: '🚨', normal: '✓' };
-        document.getElementById('anomaly-icon').textContent = icons[d.severity] || '✓';
+        const anomalyIconEl = document.getElementById('anomaly-icon');
+        if (anomalyIconEl) {
+            if (d.severity === 'critical') {
+                anomalyIconEl.innerHTML = '<svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--danger);"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+            } else if (d.severity === 'warning') {
+                anomalyIconEl.innerHTML = '<svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--warn);"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+            } else {
+                anomalyIconEl.innerHTML = '<svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent);"><polyline points="20 6 9 17 4 12"/></svg>';
+            }
+        }
         document.getElementById('anomaly-label').textContent = d.severity === 'normal'
             ? 'All Telemetry Stable'
             : d.severity === 'warning' ? 'Minor Fluctuation' : 'Significant Spike Detected';
@@ -1164,7 +1387,7 @@ function loadAnomaly() {
             }
         }
 
-        // Pollution Source Diagnostic Fingerprint
+        // Pollution Source Diagnostic Fingerprint & Stacked Distribution
         if (d.source_attribution) {
             const sa = d.source_attribution;
             const badge = document.getElementById('source_confidence_badge');
@@ -1173,15 +1396,39 @@ function loadAnomaly() {
             const reason = document.getElementById('source_reasoning');
             
             if (badge) badge.textContent = `${sa.confidence}% Confidence`;
-            if (icon) icon.textContent = sa.icon || '🍃';
+            if (icon) {
+                const srcIcons = {
+                    biomass: '<svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--warn);"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>',
+                    traffic: '<svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.5 2.8C2 11 2 11.2 2 11.5V16c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>',
+                    inversion: '<svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--cyan);"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>',
+                    urban: '<svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--danger);"><path d="M2 20h20"/><path d="M4 20V10l6 4V4l8 6v10"/></svg>',
+                    clean: '<svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>'
+                };
+                icon.innerHTML = srcIcons[sa.icon] || srcIcons.traffic;
+            }
             if (title) title.textContent = sa.source;
             if (reason) reason.textContent = sa.reasoning;
+
+            // Update Multi-Segment Stacked Covariance Attribution Bar
+            const dist = sa.distribution || { vehicular: 72, biomass: 18, marine: 10 };
+            const vEl = document.getElementById('src-bar-vehicular');
+            const bEl = document.getElementById('src-bar-biomass');
+            const mEl = document.getElementById('src-bar-marine');
+            const vPct = document.getElementById('src-pct-vehicular');
+            const bPct = document.getElementById('src-pct-biomass');
+            const mPct = document.getElementById('src-pct-marine');
+            if (vEl) { vEl.style.width = dist.vehicular + '%'; vEl.title = `Vehicular Transit: ${dist.vehicular}%`; }
+            if (bEl) { bEl.style.width = dist.biomass + '%'; bEl.title = `Biomass & Solid Fuel: ${dist.biomass}%`; }
+            if (mEl) { mEl.style.width = dist.marine + '%'; mEl.title = `Marine Aerosol & Ambient: ${dist.marine}%`; }
+            if (vPct) vPct.textContent = dist.vehicular + '%';
+            if (bPct) bPct.textContent = dist.biomass + '%';
+            if (mPct) mPct.textContent = dist.marine + '%';
         }
 
         const stuckWrap = document.getElementById('stuck-wrap');
         if (stuckWrap) {
             stuckWrap.innerHTML = d.sensor_stuck
-                ? '<div class="stuck-badge">⚠️ PM10 Sensor Watchdog: Invariant signal detected — check optical chamber.</div>'
+                ? '<div class="stuck-badge" style="display: flex; align-items: center; gap: 8px;"><svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--danger);"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>PM10 Sensor Watchdog: Invariant signal detected — check optical chamber.</span></div>'
                 : '';
         }
 
@@ -1231,11 +1478,16 @@ function updateHealthAlert(instantAqi, aqi24, heatIndex, heatCat, uesiLevel, ues
     const title = document.getElementById('alert-title');
     const body = document.getElementById('alert-body');
 
+    const alertSvgWarning = '<svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--warn);"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+    const alertSvgCritical = '<svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--danger);"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+    const alertSvgHeat = '<svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--danger);"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>';
+    const alertSvgPurple = '<svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--purple);"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+
     // 1. Acute sensor anomaly
     if (isAnomaly && aqi24Val <= 100) {
         const isCrit = anomalySeverity === 'critical';
         banner.style.borderLeftColor = isCrit ? 'var(--danger)' : 'var(--warn)';
-        if (icon) icon.textContent = isCrit ? '🚨' : '⚠️';
+        if (icon) icon.innerHTML = isCrit ? alertSvgCritical : alertSvgWarning;
         if (title) {
             const srcName = sourceAttribution && sourceAttribution.source ? ` • ${sourceAttribution.source.toUpperCase()}` : '';
             title.textContent = isCrit ? `ENVIRONMENTAL ALERT: ACUTE POLLUTION SPIKE${srcName}` : `ENVIRONMENTAL ADVISORY: UNUSUAL READING${srcName}`;
@@ -1257,7 +1509,7 @@ function updateHealthAlert(instantAqi, aqi24, heatIndex, heatCat, uesiLevel, ues
     // 2. Heat advisory
     if (aqi24Val <= 100 && hi >= 42) {
         banner.style.borderLeftColor = 'var(--danger)';
-        if (icon) icon.textContent = '🌡️';
+        if (icon) icon.innerHTML = alertSvgHeat;
         if (title) {
             title.textContent = `HEAT ADVISORY: ${hCat.toUpperCase()} (${hi}°C FEELS LIKE)`;
             title.style.color = 'var(--danger)';
@@ -1269,7 +1521,7 @@ function updateHealthAlert(instantAqi, aqi24, heatIndex, heatCat, uesiLevel, ues
     // 3. Dual hazard
     if (aqi24Val > 100 && hi >= 33) {
         banner.style.borderLeftColor = 'var(--warn)';
-        if (icon) icon.textContent = '⚠️';
+        if (icon) icon.innerHTML = alertSvgWarning;
         if (title) {
             title.textContent = `ENVIRONMENTAL ADVISORY: ${uLevel ? uLevel.toUpperCase() : 'ELEVATED RISK'} (24H AQI ${Math.round(aqi24Val)} · HI ${hi}°C)`;
             title.style.color = 'var(--warn)';
@@ -1281,7 +1533,7 @@ function updateHealthAlert(instantAqi, aqi24, heatIndex, heatCat, uesiLevel, ues
     // 4. Sustained 24h ambient air categories
     if (aqi24Val <= 150) {
         banner.style.borderLeftColor = 'var(--warn)';
-        if (icon) icon.textContent = '⚠️';
+        if (icon) icon.innerHTML = alertSvgWarning;
         if (title) {
             title.textContent = 'AIR QUALITY ADVISORY: UNHEALTHY FOR SENSITIVE GROUPS (24H AQI ' + Math.round(aqi24Val) + ')';
             title.style.color = 'var(--warn)';
@@ -1289,7 +1541,7 @@ function updateHealthAlert(instantAqi, aqi24, heatIndex, heatCat, uesiLevel, ues
         if (body) body.textContent = 'Sustained 24-hour PM10 concentration exceeds clean guidelines. Individuals with respiratory or heart conditions, older adults, and children should limit prolonged outdoor exertion.';
     } else if (aqi24Val <= 200) {
         banner.style.borderLeftColor = 'var(--danger)';
-        if (icon) icon.textContent = '🚨';
+        if (icon) icon.innerHTML = alertSvgCritical;
         if (title) {
             title.textContent = 'PUBLIC HEALTH ALERT: VERY UNHEALTHY (24H AQI ' + Math.round(aqi24Val) + ')';
             title.style.color = 'var(--danger)';
@@ -1297,7 +1549,7 @@ function updateHealthAlert(instantAqi, aqi24, heatIndex, heatCat, uesiLevel, ues
         if (body) body.textContent = 'Significant sustained 24-hour air pollution detected. Active children, adults, and sensitive individuals should avoid outdoor exertion.';
     } else if (aqi24Val <= 300) {
         banner.style.borderLeftColor = 'var(--purple)';
-        if (icon) icon.textContent = '🛑';
+        if (icon) icon.innerHTML = alertSvgPurple;
         if (title) {
             title.textContent = 'AIR QUALITY WARNING: ACUTELY UNHEALTHY (24H AQI ' + Math.round(aqi24Val) + ')';
             title.style.color = 'var(--purple)';
@@ -1305,7 +1557,7 @@ function updateHealthAlert(instantAqi, aqi24, heatIndex, heatCat, uesiLevel, ues
         if (body) body.textContent = 'Severe sustained 24-hour pollution risk. General public should stay indoors or wear protective masks outdoors.';
     } else {
         banner.style.borderLeftColor = 'var(--danger)';
-        if (icon) icon.textContent = '☣️';
+        if (icon) icon.innerHTML = alertSvgCritical;
         if (title) {
             title.textContent = 'EMERGENCY HEALTH DECLARATION: HAZARDOUS AIR (24H AQI ' + Math.round(aqi24Val) + ')';
             title.style.color = 'var(--danger)';
@@ -1481,9 +1733,9 @@ function initSensorMap() {
 
         // Layer switch control (Hybrid Satellite vs Street Map vs Clean Aerial)
         const baseMaps = {
-            "🛰️ Satellite (Hybrid)": googleSatLayer,
-            "🗺️ Street Map": streetLayer,
-            "🌍 Satellite (Terrain)": esriSatLayer
+            "Satellite (Hybrid)": googleSatLayer,
+            "Street Map": streetLayer,
+            "Satellite (Terrain)": esriSatLayer
         };
         L.control.layers(baseMaps, null, { position: 'topright' }).addTo(sensorLeafletMap);
 

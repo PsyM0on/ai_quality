@@ -65,15 +65,15 @@ last_aqi = float(df['aqi'].iloc[-1])
 # ─────────────────────────────────────────
 slope_per_hour = float(model.coef_[0]) * ONE_HOUR
 
-# 🔥 Remove insane slopes
+# Remove extreme slope outliers
 if abs(slope_per_hour) > 80:
     slope_per_hour = 0
 
-# 🔧 Allow small movements (more sensitive)
+# Sensitivity threshold
 if abs(slope_per_hour) < 0.03:
     slope_per_hour = 0
 
-# 🧲 SHORT-TERM BOOST (KEY FIX) 🧲
+# Short-term momentum adjustment
 recent_change = 0
 if len(df) >= 3:
     recent_change = df['aqi'].iloc[-1] - df['aqi'].iloc[-3]
@@ -108,7 +108,7 @@ elif slope_per_hour < -1.0:
 else:
     trend = "stable"
 
-    # 🔥 UX FIX for high AQI
+    # Status message for persistently elevated AQI
     if last_aqi > 200:
         trend_msg = "Air quality is consistently poor."
     else:
