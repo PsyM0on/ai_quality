@@ -2962,3 +2962,57 @@ body.light .skeleton::after {
         grid-template-columns: repeat(3, 1fr);
     }
 }
+
+/* ==========================================================================
+   Leaflet Map Styles
+   ========================================================================== */
+.map-card {
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.dark .map-card {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.custom-map-marker {
+    position: relative;
+    width: 24px;
+    height: 24px;
+}
+
+.map-pulse-dot {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: var(--accent);
+    border-radius: 50%;
+    top: 7px;
+    left: 7px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+    z-index: 2;
+}
+
+.map-pulse-ring {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    background-color: var(--accent);
+    border-radius: 50%;
+    top: 0;
+    left: 0;
+    opacity: 0.4;
+    animation: map-pulse 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+    z-index: 1;
+}
+
+@keyframes map-pulse {
+    0% {
+        transform: scale(0.6);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(2.5);
+        opacity: 0;
+    }
+}

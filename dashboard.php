@@ -179,8 +179,10 @@ if (isset($_GET['latest'])) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="assets/css/dashboard.css?v=47" rel="stylesheet">
+<link href="assets/css/dashboard.css?v=48" rel="stylesheet">
 <script>
     // System Validation: Early Device Theme Detection (Default: Light Mode)
     (function() {
@@ -380,6 +382,16 @@ if (isset($_GET['latest'])) {
                     </button>
                 </div>
             </div>
+        </div>
+
+        <!-- Live Sensor Map -->
+        <div class="section-heading mt-4" style="margin-top: 24px;">
+            <h2 class="section-title">Deployment Location</h2>
+            <span class="section-subtitle">Real-time geographical context of the sensor node</span>
+        </div>
+        
+        <div class="card map-card" style="padding: 0; overflow: hidden; margin-bottom: 32px; border: 1px solid var(--border); border-radius: 16px; height: 350px; z-index: 1;">
+            <div id="sensor-map" style="width: 100%; height: 100%;"></div>
         </div>
 
         <!-- Clean Telemetry Row (4 Cards) -->
@@ -997,7 +1009,7 @@ $feedback_next_url = (strpos($current_host, 'localhost') !== false || strpos($cu
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=47" defer></script>
+<script src="assets/js/dashboard.js?v=48" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {

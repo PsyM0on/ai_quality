@@ -1414,3 +1414,64 @@ load();
 setTimeout(loadTrend, 1500);
 setTimeout(loadAnomaly, 3500);
 setTimeout(loadDaily, 5500);
+
+// Initialize Leaflet Map
+(function initSensorMap() {
+    document.addEventListener('DOMContentLoaded', () => {
+        const mapContainer = document.getElementById('sensor-map');
+        if (!mapContainer) return;
+        
+        // Coordinates for Maypangdan, Borongan City
+        const lat = 11.6115;
+        const lng = 125.4331;
+        
+        // Initialize map
+        const map = L.map('sensor-map', {
+            center: [lat, lng],
+            zoom: 15,
+            zoomControl: false,
+            scrollWheelZoom: false
+        });
+        
+        const isDark = document.documentElement.classList.contains('dark');
+        
+        const tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/{style}/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> contributors',
+            subdomains: 'abcd',
+            maxZoom: 20,
+            style: isDark ? 'dark_all' : 'light_all'
+        }).addTo(map);
+
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+        
+        const pulseIcon = L.divIcon({
+            className: 'custom-map-marker',
+            html: '<div class="map-pulse-ring"></div><div class="map-pulse-dot"></div>',
+            iconSize: [24, 24],
+            iconAnchor: [12, 12]
+        });
+        
+        const marker = L.marker([lat, lng], { icon: pulseIcon }).addTo(map);
+        marker.bindPopup('<div style="font-family: \'Inter\', sans-serif; text-align: center;"><strong style="display: block; font-size: 13px; margin-bottom: 4px;">Sensor Node #1</strong><span style="font-size: 11px; color: #666;">Maypangdan Bridge</span><br><span style="font-size: 11px; color: #666;">Borongan City</span></div>');
+        
+        // Watch for theme changes
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.attributeName === 'class') {
+                    const isNowDark = document.documentElement.classList.contains('dark');
+                    const newStyle = isNowDark ? 'dark_all' : 'light_all';
+                    tileLayer.setUrl(\https://{s}.basemaps.cartocdn.com/\/{z}/{x}/{y}{r}.png\);
+                }
+            });
+        });
+        observer.observe(document.documentElement, { attributes: true });
+
+        // Fix rendering when in tabs
+        setTimeout(() => { map.invalidateSize(); }, 500);
+        
+        // Also invalidate when window resizes
+        window.addEventListener('resize', () => {
+            map.invalidateSize();
+        });
+    });
+})();
