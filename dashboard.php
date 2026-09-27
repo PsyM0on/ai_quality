@@ -570,8 +570,8 @@ if (isset($_GET['latest'])) {
             </button>
             <button class="sub-tab-btn" id="subtab-sensor-map" role="tab" aria-selected="false" onclick="switchTechTab('sensor-map')">
                 <svg class="icon-svg tab-svg" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
-                <span class="tab-label-full">Geospatial Station Map</span>
-                <span class="tab-label-short">Station Map</span>
+                <span class="tab-label-full">Sensor Map</span>
+                <span class="tab-label-short">Sensor Map</span>
             </button>
         </div>
 
@@ -902,14 +902,14 @@ if (isset($_GET['latest'])) {
             </div>
         </div>
 
-        <!-- SUB-TAB 3: Geospatial Deployment Map -->
+        <!-- SUB-TAB 3: Sensor Map -->
         <div id="tech-pane-sensor-map" class="tech-sub-pane" style="display: none;">
             <div class="panel diag-panel" style="padding: 0; overflow: hidden;">
                 <div class="panel-header" style="padding: 16px 20px; border-bottom: 1px solid var(--border);">
                     <div class="panel-title-group">
                         <span class="panel-title">
                             <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
-                            Geospatial Station Deployment & Microclimate Anchor
+                            Sensor Location
                         </span>
                         <span class="badge-pill" id="map-station-badge">Node #1 Active</span>
                     </div>
@@ -1129,11 +1129,11 @@ $feedback_next_url = (strpos($current_host, 'localhost') !== false || strpos($cu
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=57" defer></script>
+<script src="assets/js/dashboard.js?v=58" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=51')
+        navigator.serviceWorker.register('./sw.js?update=52')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update();
