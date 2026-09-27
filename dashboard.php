@@ -88,7 +88,7 @@ if (isset($_GET['latest'])) {
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="assets/css/dashboard.css?v=55" rel="stylesheet">
+<link href="assets/css/dashboard.css?v=56" rel="stylesheet">
 <script>
     // System Validation: Early Device Theme Detection (Default: Light Mode)
     (function() {
@@ -224,10 +224,11 @@ if (isset($_GET['latest'])) {
                         <defs>
                             <linearGradient id="aqiGaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
                                 <stop offset="0%" stop-color="#00CFA8"/>
-                                <stop offset="25%" stop-color="#4C9EEB"/>
-                                <stop offset="50%" stop-color="#F5A623"/>
-                                <stop offset="75%" stop-color="#F05252"/>
-                                <stop offset="100%" stop-color="#9B51E0"/>
+                                <stop offset="20%" stop-color="#F5A623"/>
+                                <stop offset="40%" stop-color="#FF8C00"/>
+                                <stop offset="60%" stop-color="#F05252"/>
+                                <stop offset="80%" stop-color="#9B51E0"/>
+                                <stop offset="100%" stop-color="#7E0023"/>
                             </linearGradient>
                         </defs>
                         <!-- Background Inactive Track -->
@@ -247,8 +248,8 @@ if (isset($_GET['latest'])) {
                 <div class="aqi-spectrum-track" title="Philippine Clean Air Act (RA 8749) AQI Range Scale">
                     <div class="spectrum-segments">
                         <span class="spec-seg" style="background:#00CFA8;" title="Good (0–50)"></span>
-                        <span class="spec-seg" style="background:#4C9EEB;" title="Fair (51–100)"></span>
-                        <span class="spec-seg" style="background:#F5A623;" title="Unhealthy for Sensitive (101–150)"></span>
+                        <span class="spec-seg" style="background:#F5A623;" title="Fair (51–100)"></span>
+                        <span class="spec-seg" style="background:#FF8C00;" title="Unhealthy for Sensitive (101–150)"></span>
                         <span class="spec-seg" style="background:#F05252;" title="Very Unhealthy (151–200)"></span>
                         <span class="spec-seg" style="background:#9B51E0;" title="Acutely Unhealthy (201–300)"></span>
                         <span class="spec-seg" style="background:#7E0023;" title="Emergency (301+)"></span>
@@ -1128,11 +1129,11 @@ $feedback_next_url = (strpos($current_host, 'localhost') !== false || strpos($cu
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=55" defer></script>
+<script src="assets/js/dashboard.js?v=56" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=48')
+        navigator.serviceWorker.register('./sw.js?update=49')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update();
