@@ -22,7 +22,7 @@ const DENR_PM10_BREAKPOINTS = [
     [155.0, 254.0,  101, 150],   // Unhealthy for Sensitive Groups
     [255.0, 354.0,  151, 200],   // Very Unhealthy
     [355.0, 424.0,  201, 300],   // Acutely Unhealthy
-    [425.0, 604.0,  301, 500]    // Emergency
+    [425.0, 504.0,  301, 500]    // Emergency (DAO 2000-81 Annex A)
 ];
 
 /**
@@ -33,7 +33,7 @@ const DENR_PM10_BREAKPOINTS = [
  */
 function calc_pm10_aqi($pm10) {
     $pm = max(0.0, floatval($pm10));
-    if ($pm > 604.0) {
+    if ($pm > 504.0) {
         return 500;
     }
     foreach (DENR_PM10_BREAKPOINTS as $bp) {
@@ -78,7 +78,7 @@ function get_aqi_color($aqi) {
 }
 
 /**
- * Return official Philippine DENR EMB cautionary health advisory text.
+ * Return official Philippine DENR EMB cautionary health advisory text (DAO 2000-81 Annex A).
  * 
  * @param int|float $aqi
  * @return string
@@ -90,13 +90,13 @@ function get_aqi_advice($aqi) {
     } elseif ($v <= 100) {
         return "Air quality is acceptable (Fair). Unusually sensitive individuals should consider limiting prolonged outdoor exertion.";
     } elseif ($v <= 150) {
-        return "Unhealthy for Sensitive Groups. People with respiratory or heart disease, the elderly, and children should limit outdoor exertion.";
+        return "People with respiratory disease, such as asthma, should limit outdoor exertion (DAO 2000-81).";
     } elseif ($v <= 200) {
-        return "Very Unhealthy. People with respiratory illness should avoid outdoor exertion; everyone else should limit prolonged exposure.";
+        return "Pedestrians should avoid heavy traffic areas. People with heart or respiratory disease, such as asthma, should stay indoors and rest as much as possible. Unnecessary trips should be postponed. People should voluntarily restrict vehicle use (DAO 2000-81).";
     } elseif ($v <= 300) {
-        return "Acutely Unhealthy. People with respiratory disease (asthma) must stay indoors; general public should avoid outdoor exertion.";
+        return "People should limit outdoor exertion. People with heart or respiratory disease, such as asthma, should stay indoors and rest as much as possible. Unnecessary trips should be postponed. Motor vehicle use may be restricted (DAO 2000-81).";
     } else {
-        return "EMERGENCY. Everyone should avoid outdoor exertion; remain indoors with doors and windows closed.";
+        return "EMERGENCY. Everyone should remain indoors, (keeping windows and doors closed unless heat stress is possible). Motor vehicle use prohibited except emergencies; industrial activities curtailed (DAO 2000-81).";
     }
 }
 

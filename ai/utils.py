@@ -23,11 +23,13 @@ _AQI_BREAKPOINTS = [
     (155.0, 254.0, 101, 150),  # Unhealthy for Sensitive Groups
     (255.0, 354.0, 151, 200),  # Very Unhealthy
     (355.0, 424.0, 201, 300),  # Acutely Unhealthy
-    (425.0, 604.0, 301, 500),  # Emergency
+    (425.0, 504.0, 301, 500),  # Emergency (DAO 2000-81 Annex A)
 ]
 
 def calc_aqi(pm10: float) -> int:
-    """Compute AQI from PM10 using Philippine Clean Air Act (RA 8749 / DENR) breakpoints."""
+    """Compute AQI from PM10 using Philippine Clean Air Act (RA 8749 / DENR DAO 2000-81) breakpoints."""
+    if pm10 > 504.0:
+        return 500
     for c_low, c_high, i_low, i_high in _AQI_BREAKPOINTS:
         if c_low <= pm10 <= c_high:
             aqi = (i_high - i_low) / (c_high - c_low) * (pm10 - c_low) + i_low
@@ -56,13 +58,13 @@ def get_color(aqi: float) -> str:
 
 
 def get_advice(aqi: float) -> str:
-    """Return Philippine DENR EMB cautionary health advice."""
+    """Return Philippine DENR EMB cautionary health advice (DAO 2000-81 Annex A)."""
     if aqi <= 50:    return "Air quality is satisfactory. No air pollution health risks (DENR Good)."
-    elif aqi <= 100: return "Air quality is acceptable (Fair). Unusually sensitive individuals should consider limiting prolonged outdoor exertion."
-    elif aqi <= 150: return "Unhealthy for Sensitive Groups. People with respiratory or heart disease, the elderly, and children should limit outdoor exertion."
-    elif aqi <= 200: return "Very Unhealthy. People with respiratory illness should avoid outdoor exertion; everyone else should limit prolonged exposure."
-    elif aqi <= 300: return "Acutely Unhealthy. People with respiratory disease (asthma) must stay indoors; general public should avoid outdoor exertion."
-    else:            return "EMERGENCY. Everyone should avoid outdoor exertion; remain indoors with doors and windows closed."
+    elif aqi <= 100: return "Air quality is acceptable (Fair). Unusually sensitive individuals should monitor respiratory symptoms."
+    elif aqi <= 150: return "People with respiratory disease, such as asthma, should limit outdoor exertion (DAO 2000-81)."
+    elif aqi <= 200: return "Pedestrians should avoid heavy traffic areas. People with heart or respiratory disease, such as asthma, should stay indoors and rest as much as possible. Unnecessary trips should be postponed. People should voluntarily restrict vehicle use (DAO 2000-81)."
+    elif aqi <= 300: return "People should limit outdoor exertion. People with heart or respiratory disease, such as asthma, should stay indoors and rest as much as possible. Unnecessary trips should be postponed. Motor vehicle use may be restricted (DAO 2000-81)."
+    else:            return "EMERGENCY. Everyone should remain indoors, (keeping windows and doors closed unless heat stress is possible). Motor vehicle use prohibited except emergencies; industrial activities curtailed (DAO 2000-81)."
 
 
 # ── FIRE ALERT ────────────────────────────────────────────────────────────────

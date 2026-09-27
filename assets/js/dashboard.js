@@ -540,7 +540,7 @@ const AQI_LEVELS = [
         cls: 'aqi-good',
         card: 'c-accent',
         color: '#00CFA8',
-        guidance: 'Air quality is ideal. Safe for all regular outdoor activities and exercise.'
+        guidance: 'Air quality is satisfactory. No air pollution health risks (DENR Good).'
     },
     {
         max: 100,
@@ -548,7 +548,7 @@ const AQI_LEVELS = [
         cls: 'aqi-mod',
         card: 'c-warn',
         color: '#F5A623',
-        guidance: 'Acceptable air quality. Unusually sensitive individuals should monitor respiratory symptoms.'
+        guidance: 'Air quality is acceptable (Fair). Unusually sensitive individuals should monitor respiratory symptoms.'
     },
     {
         max: 150,
@@ -556,7 +556,7 @@ const AQI_LEVELS = [
         cls: 'aqi-sensitive',
         card: 'c-orange',
         color: '#FF8C00',
-        guidance: 'Sensitive groups (children, elderly, people with asthma) should reduce prolonged outdoor exertion.'
+        guidance: 'People with respiratory disease, such as asthma, should limit outdoor exertion (DAO 2000-81).'
     },
     {
         max: 200,
@@ -564,7 +564,7 @@ const AQI_LEVELS = [
         cls: 'aqi-unhealthy',
         card: 'c-danger',
         color: '#F05252',
-        guidance: 'Active children and adults should avoid prolonged outdoor exertion; keep indoor spaces well-ventilated.'
+        guidance: 'Pedestrians avoid heavy traffic. People with heart/respiratory disease stay indoors and rest. Postpone unnecessary trips (DAO 2000-81).'
     },
     {
         max: 300,
@@ -572,7 +572,7 @@ const AQI_LEVELS = [
         cls: 'aqi-very',
         card: 'c-purple',
         color: '#9B59B6',
-        guidance: 'General public should avoid outdoor exertion. Consider wearing a protective particulate mask.'
+        guidance: 'People should limit outdoor exertion. Vulnerable groups must stay indoors and rest. Vehicle/industrial use restricted (DAO 2000-81).'
     },
     {
         max: 9999,
@@ -580,7 +580,7 @@ const AQI_LEVELS = [
         cls: 'aqi-hazardous',
         card: 'c-maroon',
         color: '#7B241C',
-        guidance: 'Hazardous air conditions. Everyone should remain indoors with doors and windows tightly closed.'
+        guidance: 'Everyone should remain indoors, (keeping windows/doors closed unless heat stress is possible). Travel prohibited (DAO 2000-81).'
     }
 ];
 
