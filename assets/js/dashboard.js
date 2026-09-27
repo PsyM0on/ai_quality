@@ -988,26 +988,56 @@ function updateActionChips(aqi) {
     const mask = document.getElementById('status-mask');
     if (!out || isNaN(aqi)) return;
 
+    const chipOut = document.getElementById('chip-outdoor');
+    const chipVent = document.getElementById('chip-ventilation');
+    const chipVuln = document.getElementById('chip-vulnerable');
+    const chipMask = document.getElementById('chip-mask');
+
     if (aqi <= 50) {
         out.textContent = 'Permitted'; out.className = 'chip-status safe';
         vent.textContent = 'Open Windows'; vent.className = 'chip-status safe';
         vuln.textContent = 'Low Risk'; vuln.className = 'chip-status safe';
         mask.textContent = 'Not Required'; mask.className = 'chip-status safe';
+        if (chipOut) chipOut.title = 'Outdoors: Air quality is satisfactory. Safe for all outdoor activities.';
+        if (chipVent) chipVent.title = 'Ventilation: Open windows and natural airflow encouraged.';
+        if (chipVuln) chipVuln.title = 'Sensitive Groups: Minimal risk for children, elderly, and respiratory patients.';
+        if (chipMask) chipMask.title = 'Facemask: No protective mask required.';
     } else if (aqi <= 100) {
-        out.textContent = 'Moderate'; out.className = 'chip-status fair';
+        out.textContent = 'Acceptable'; out.className = 'chip-status fair';
         vent.textContent = 'Normal'; vent.className = 'chip-status fair';
-        vuln.textContent = 'Acceptable'; vuln.className = 'chip-status fair';
+        vuln.textContent = 'Moderate'; vuln.className = 'chip-status fair';
         mask.textContent = 'Optional'; mask.className = 'chip-status fair';
+        if (chipOut) chipOut.title = 'Outdoors: Air quality is acceptable; outdoor activities permitted.';
+        if (chipVent) chipVent.title = 'Ventilation: Standard indoor ventilation is adequate.';
+        if (chipVuln) chipVuln.title = 'Sensitive Groups: Unusually sensitive individuals should monitor symptoms.';
+        if (chipMask) chipMask.title = 'Facemask: Mask optional for general public.';
     } else if (aqi <= 150) {
-        out.textContent = 'Limit Prolonged'; out.className = 'chip-status caution';
-        vent.textContent = 'Filtered / Close'; vent.className = 'chip-status caution';
-        vuln.textContent = 'Reduce Exertion'; vuln.className = 'chip-status caution';
+        out.textContent = 'Limit Exertion'; out.className = 'chip-status caution';
+        vent.textContent = 'Keep Filtered'; vent.className = 'chip-status caution';
+        vuln.textContent = 'Reduce Effort'; vuln.className = 'chip-status caution';
         mask.textContent = 'Recommended'; mask.className = 'chip-status caution';
-    } else {
+        if (chipOut) chipOut.title = 'Outdoors: Sensitive groups should limit prolonged outdoor exertion.';
+        if (chipVent) chipVent.title = 'Ventilation: Use filtered air or consider closing windows if dusty.';
+        if (chipVuln) chipVuln.title = 'Sensitive Groups: People with asthma or respiratory illness reduce exertion.';
+        if (chipMask) chipMask.title = 'Facemask: Particulate mask recommended for sensitive individuals.';
+    } else if (aqi <= 200) {
         out.textContent = 'Avoid Outdoors'; out.className = 'chip-status danger';
         vent.textContent = 'Keep Closed'; vent.className = 'chip-status danger';
         vuln.textContent = 'Stay Indoors'; vuln.className = 'chip-status danger';
+        mask.textContent = 'Wear Mask'; mask.className = 'chip-status danger';
+        if (chipOut) chipOut.title = 'Outdoors: Pedestrians avoid heavy traffic; postpone unnecessary trips.';
+        if (chipVent) chipVent.title = 'Ventilation: Keep windows and doors closed to avoid particulate entry.';
+        if (chipVuln) chipVuln.title = 'Sensitive Groups: People with heart or respiratory disease stay indoors and rest.';
+        if (chipMask) chipMask.title = 'Facemask: Protective particulate mask recommended for everyone outdoors.';
+    } else {
+        out.textContent = 'Stay Indoors'; out.className = 'chip-status danger';
+        vent.textContent = 'Keep Closed'; vent.className = 'chip-status danger';
+        vuln.textContent = 'Severe Risk'; vuln.className = 'chip-status danger';
         mask.textContent = 'Wear N95 Mask'; mask.className = 'chip-status danger';
+        if (chipOut) chipOut.title = 'Outdoors: Everyone should remain indoors; travel restricted except emergencies.';
+        if (chipVent) chipVent.title = 'Ventilation: Keep all doors and windows tightly closed unless heat stress is possible.';
+        if (chipVuln) chipVuln.title = 'Sensitive Groups: High risk emergency; remain indoors and rest.';
+        if (chipMask) chipMask.title = 'Facemask: N95 respirator mandatory for necessary outdoor movement.';
     }
 }
 

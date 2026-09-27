@@ -874,9 +874,10 @@ body.light .pointer-tip {
     margin-bottom: 12px;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 1080px) {
     .action-chips-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
     }
 }
 
@@ -887,9 +888,10 @@ body.light .pointer-tip {
     background: var(--card-subtle);
     border: 1px solid var(--border);
     border-radius: var(--radius-inner);
-    padding: 8px 10px;
-    transition: border-color 0.2s, background-color 0.2s;
+    padding: 7px 10px;
+    transition: border-color 0.2s, background-color 0.2s, transform 0.15s ease;
     min-width: 0;
+    min-height: 52px;
 }
 
 body.light .action-chip {
@@ -917,12 +919,14 @@ body.light .chip-icon {
 .chip-details {
     display: flex;
     flex-direction: column;
+    justify-content: center;
     gap: 2px;
     min-width: 0;
+    flex: 1;
 }
 
 .chip-label {
-    font-size: 0.64rem;
+    font-size: 0.62rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -930,14 +934,16 @@ body.light .chip-icon {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    line-height: 1.15;
 }
 
 .chip-status {
     font-size: 0.74rem;
     font-weight: 700;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    line-height: 1.25;
+    white-space: normal;
+    word-break: normal;
+    overflow-wrap: break-word;
 }
 
 .chip-status.safe {
@@ -945,11 +951,11 @@ body.light .chip-icon {
 }
 
 .chip-status.fair {
-    color: var(--cyan);
+    color: var(--warn);
 }
 
 .chip-status.caution {
-    color: var(--warn);
+    color: #FF8C00;
 }
 
 .chip-status.danger {
