@@ -2986,6 +2986,100 @@ body.light .skeleton::after {
         gap: 12px;
     }
 
+    /* Environmental Telemetry Stacked List for Mobile */
+    .telemetry-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .telemetry-card {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        grid-template-areas:
+            "header header"
+            "body   spark"
+            "footer footer";
+        align-items: center;
+        gap: 6px 14px;
+        padding: 14px 16px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .telemetry-card:active {
+        transform: scale(0.995);
+    }
+
+    .telemetry-card .card-header {
+        grid-area: header;
+        margin-bottom: 2px;
+        width: 100%;
+    }
+
+    .telemetry-card .telemetry-body {
+        grid-area: body;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+    }
+
+    .telemetry-card .telemetry-reading {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+    }
+
+    .telemetry-card .telemetry-num {
+        font-size: clamp(1.6rem, 5.5vw, 1.95rem);
+        line-height: 1.1;
+    }
+
+    .telemetry-card .telemetry-unit {
+        font-size: 0.8rem;
+    }
+
+    .telemetry-card .telemetry-sub {
+        font-size: 0.72rem;
+        color: var(--muted);
+        line-height: 1.25;
+    }
+
+    .telemetry-card .telemetry-spark-row {
+        grid-area: spark;
+        margin: 0;
+        align-self: center;
+        justify-self: end;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 8px;
+        border-radius: var(--radius-inner);
+    }
+
+    .telemetry-card .telemetry-sparkline {
+        width: clamp(75px, 20vw, 105px);
+        height: 24px;
+    }
+
+    .telemetry-card .spark-badge {
+        font-size: 0.68rem;
+        padding: 2px 6px;
+    }
+
+    .telemetry-card .telemetry-footer {
+        grid-area: footer;
+        border-top: 1px solid var(--border-subtle);
+        padding-top: 8px;
+        margin-top: 4px;
+        width: 100%;
+    }
+
+    .telemetry-card .meta-row {
+        font-size: 0.74rem;
+        gap: 6px;
+    }
+
     .chart-canvas-wrap {
         height: clamp(240px, 32vh, 320px);
     }
@@ -3282,7 +3376,7 @@ body.light .skeleton::after {
 
 @media (max-width: 520px) {
     .telemetry-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: 1fr;
         gap: 10px;
     }
 
@@ -3292,19 +3386,20 @@ body.light .skeleton::after {
     }
 
     .telemetry-card {
-        padding: 14px 12px;
+        padding: 12px 14px;
+        gap: 6px 12px;
     }
 
     .telemetry-num {
-        font-size: clamp(1.4rem, 5vw, 1.8rem);
+        font-size: clamp(1.5rem, 5.5vw, 1.85rem);
     }
 
     .telemetry-unit {
-        font-size: 0.72rem;
+        font-size: 0.78rem;
     }
 
     .telemetry-sub {
-        font-size: 0.68rem;
+        font-size: 0.7rem;
     }
 
     .aqi-score-container {
@@ -3436,6 +3531,20 @@ body.light .skeleton::after {
         grid-template-columns: 1fr;
     }
 
+    .telemetry-card {
+        padding: 10px 12px;
+        gap: 6px 10px;
+    }
+
+    .telemetry-card .telemetry-sparkline {
+        width: 72px;
+    }
+
+    .telemetry-card .spark-badge {
+        font-size: 0.62rem;
+        padding: 2px 4px;
+    }
+
     .brand-title {
         font-size: 1.05rem;
     }
@@ -3450,6 +3559,21 @@ body.light .skeleton::after {
 
     .z-grid {
         grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 330px) {
+    .telemetry-card {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "header"
+            "body"
+            "spark"
+            "footer";
+    }
+
+    .telemetry-card .telemetry-spark-row {
+        justify-self: stretch;
     }
 }
 
