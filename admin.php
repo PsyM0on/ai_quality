@@ -22,6 +22,7 @@ elseif (isset($_POST["password"])) {
         $_SESSION["admin_ip"] = $_SERVER['REMOTE_ADDR'];
         $_SESSION["admin_ua"] = $_SERVER['HTTP_USER_AGENT'];
         $_SESSION["login_attempts"] = 0; // Reset
+        $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
         header("Location: admin.php");
         exit;
     } else {
@@ -47,6 +48,23 @@ if (isset($_SESSION["admin_logged_in"])) {
     if ($_SESSION["admin_ip"] !== $_SERVER['REMOTE_ADDR'] || $_SESSION["admin_ua"] !== $_SERVER['HTTP_USER_AGENT']) {
         session_destroy();
         header("Location: admin.php");
+        exit;
+    }
+    // Ensure CSRF token is always present for logged in session
+    if (empty($_SESSION["csrf_token"])) {
+        $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
+    }
+
+    // Authenticated AJAX handler for cloud serial log (protected from unauthorized public access)
+    if (isset($_GET["fetch_log"])) {
+        header("Content-Type: text/plain; charset=utf-8");
+        header("Cache-Control: no-store, no-cache, must-revalidate");
+        $log_file = __DIR__ . "/storage/cloud_serial.log";
+        if (file_exists($log_file)) {
+            readfile($log_file);
+        } else {
+            echo "";
+        }
         exit;
     }
 }
@@ -309,13 +327,19 @@ if (!isset($_SESSION["admin_logged_in"])) {
 $sel_dev = isset($_GET["device"]) ? intval($_GET["device"]) : 1;
 
 // Command & Maintenance State Management
-$cmd_file = "command_" . $sel_dev . ".txt";
-if (!file_exists($cmd_file)) file_put_contents($cmd_file, "NONE");
+$cmd_file = __DIR__ . "/storage/command_" . $sel_dev . ".txt";
+if (!file_exists($cmd_file)) @file_put_contents($cmd_file, "NONE");
 
-$maint_file = "maintenance.txt";
-if (!file_exists($maint_file)) file_put_contents($maint_file, "OFF");
+$maint_file = __DIR__ . "/storage/maintenance.txt";
+if (!file_exists($maint_file)) @file_put_contents($maint_file, "OFF");
 
 if (isset($_POST["action"])) {
+    // Enforce CSRF protection
+    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'] ?? '', $_POST['csrf_token'])) {
+        http_response_code(403);
+        die("Security Protocol Violation: Invalid or missing CSRF security token.");
+    }
+
     $action = $_POST["action"];
     if ($action === "reboot") {
         file_put_contents($cmd_file, "REBOOT");
@@ -330,7 +354,7 @@ if (isset($_POST["action"])) {
         file_put_contents($cmd_file, "NONE");
         $_SESSION["msg"] = "Scheduled command cancelled.";
     } elseif ($action === "clear_log") {
-        file_put_contents("cloud_serial.log", "");
+        file_put_contents(__DIR__ . "/storage/cloud_serial.log", "");
         $_SESSION["msg"] = "Serial monitor buffer cleared.";
     } elseif ($action === "maint_on") {
         file_put_contents($maint_file, "ON");
@@ -349,10 +373,10 @@ if (isset($_SESSION["msg"])) {
     unset($_SESSION["msg"]);
 }
 
-$current_cmd = trim(file_get_contents($cmd_file));
-$maint_mode = trim(file_get_contents($maint_file));
+$current_cmd = file_exists($cmd_file) ? trim(file_get_contents($cmd_file)) : "NONE";
+$maint_mode = file_exists($maint_file) ? trim(file_get_contents($maint_file)) : "OFF";
 
-$res_file = "command_result_" . $sel_dev . ".txt";
+$res_file = __DIR__ . "/storage/command_result_" . $sel_dev . ".txt";
 $last_result = file_exists($res_file) ? file_get_contents($res_file) : "No execution return recorded.";
 
 // System Diagnostics
@@ -987,6 +1011,7 @@ $operator_ip = $_SESSION["admin_ip"] ?? "127.0.0.1";
             </div>
 
             <form method="POST" style="margin: 0;">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
                 <div class="actuator-grid">
                     <?php if($current_cmd === "NONE"): ?>
                         <!-- Reboot Actuator -->
@@ -1041,6 +1066,7 @@ $operator_ip = $_SESSION["admin_ip"] ?? "127.0.0.1";
                 <p>Broadcasts a persistent maintenance advisory banner across public user dashboards during physical calibration or testing.</p>
             </div>
             <form method="POST" style="margin: 0;">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
                 <?php if($maint_mode === "ON"): ?>
                     <button type="submit" name="action" value="maint_off" class="btn-toggle-maint" style="background: #2F3543; color: #fff;">Disable Maintenance Mode</button>
                 <?php else: ?>
@@ -1059,6 +1085,7 @@ $operator_ip = $_SESSION["admin_ip"] ?? "127.0.0.1";
                 </div>
                 <div class="term-title-text">Serial Stream: /dev/ttyUSB0 (115200 baud) &bull; Cloud Serial Monitor</div>
                 <form method="POST" style="margin: 0;">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
                     <button type="submit" name="action" value="clear_log" style="background: none; border: 1px solid #2F3543; color: #849585; font-family: var(--mono); font-size: 10px; border-radius: 4px; padding: 4px 10px; cursor: pointer;">Clear Stream</button>
                 </form>
             </div>
@@ -1069,7 +1096,7 @@ $operator_ip = $_SESSION["admin_ip"] ?? "127.0.0.1";
     <script>
         // Auto-refresh the Cloud Serial Monitor every 2 seconds
         function updateTerminal() {
-            fetch("cloud_serial.log?v=" + new Date().getTime())
+            fetch("admin.php?fetch_log=1&v=" + new Date().getTime())
                 .then(r => r.text())
                 .then(txt => {
                     const box = document.getElementById("term-box");

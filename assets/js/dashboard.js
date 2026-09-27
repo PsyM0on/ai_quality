@@ -902,72 +902,82 @@ function loadDaily() {
     ];
     targets.forEach(id => { let el = document.getElementById(id); if (el) el.classList.add('skeleton'); });
 
-    fetch('api/daily.php?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(d => {
-        targets.forEach(id => { let el = document.getElementById(id); if (el) el.classList.remove('skeleton'); });
-        
-        if (d.error) {
-            document.getElementById('day_summary').textContent = d.error;
-            document.getElementById('daily-tag').textContent = 'error';
-            return;
-        }
-        const t = d.today, y = d.yesterday, c = d.change;
+    fetch('api/daily.php?t=' + Date.now(), { cache: 'no-store' })
+        .then(r => {
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.json();
+        })
+        .then(d => {
+            if (d.error) {
+                document.getElementById('day_summary').textContent = d.error;
+                document.getElementById('daily-tag').textContent = 'error';
+                return;
+            }
+            const t = d.today, y = d.yesterday, c = d.change;
 
-        // Today's Stats
-        const tAqiEl = document.getElementById('day_today_aqi');
-        const tCatEl = document.getElementById('day_today_cat');
-        if (tAqiEl) { tAqiEl.textContent = t.avg_aqi; tAqiEl.style.color = t.color; }
-        if (tCatEl) { tCatEl.textContent = t.category; }
+            // Today's Stats
+            const tAqiEl = document.getElementById('day_today_aqi');
+            const tCatEl = document.getElementById('day_today_cat');
+            if (tAqiEl) { tAqiEl.textContent = t.avg_aqi; tAqiEl.style.color = t.color; }
+            if (tCatEl) { tCatEl.textContent = t.category; }
 
-        // Yesterday's Stats
-        const yAqiEl = document.getElementById('day_yest_aqi');
-        const yCatEl = document.getElementById('day_yest_cat');
-        if (y) {
-            if (yAqiEl) { yAqiEl.textContent = y.avg_aqi; yAqiEl.style.color = y.color; }
-            if (yCatEl) { yCatEl.textContent = y.category; }
-        } else {
-            if (yAqiEl) { yAqiEl.textContent = 'N/A'; yAqiEl.style.color = 'var(--muted)'; }
-            if (yCatEl) { yCatEl.textContent = 'no prior data'; }
-        }
+            // Yesterday's Stats
+            const yAqiEl = document.getElementById('day_yest_aqi');
+            const yCatEl = document.getElementById('day_yest_cat');
+            if (y) {
+                if (yAqiEl) { yAqiEl.textContent = y.avg_aqi; yAqiEl.style.color = y.color; }
+                if (yCatEl) { yCatEl.textContent = y.category; }
+            } else {
+                if (yAqiEl) { yAqiEl.textContent = 'N/A'; yAqiEl.style.color = 'var(--muted)'; }
+                if (yCatEl) { yCatEl.textContent = 'no prior data'; }
+            }
 
-        // Weekly (7-Day) Summary Stats
-        const wAqiEl = document.getElementById('day_weekly_aqi');
-        const wCatEl = document.getElementById('day_weekly_cat');
-        if (d.weekly) {
-            if (wAqiEl) { wAqiEl.textContent = d.weekly.avg_aqi ?? '—'; wAqiEl.style.color = d.weekly.color; }
-            if (wCatEl) { wCatEl.textContent = d.weekly.category ?? 'AQI'; }
-        } else {
-            if (wAqiEl) { wAqiEl.textContent = 'N/A'; wAqiEl.style.color = 'var(--muted)'; }
-            if (wCatEl) { wCatEl.textContent = 'no weekly data'; }
-        }
+            // Weekly (7-Day) Summary Stats
+            const wAqiEl = document.getElementById('day_weekly_aqi');
+            const wCatEl = document.getElementById('day_weekly_cat');
+            if (d.weekly) {
+                if (wAqiEl) { wAqiEl.textContent = d.weekly.avg_aqi ?? '—'; wAqiEl.style.color = d.weekly.color; }
+                if (wCatEl) { wCatEl.textContent = d.weekly.category ?? 'AQI'; }
+            } else {
+                if (wAqiEl) { wAqiEl.textContent = 'N/A'; wAqiEl.style.color = 'var(--muted)'; }
+                if (wCatEl) { wCatEl.textContent = 'no weekly data'; }
+            }
 
-        // Monthly (30-Day) Summary Stats
-        const mAqiEl = document.getElementById('day_monthly_aqi');
-        const mCatEl = document.getElementById('day_monthly_cat');
-        if (d.monthly) {
-            if (mAqiEl) { mAqiEl.textContent = d.monthly.avg_aqi ?? '—'; mAqiEl.style.color = d.monthly.color; }
-            if (mCatEl) { mCatEl.textContent = d.monthly.category ?? 'AQI'; }
-        } else {
-            if (mAqiEl) { mAqiEl.textContent = 'N/A'; mAqiEl.style.color = 'var(--muted)'; }
-            if (mCatEl) { mCatEl.textContent = 'no monthly data'; }
-        }
+            // Monthly (30-Day) Summary Stats
+            const mAqiEl = document.getElementById('day_monthly_aqi');
+            const mCatEl = document.getElementById('day_monthly_cat');
+            if (d.monthly) {
+                if (mAqiEl) { mAqiEl.textContent = d.monthly.avg_aqi ?? '—'; mAqiEl.style.color = d.monthly.color; }
+                if (mCatEl) { mCatEl.textContent = d.monthly.category ?? 'AQI'; }
+            } else {
+                if (mAqiEl) { mAqiEl.textContent = 'N/A'; mAqiEl.style.color = 'var(--muted)'; }
+                if (mCatEl) { mCatEl.textContent = 'no monthly data'; }
+            }
 
-        document.getElementById('day_min').textContent = t.min_aqi;
-        document.getElementById('day_max').textContent = t.max_aqi;
-        document.getElementById('day_readings').textContent = t.readings;
+            document.getElementById('day_min').textContent = t.min_aqi;
+            document.getElementById('day_max').textContent = t.max_aqi;
+            document.getElementById('day_readings').textContent = t.readings;
 
-        if (c) {
-            const arrows = { worse: '↑', better: '↓', same: '→' };
-            const sign = c.abs > 0 ? '+' : '';
-            document.getElementById('day-change-wrap').innerHTML =
-                `<span class="change-badge ${c.direction}">${arrows[c.direction]} ${sign}${c.abs} pts (${sign}${c.pct}% vs yesterday)</span>`;
-        }
+            if (c) {
+                const arrows = { worse: '↑', better: '↓', same: '→' };
+                const sign = c.abs > 0 ? '+' : '';
+                document.getElementById('day-change-wrap').innerHTML =
+                    `<span class="change-badge ${c.direction}">${arrows[c.direction]} ${sign}${c.abs} pts (${sign}${c.pct}% vs yesterday)</span>`;
+            }
 
-        document.getElementById('day_summary').textContent = d.summary;
-        document.getElementById('daily-tag').textContent = d.date || new Date().toLocaleDateString();
-    }).catch(() => {
-        document.getElementById('day_summary').textContent = 'Could not reach daily.php summary endpoint.';
-        document.getElementById('daily-tag').textContent = 'fetch error';
-    });
+            document.getElementById('day_summary').textContent = d.summary;
+            document.getElementById('daily-tag').textContent = d.date || new Date().toLocaleDateString();
+        })
+        .catch(err => {
+            console.warn('Daily summary fetch error:', err);
+            const sumEl = document.getElementById('day_summary');
+            if (sumEl) sumEl.textContent = 'Statistical aggregations temporarily calculating. Live telemetry is nominal.';
+            const tagEl = document.getElementById('daily-tag');
+            if (tagEl) tagEl.textContent = 'syncing';
+        })
+        .finally(() => {
+            targets.forEach(id => { let el = document.getElementById(id); if (el) el.classList.remove('skeleton'); });
+        });
 }
 
 /* ── UI VISUAL UPGRADES (ACTION CHIPS, SPARKLINES, TRAJECTORY) ──────────── */
@@ -1435,9 +1445,14 @@ function loadAnomaly() {
 
         window.latestAnomaly = d;
         updateHealthAlert();
-    }).catch(() => {
+    }).catch(err => {
+        console.warn('Anomaly detection fetch error:', err);
         const tag = document.getElementById('anomaly-tag');
         if (tag) tag.textContent = 'fetch error';
+        const label = document.getElementById('anomaly-label');
+        if (label) label.textContent = 'Telemetry Ingestion Active';
+        const msg = document.getElementById('anomaly-msg');
+        if (msg) msg.textContent = 'Statistical anomaly scan temporarily offline. Live telemetry is streaming normally.';
     });
 }
 

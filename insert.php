@@ -1,6 +1,7 @@
 <?php
 require_once("includes/security.php");
-include("includes/db.php");
+require_once("includes/db.php");
+require_once("includes/metrics.php");
 
 // Execute Security Protocols
 enforceRateLimit($conn, 3);
@@ -18,38 +19,17 @@ if ($pm10 < 0) $pm10 = 0;
 if ($pm10 > 600) $pm10 = 600; 
 $pm10 = round($pm10, 1);
 
-// AQI CALCULATION (PHILIPPINE CLEAN AIR ACT RA 8749 / DENR EMB)
-function calcAQI($pm) {
-    // Philippine DENR EMB Breakpoints for PM10 (ug/m3, 24-hr avg, DAO 2000-81)
-    $bp = [
-        [0, 54, 0, 50],       // Good
-        [55, 154, 51, 100],   // Fair
-        [155, 254, 101, 150], // Unhealthy for Sensitive Groups
-        [255, 354, 151, 200], // Very Unhealthy
-        [355, 424, 201, 300], // Acutely Unhealthy
-        [425, 604, 301, 500]  // Emergency
-    ];
-
-    foreach ($bp as $b) {
-        list($cl, $ch, $il, $ih) = $b;
-        if ($pm >= $cl && $pm <= $ch) {
-            return round((($ih - $il) / ($ch - $cl)) * ($pm - $cl) + $il);
-        }
-    }
-    return 500;
-}
-
 $device_id = isset($_GET['device_id']) ? intval($_GET['device_id']) : 1;
 
 // --- ACKNOWLEDGMENT LOGGING (C2 FEEDBACK) ---
 if (isset($_GET['msg'])) {
     $msg_text = htmlspecialchars($_GET['msg']);
-    $log_file = "cloud_serial.log";
+    $log_file = __DIR__ . "/storage/cloud_serial.log";
     $timestamp = date("Y-m-d H:i:s");
     $log_entry = "[$timestamp] [DEV $device_id] ACK: {$msg_text}\n";
     
     // Save to dedicated result file for the Admin UI
-    file_put_contents("command_result_" . $device_id . ".txt", "[$timestamp] " . $msg_text);
+    file_put_contents(__DIR__ . "/storage/command_result_" . $device_id . ".txt", "[$timestamp] " . $msg_text);
     
     $logs = file_exists($log_file) ? file($log_file) : [];
     $logs[] = $log_entry;
@@ -62,7 +42,7 @@ if (isset($_GET['msg'])) {
 }
 // --------------------------------------------
 
-$aqi = calcAQI($pm10);
+$aqi = calc_pm10_aqi($pm10);
 
 $stmt = $conn->prepare("INSERT INTO telemetry_raw (device_id, temp, hum, pm10, mq135, aqi) VALUES (?, ?, ?, ?, ?, ?)");
 $stmt->bind_param("idddii", $device_id, $temp, $hum, $pm10, $mq135, $aqi);
@@ -97,57 +77,21 @@ $f2 = (int)round(min(500, max(0, $aqi + $slope * 2)));
 $f3 = (int)round(min(500, max(0, $aqi + $slope * 3)));
 $pred_aqi = $f1;
 
-// Category & Advice (Philippine Clean Air Act RA 8749 / DENR EMB)
-if ($aqi <= 50) {
-    $category = "Good";
-    $advice = "Air quality is satisfactory. No air pollution health risks (DENR Good).";
-} elseif ($aqi <= 100) {
-    $category = "Fair";
-    $advice = "Air quality is acceptable (Fair). Unusually sensitive individuals should consider limiting prolonged outdoor exertion.";
-} elseif ($aqi <= 150) {
-    $category = "Unhealthy for Sensitive Groups";
-    $advice = "Unhealthy for Sensitive Groups. People with respiratory or heart disease, the elderly, and children should limit outdoor exertion.";
-} elseif ($aqi <= 200) {
-    $category = "Very Unhealthy";
-    $advice = "Very Unhealthy. People with respiratory illness should avoid outdoor exertion; everyone else should limit prolonged exposure.";
-} elseif ($aqi <= 300) {
-    $category = "Acutely Unhealthy";
-    $advice = "Acutely Unhealthy. People with respiratory disease (asthma) must stay indoors; general public should avoid outdoor exertion.";
-} else {
-    $category = "Emergency";
-    $advice = "EMERGENCY. Everyone should avoid outdoor exertion; remain indoors with doors and windows closed.";
-}
+// Category & Advisory (Philippine Clean Air Act RA 8749 / DENR EMB)
+$category = get_aqi_category($aqi);
+$advice = get_aqi_advice($aqi);
 
-// Health Risk Score & Risk Level (Standard Project Weighted Model)
-$pm_score  = min($pm10 / 325.4, 1.0) * 100;
-$voc_score = min(max($mq135 - 300, 0) / 400.0, 1.0) * 100;
-$hum_score = min(max(abs($hum - 50) - 10, 0) / 40.0, 1.0) * 100;
-$tmp_score = min(max($temp - 35, 0) / 15.0, 1.0) * 100;
-$health_score = round(min($pm_score * 0.50 + $voc_score * 0.30 + $hum_score * 0.10 + $tmp_score * 0.10, 100.0), 1);
+// Health Risk Score & Tier Assessment
+$health_score = calc_health_risk_score($pm10, $mq135, $temp, $hum);
+$risk_level = get_health_risk_level($health_score, $temp);
 
-if ($temp > 74.0) $risk_level = "Critical Risk";
-elseif ($temp >= 57.0) $risk_level = "High Risk";
-elseif ($health_score <= 20.0) $risk_level = "Low Risk";
-elseif ($health_score <= 40.0) $risk_level = "Mild Risk";
-elseif ($health_score <= 60.0) $risk_level = "Moderate Risk";
-elseif ($health_score <= 80.0) $risk_level = "High Risk";
-else $risk_level = "Critical Risk";
+// K-Means Cluster Pattern
+$cluster_label = get_cluster_label($aqi, $pm10);
 
-// K-Means Cluster Label
-if ($aqi <= 50 && $pm10 <= 54) $cluster_label = "Clean";
-elseif ($aqi <= 100 && $pm10 <= 154) $cluster_label = "Moderate";
-else $cluster_label = "Polluted";
-
-// Statistical Anomaly & Outlier Assessment
-$is_anomaly = 0;
-$anomaly_severity = "normal";
-if ($pm10 >= 255 || $temp >= 57 || $mq135 >= 700 || abs($slope) >= 30) {
-    $is_anomaly = 1;
-    $anomaly_severity = "critical";
-} elseif ($pm10 >= 155 || $mq135 >= 500 || abs($slope) >= 15) {
-    $is_anomaly = 1;
-    $anomaly_severity = "warning";
-}
+// Ingestion Outlier & Spike Assessment
+$anomaly_data = calc_rule_anomaly($pm10, $temp, $mq135, $slope);
+$is_anomaly = $anomaly_data['is_anomaly'];
+$anomaly_severity = $anomaly_data['severity'];
 
 $pred_ins = $conn->prepare("
     INSERT INTO ai_predictions (
@@ -169,7 +113,7 @@ $pred_ins->close();
 // ------------------------------------
 
 $command = "NONE";
-$cmd_file = "command_" . $device_id . ".txt";
+$cmd_file = __DIR__ . "/storage/command_" . $device_id . ".txt";
 if (file_exists($cmd_file)) {
     $command = trim(file_get_contents($cmd_file));
     if ($command !== "NONE") {
@@ -178,7 +122,7 @@ if (file_exists($cmd_file)) {
 }
 
 // --- CLOUD SERIAL LOGGING ---
-$log_file = "cloud_serial.log";
+$log_file = __DIR__ . "/storage/cloud_serial.log";
 $timestamp = date("Y-m-d H:i:s");
 $log_entry = "[$timestamp] [DEV $device_id] RECV: Temp={$temp}°C, Hum={$hum}%, PM10={$pm10}ug/m3, MQ135={$mq135} | CMD Sent: {$command}\n";
 // Keep log file from getting too big (keep last 50 lines)

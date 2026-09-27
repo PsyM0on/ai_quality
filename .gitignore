@@ -6,14 +6,27 @@ __pycache__/
 *.log
 command_*.txt
 command_result_*.txt
+maintenance.txt
+cloud_serial.log
+
+# Internal Protected Storage & Cache
+storage/cache/*
+!storage/cache/.gitkeep
+!storage/.htaccess
+
+# Design dumps and scratch documents
+stitch_dump/
+stitch_admin_dump/
+scratch/
+scratch_doc.txt
+*.docx
+*.pdf
 
 # OS generated files
 .DS_Store
 Thumbs.db
 
+# Machine Learning joblib models
 *.joblib
 ai/models/*
 !ai/models/.gitkeep
-
-stitch_dump/
-scratch/

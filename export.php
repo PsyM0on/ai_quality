@@ -8,6 +8,7 @@
  */
 
 include("includes/db.php");
+require_once("includes/metrics.php");
 
 // ── SECURITY & RATE LIMITING ──────────────────────────
 // Simple session-based throttle to prevent denial of service (DoS) on export
@@ -54,64 +55,7 @@ if ($to_ts - $from_ts > (365 * 86400)) {
     $date_from = date('Y-m-d', $from_ts);
 }
 
-// ── FALLBACK COMPUTATION HELPERS ─────────────────────────
-function calc_export_category($aqi) {
-    if ($aqi <= 50) return "Good";
-    if ($aqi <= 100) return "Fair";
-    if ($aqi <= 150) return "Unhealthy for Sensitive Groups";
-    if ($aqi <= 200) return "Very Unhealthy";
-    if ($aqi <= 300) return "Acutely Unhealthy";
-    return "Emergency";
-}
 
-function calc_export_health_score($pm10, $mq135, $temp, $hum) {
-    $pm_score  = min($pm10 / 325.4, 1.0) * 100;
-    $voc_score = min(max($mq135 - 300, 0) / 400.0, 1.0) * 100;
-    $hum_score = min(max(abs($hum - 50) - 10, 0) / 40.0, 1.0) * 100;
-    $tmp_score = min(max($temp - 35, 0) / 15.0, 1.0) * 100;
-    $score = $pm_score * 0.50 + $voc_score * 0.30 + $hum_score * 0.10 + $tmp_score * 0.10;
-    return round(min($score, 100.0), 1);
-}
-
-function calc_export_risk_level($health_score, $temp) {
-    if ($temp > 74.0) return "Critical Risk";
-    if ($temp >= 57.0) return "High Risk";
-    if ($health_score <= 20.0) return "Low Risk";
-    if ($health_score <= 40.0) return "Mild Risk";
-    if ($health_score <= 60.0) return "Moderate Risk";
-    if ($health_score <= 80.0) return "High Risk";
-    return "Critical Risk";
-}
-
-function calc_export_cluster($aqi, $pm10) {
-    if ($aqi <= 50 && $pm10 <= 54) return "Clean";
-    if ($aqi <= 100 && $pm10 <= 154) return "Moderate";
-    return "Polluted";
-}
-
-function calc_export_heat_index($temp_c, $hum) {
-    $T_c = floatval($temp_c);
-    $RH = floatval($hum);
-    $T_f = ($T_c * 9/5) + 32;
-    
-    if ($T_f < 80) {
-        $HI_f = 0.5 * ($T_f + 61.0 + (($T_f - 68.0) * 1.2) + ($RH * 0.094));
-    } else {
-        $HI_f = -42.379 + (2.04901523 * $T_f) + (10.14333127 * $RH) 
-                - (0.22475541 * $T_f * $RH) - (0.00683783 * $T_f * $T_f) 
-                - (0.05481717 * $RH * $RH) + (0.00122874 * $T_f * $T_f * $RH) 
-                + (0.00085282 * $T_f * $RH * $RH) - (0.00000199 * $T_f * $T_f * $RH * $RH);
-                
-        if ($RH < 13 && $T_f >= 80 && $T_f <= 112) {
-            $adj = ((13 - $RH) / 4) * sqrt(max(0, 17 - abs($T_f - 95)) / 17);
-            $HI_f -= $adj;
-        } elseif ($RH > 85 && $T_f >= 80 && $T_f <= 87) {
-            $adj = (($RH - 85) / 10) * ((87 - $T_f) / 5);
-            $HI_f += $adj;
-        }
-    }
-    return round(($HI_f - 32) * 5/9, 1);
-}
 
 if ($do_export) {
     // Rate limit: 1 export request every 3 seconds per visitor session
@@ -207,11 +151,11 @@ if ($do_export) {
             $avg_h   = floatval($r['avg_hum']);
             $readings= intval($r['total_readings']);
 
-            $cat     = calc_export_category(round($avg_aqi));
-            $h_score = calc_export_health_score($avg_pm, $avg_mq, $avg_t, $avg_h);
-            $risk    = calc_export_risk_level($h_score, $avg_t);
-            $cluster = calc_export_cluster(round($avg_aqi), $avg_pm);
-            $hi      = calc_export_heat_index($avg_t, $avg_h);
+            $cat     = get_aqi_category(round($avg_aqi));
+            $h_score = calc_health_risk_score($avg_pm, $avg_mq, $avg_t, $avg_h);
+            $risk    = get_health_risk_level($h_score, $avg_t);
+            $cluster = get_cluster_label(round($avg_aqi), $avg_pm);
+            $hi      = calc_pagasa_heat_index($avg_t, $avg_h)['heat_index_c'];
 
             fputcsv($out, [
                 $r['record_date'],
@@ -377,20 +321,14 @@ if ($do_export) {
         $fallback_f2 = (int)round(min(500, max(0, $aqi + $slope * 2)));
         $fallback_f3 = (int)round(min(500, max(0, $aqi + $slope * 3)));
         $fallback_pred_aqi = $fallback_f1;
-        $fallback_category = calc_export_category($aqi);
-        $fallback_health = calc_export_health_score($pm10, $mq135, $temp, $hum);
-        $fallback_risk = calc_export_risk_level($fallback_health, $temp);
-        $fallback_cluster = calc_export_cluster($aqi, $pm10);
+        $fallback_category = get_aqi_category($aqi);
+        $fallback_health = calc_health_risk_score($pm10, $mq135, $temp, $hum);
+        $fallback_risk = get_health_risk_level($fallback_health, $temp);
+        $fallback_cluster = get_cluster_label($aqi, $pm10);
 
-        $is_anomaly = false;
-        $anomaly_sev = "normal";
-        if ($pm10 >= 255 || $temp >= 57 || $mq135 >= 700 || abs($slope) >= 30) {
-            $is_anomaly = true;
-            $anomaly_sev = "critical";
-        } elseif ($pm10 >= 155 || $mq135 >= 500 || abs($slope) >= 15) {
-            $is_anomaly = true;
-            $anomaly_sev = "warning";
-        }
+        $anomaly_data = calc_rule_anomaly($pm10, $temp, $mq135, $slope);
+        $is_anomaly = (bool)$anomaly_data['is_anomaly'];
+        $anomaly_sev = $anomaly_data['severity'];
 
         // Values with fallback guarantee (never output blank or '—')
         $val_pred_aqi = (!empty($closest_pred['predicted_aqi']) || (isset($closest_pred['predicted_aqi']) && $closest_pred['predicted_aqi'] !== '')) 

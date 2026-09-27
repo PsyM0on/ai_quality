@@ -1,0 +1,9 @@
+# Eco Quality — Protected Storage Area
+# Direct HTTP access to internal state logs, command queues, and caches is prohibited.
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order deny,allow
+    Deny from all
+</IfModule>

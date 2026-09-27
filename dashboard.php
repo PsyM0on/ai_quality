@@ -4,8 +4,9 @@ enforceWebSecurity();
 
 // Fetch database records
 require_once("includes/db.php");
+require_once("includes/metrics.php");
 
-$maint_file = "maintenance.txt";
+$maint_file = __DIR__ . "/storage/maintenance.txt";
 $maint_mode = file_exists($maint_file) ? trim(file_get_contents($maint_file)) : "OFF";
 
 if (isset($_GET['fetch'])) {
@@ -27,16 +28,6 @@ if (isset($_GET['latest'])) {
     $latest = $result ? $result->fetch_assoc() : null;
     
     if ($latest) {
-        // Philippine DENR EMB Breakpoints for PM10 (ug/m3, DAO 2000-81)
-        $bp = [
-            [0, 54, 0, 50],
-            [55, 154, 51, 100],
-            [155, 254, 101, 150],
-            [255, 354, 151, 200],
-            [355, 424, 201, 300],
-            [425, 604, 301, 500]
-        ];
-
         // 1. Compute 5-Minute Interval Average for PM10 (Academic Standard Cadence)
         $avg_5m_res = $conn->query("SELECT AVG(pm10) as pm10_5m, COUNT(*) as count_5m FROM telemetry_raw WHERE `timestamp` >= NOW() - INTERVAL 5 MINUTE");
         $avg_5m_row = $avg_5m_res ? $avg_5m_res->fetch_assoc() : null;
@@ -46,21 +37,7 @@ if (isset($_GET['latest'])) {
             $pm10_val = floatval($latest['pm10'] ?? 0);
         }
         $pm10_val = max(0.0, $pm10_val);
-
-        // 5-Minute Interval AQI Calculation
-        $aqi_5m = 0;
-        if ($pm10_val > 604) {
-            $aqi_5m = 500;
-        } else {
-            foreach ($bp as $b) {
-                list($cl, $ch, $il, $ih) = $b;
-                if ($pm10_val >= $cl && $pm10_val <= $ch) {
-                    $aqi_5m = round((($ih - $il) / ($ch - $cl)) * ($pm10_val - $cl) + $il);
-                    break;
-                }
-            }
-        }
-        $latest['aqi'] = $aqi_5m;
+        $latest['aqi'] = calc_pm10_aqi($pm10_val);
         $latest['pm10'] = $pm10_val;
         $latest['interval_mode'] = '5-MIN';
 
@@ -69,95 +46,24 @@ if (isset($_GET['latest'])) {
         $avg_row = $avg_res ? $avg_res->fetch_assoc() : null;
         $pm10_24h = ($avg_row && $avg_row['pm10_24h'] !== null) ? round(floatval($avg_row['pm10_24h']), 1) : floatval($latest['pm10'] ?? 0);
         $pm10_24h = max(0.0, $pm10_24h);
-        
-        $aqi_24h = 0;
-        if ($pm10_24h > 604) {
-            $aqi_24h = 500;
-        } else {
-            foreach ($bp as $b) {
-                list($cl, $ch, $il, $ih) = $b;
-                if ($pm10_24h >= $cl && $pm10_24h <= $ch) {
-                    $aqi_24h = round((($ih - $il) / ($ch - $cl)) * ($pm10_24h - $cl) + $il);
-                    break;
-                }
-            }
-        }
+        $aqi_24h = calc_pm10_aqi($pm10_24h);
+
         $latest['pm10_24h'] = $pm10_24h;
         $latest['aqi_24h'] = $aqi_24h;
         $latest['count_24h'] = $avg_row ? intval($avg_row['count_24h']) : 0;
 
-        // ─────────────────────────────────────────────────────────────
-        // PAGASA Heat Index Calculation (Philippine Atmospheric, Geophysical 
-        // and Astronomical Services Administration)
-        // ─────────────────────────────────────────────────────────────
-        $T_c = floatval($latest['temp']);
-        $RH = floatval($latest['hum']);
-        $T_f = ($T_c * 9/5) + 32;
-        
-        if ($T_f < 80) {
-            $HI_f = 0.5 * ($T_f + 61.0 + (($T_f - 68.0) * 1.2) + ($RH * 0.094));
-        } else {
-            $HI_f = -42.379 + (2.04901523 * $T_f) + (10.14333127 * $RH) 
-                    - (0.22475541 * $T_f * $RH) - (0.00683783 * $T_f * $T_f) 
-                    - (0.05481717 * $RH * $RH) + (0.00122874 * $T_f * $T_f * $RH) 
-                    + (0.00085282 * $T_f * $RH * $RH) - (0.00000199 * $T_f * $T_f * $RH * $RH);
-                    
-            if ($RH < 13 && $T_f >= 80 && $T_f <= 112) {
-                $adj = ((13 - $RH) / 4) * sqrt((17 - abs($T_f - 95)) / 17);
-                $HI_f -= $adj;
-            } elseif ($RH > 85 && $T_f >= 80 && $T_f <= 87) {
-                $adj = (($RH - 85) / 10) * ((87 - $T_f) / 5);
-                $HI_f += $adj;
-            }
-        }
-        
-        $HI_c = round(($HI_f - 32) * 5/9, 1);
-        
-        if ($HI_c < 27) {
-            $hi_cat = "Normal";
-            $hi_color = "#00CFA8";
-            $hi_desc = "Minimal thermal stress.";
-        } elseif ($HI_c <= 32) {
-            $hi_cat = "Caution";
-            $hi_color = "#4C9EEB";
-            $hi_desc = "Fatigue possible with prolonged exposure.";
-        } elseif ($HI_c <= 41) {
-            $hi_cat = "Extreme Caution";
-            $hi_color = "#F5A623";
-            $hi_desc = "Heat cramps and heat exhaustion possible.";
-        } elseif ($HI_c <= 51) {
-            $hi_cat = "Danger";
-            $hi_color = "#F05252";
-            $hi_desc = "Heat exhaustion likely; heat stroke probable.";
-        } else {
-            $hi_cat = "Extreme Danger";
-            $hi_color = "#C084FC";
-            $hi_desc = "Heat stroke imminent with continued exposure.";
-        }
-        
-        $latest['heat_index'] = $HI_c;
-        $latest['heat_cat'] = $hi_cat;
-        $latest['heat_color'] = $hi_color;
-        $latest['heat_desc'] = $hi_desc;
+        // 3. PAGASA Heat Index Calculation
+        $hi = calc_pagasa_heat_index(floatval($latest['temp']), floatval($latest['hum']));
+        $latest['heat_index'] = $hi['heat_index_c'];
+        $latest['heat_cat'] = $hi['category'];
+        $latest['heat_color'] = $hi['color'];
+        $latest['heat_desc'] = $hi['description'];
 
-        // Urban Environmental Stress Index (UESI) - anchored to sustained 24h AQI
-        $max_aqi_val = $aqi_24h;
-        if ($max_aqi_val > 150 || $HI_c >= 42) {
-            $uesi_level = "High Environmental Stress";
-            $uesi_color = "#F05252";
-            $uesi_advice = "Dual hazard: High pollution and severe thermal heat. Vulnerable individuals avoid outdoor exertion.";
-        } elseif ($max_aqi_val > 100 || $HI_c >= 33) {
-            $uesi_level = "Moderate Environmental Stress";
-            $uesi_color = "#F5A623";
-            $uesi_advice = "Elevated environmental factor detected. Stay hydrated and limit prolonged roadside exertion.";
-        } else {
-            $uesi_level = "Optimal Urban Conditions";
-            $uesi_color = "#00CFA8";
-            $uesi_advice = "Normal atmospheric dispersion and comfortable thermal conditions.";
-        }
-        $latest['uesi_level'] = $uesi_level;
-        $latest['uesi_color'] = $uesi_color;
-        $latest['uesi_advice'] = $uesi_advice;
+        // 4. Urban Environmental Stress Index (UESI) - anchored to sustained 24h AQI
+        $uesi = calc_uesi($aqi_24h, $hi['heat_index_c']);
+        $latest['uesi_level'] = $uesi['level'];
+        $latest['uesi_color'] = $uesi['color'];
+        $latest['uesi_advice'] = $uesi['advice'];
     }
     
     echo json_encode($latest);
@@ -182,7 +88,7 @@ if (isset($_GET['latest'])) {
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="assets/css/dashboard.css?v=54" rel="stylesheet">
+<link href="assets/css/dashboard.css?v=55" rel="stylesheet">
 <script>
     // System Validation: Early Device Theme Detection (Default: Light Mode)
     (function() {
@@ -1222,11 +1128,11 @@ $feedback_next_url = (strpos($current_host, 'localhost') !== false || strpos($cu
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=54" defer></script>
+<script src="assets/js/dashboard.js?v=55" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=47')
+        navigator.serviceWorker.register('./sw.js?update=48')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update();
