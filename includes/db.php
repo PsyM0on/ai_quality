@@ -4,7 +4,7 @@
  *
  * SETUP (run once in MySQL as root):
  *   CREATE USER 'aq_user'@'localhost' IDENTIFIED BY 'aq_secure_2024';
- *   GRANT SELECT, INSERT, UPDATE ON ai_quality.* TO 'aq_user'@'localhost';
+ *   GRANT ALL PRIVILEGES ON air_quality.* TO 'aq_user'@'localhost';
  *   FLUSH PRIVILEGES;
  *
  * NOTE: Never use root with an empty password in production.

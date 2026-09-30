@@ -34,14 +34,14 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
     iptables-persistent
 
 echo "=== [4/7] Configuring MySQL Database ==="
-sudo mysql -e "CREATE DATABASE IF NOT EXISTS ai_quality CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+sudo mysql -e "CREATE DATABASE IF NOT EXISTS air_quality CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 sudo mysql -e "CREATE USER IF NOT EXISTS 'aq_user'@'localhost' IDENTIFIED BY 'aq_secure_2024';"
-sudo mysql -e "GRANT ALL PRIVILEGES ON ai_quality.* TO 'aq_user'@'localhost';"
+sudo mysql -e "GRANT ALL PRIVILEGES ON air_quality.* TO 'aq_user'@'localhost';"
 sudo mysql -e "FLUSH PRIVILEGES;"
 
-if [ -f "ai_quality.sql" ]; then
+if [ -f "air_quality.sql" ]; then
     echo "Importing database schema..."
-    sudo mysql -u aq_user -paq_secure_2024 ai_quality < ai_quality.sql
+    sudo mysql -u aq_user -paq_secure_2024 air_quality < air_quality.sql
 fi
 
 echo "=== [5/7] Copying project files to Apache root ==="
