@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 820" width="100%" height="100%" style="background:#ffffff; font-family:'Segoe UI', Arial, sans-serif;">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#000000"/>
+    </marker>
+  </defs>
+
+  <!-- Title Banner -->
+  <text x="320" y="28" font-size="14" font-weight="800" fill="#000000" text-anchor="middle" letter-spacing="0.03em">FIGURE 8A. TELEMETRY INGESTION &amp; AI ANALYTICS PIPELINE</text>
+  <text x="320" y="46" font-size="10.5" font-weight="500" fill="#64748B" text-anchor="middle">Part 1: Hardware Sensing, Data Validation, DENR AQI &amp; AI Modeling</text>
+
+  <!-- START Terminator -->
+  <rect x="230" y="66" width="180" height="38" rx="19" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
+  <text x="320" y="90" font-size="12" font-weight="700" fill="#000000" text-anchor="middle">START: System Boot</text>
+
+  <line x1="320" y1="104" x2="320" y2="128" stroke="#000000" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Initialize Node Process -->
+  <rect x="180" y="128" width="280" height="48" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
+  <text x="320" y="148" font-size="11" font-weight="700" fill="#000000" text-anchor="middle">Initialize ESP32 Node &amp; Sensors</text>
+  <text x="320" y="164" font-size="10" fill="#475569" text-anchor="middle">PMS5003 (UART), MQ-135 (ADC), DHT22</text>
+
+  <line x1="320" y1="176" x2="320" y2="200" stroke="#000000" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Sample Telemetry I/O Parallelogram -->
+  <polygon points="180,200 480,200 440,250 140,250" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
+  <text x="310" y="220" font-size="11" font-weight="700" fill="#000000" text-anchor="middle">Sample Real-Time Telemetry</text>
+  <text x="310" y="238" font-size="9.5" fill="#475569" text-anchor="middle">Temp, Hum, PM10 mass, Gas ADC, Timestamp</text>
+
+  <line x1="310" y1="250" x2="310" y2="274" stroke="#000000" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Transmit JSON I/O Parallelogram -->
+  <polygon points="190,274 490,274 450,324 150,324" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
+  <text x="320" y="294" font-size="11" font-weight="700" fill="#000000" text-anchor="middle">Transmit JSON via Wi-Fi (HTTP POST)</text>
+  <text x="320" y="312" font-size="9.5" fill="#475569" text-anchor="middle">Endpoint: Oracle Cloud Ingestion API</text>
+
+  <line x1="320" y1="324" x2="320" y2="348" stroke="#000000" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Validation Decision Diamond -->
+  <polygon points="320,348 450,398 320,448 190,398" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
+  <text x="320" y="393" font-size="10.5" font-weight="700" fill="#000000" text-anchor="middle">Payload Valid &amp;</text>
+  <text x="320" y="408" font-size="10.5" font-weight="700" fill="#000000" text-anchor="middle">Authorized?</text>
+
+  <!-- No Branch (Retry Loop) -->
+  <line x1="450" y1="398" x2="550" y2="398" stroke="#000000" stroke-width="2"/>
+  <line x1="550" y1="398" x2="550" y2="225" stroke="#000000" stroke-width="2"/>
+  <line x1="550" y1="225" x2="465" y2="225" stroke="#000000" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="475" y="390" font-size="10" font-weight="700" fill="#000000">No (Error)</text>
+
+  <!-- Yes Branch -->
+  <line x1="320" y1="448" x2="320" y2="472" stroke="#000000" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="330" y="462" font-size="10" font-weight="700" fill="#000000">Yes</text>
+
+  <!-- Humidity & AQI Calculation Process -->
+  <rect x="160" y="472" width="320" height="54" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
+  <text x="320" y="492" font-size="11" font-weight="700" fill="#000000" text-anchor="middle">Normalize RH &amp; Calculate DENR AQI</text>
+  <text x="320" y="507" font-size="9.5" fill="#475569" text-anchor="middle">PM10 DAO 2000-81 Breakpoints &amp; Risk Score (0-100)</text>
+  <text x="320" y="520" font-size="9" fill="#64748B" text-anchor="middle">Correction equation applied if RH &gt; 75%</text>
+
+  <line x1="320" y1="526" x2="320" y2="550" stroke="#000000" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- AI Models Process -->
+  <rect x="150" y="550" width="340" height="60" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
+  <text x="320" y="570" font-size="11" font-weight="700" fill="#000000" text-anchor="middle">Execute Automated Python AI Daemons</text>
+  <text x="320" y="586" font-size="9.5" fill="#475569" text-anchor="middle">• Random Forest (n=100) Multi-Hour Forecast (+1h, +2h, +3h)</text>
+  <text x="320" y="600" font-size="9.5" fill="#475569" text-anchor="middle">• Hybrid Isolation Forest Anomaly Filter &amp; Z-Scores (±2.5σ)</text>
+
+  <line x1="320" y1="610" x2="320" y2="634" stroke="#000000" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Database Storage Cylinder -->
+  <g transform="translate(195, 634)">
+    <path d="M 0 14 A 125 14 0 0 1 250 14 L 250 56 A 125 14 0 0 1 0 56 Z" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
+    <ellipse cx="125" cy="14" rx="125" ry="14" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
+    <text x="125" y="38" font-size="11" font-weight="700" fill="#000000" text-anchor="middle">Store in MySQL Database</text>
+    <text x="125" y="52" font-size="9.5" fill="#475569" text-anchor="middle">telemetry_raw &amp; ai_predictions</text>
+  </g>
+
+  <line x1="320" y1="704" x2="320" y2="736" stroke="#000000" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- OFF-PAGE CONNECTOR (PENTAGON POINTING DOWN) -->
+  <g transform="translate(295, 736)">
+    <!-- Pentagon pointing down -->
+    <polygon points="0,0 50,0 50,22 25,44 0,22" fill="#FFFFFF" stroke="#000000" stroke-width="2.2"/>
+    <text x="25" y="19" font-size="14" font-weight="800" fill="#000000" text-anchor="middle">A</text>
+  </g>
+  <text x="360" y="760" font-size="10.5" font-weight="600" fill="#475569">To Figure 8B (Part 2)</text>
+</svg>

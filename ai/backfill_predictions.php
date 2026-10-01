@@ -1,4 +1,5 @@
 <?php
+if (PHP_SAPI !== 'cli') { http_response_code(404); exit; }
 /**
  * ai/backfill_predictions.php
  * 
@@ -17,9 +18,9 @@ echo "=== AI PREDICTIONS BACKFILL UTILITY ===\n";
 // Find telemetry rows needing predictions (ordered chronologically)
 echo "Querying telemetry_raw records without matching ai_predictions...\n";
 $query = "
-    SELECT t.id, t.temp, t.hum, t.mq135, t.pm10, t.aqi, t.`timestamp`
+    SELECT t.id, t.device_id, t.temp, t.hum, t.mq135, t.pm10, t.aqi, t.`timestamp`
     FROM telemetry_raw t
-    LEFT JOIN ai_predictions p ON p.`timestamp` = t.`timestamp`
+    LEFT JOIN ai_predictions p ON p.telemetry_id = t.id
     WHERE p.id IS NULL
     ORDER BY t.`timestamp` ASC, t.id ASC
 ";
@@ -41,20 +42,20 @@ $batch_size = 500;
 $batch_rows = [];
 $inserted_count = 0;
 
-$prev_aqi = null;
-$prev_ts = null;
+$previous = [];
 
 $insert_sql = "
     INSERT INTO ai_predictions (
         predicted_aqi, actual_aqi, category, advice, trend,
         forecast_1h, forecast_2h, forecast_3h,
         health_score, risk_level, is_anomaly, anomaly_severity,
-        cluster_label, `timestamp`
+        cluster_label, telemetry_id, device_id, `timestamp`
     ) VALUES 
 ";
 
 while ($row = $res->fetch_assoc()) {
     $raw_ts = strtotime($row['timestamp']);
+    $device_id = (int)$row['device_id'];
     $aqi = (int)$row['aqi'];
     $pm10 = (float)$row['pm10'];
     $mq135 = (int)$row['mq135'];
@@ -63,6 +64,8 @@ while ($row = $res->fetch_assoc()) {
 
     // Dynamic slope & trend estimation
     $slope = 0.0;
+    $prev_ts = $previous[$device_id]['ts'] ?? null;
+    $prev_aqi = $previous[$device_id]['aqi'] ?? null;
     if ($prev_ts !== null && $prev_aqi !== null) {
         $dt = max(1, $raw_ts - $prev_ts);
         if ($dt <= 7200) { // only consider consecutive readings within 2 hours
@@ -71,8 +74,7 @@ while ($row = $res->fetch_assoc()) {
             if (abs($slope) > 40) $slope = ($slope > 0 ? 40 : -40);
         }
     }
-    $prev_ts = $raw_ts;
-    $prev_aqi = $aqi;
+    $previous[$device_id] = ['ts' => $raw_ts, 'aqi' => $aqi];
 
     if ($slope > 1.0) {
         $trend = "rising";
@@ -102,7 +104,8 @@ while ($row = $res->fetch_assoc()) {
     $escaped_advice = $conn->real_escape_string($advice);
     $escaped_ts = $conn->real_escape_string($row['timestamp']);
 
-    $batch_rows[] = "({$predicted_aqi}, {$actual_aqi}, '{$category}', '{$escaped_advice}', '{$trend}', {$forecast_1h}, {$forecast_2h}, {$forecast_3h}, {$health_score}, '{$risk_level}', {$is_anomaly}, '{$anomaly_severity}', '{$cluster_label}', '{$escaped_ts}')";
+    $telemetry_id = (int)$row['id'];
+    $batch_rows[] = "({$predicted_aqi}, {$actual_aqi}, '{$category}', '{$escaped_advice}', '{$trend}', {$forecast_1h}, {$forecast_2h}, {$forecast_3h}, {$health_score}, '{$risk_level}', {$is_anomaly}, '{$anomaly_severity}', '{$cluster_label}', {$telemetry_id}, {$device_id}, '{$escaped_ts}')";
 
     if (count($batch_rows) >= $batch_size) {
         $sql = $insert_sql . implode(",\n", $batch_rows);

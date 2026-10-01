@@ -1,43 +1,76 @@
 <?php
+require_once __DIR__ . '/includes/config.php';
+ini_set('session.use_strict_mode', '1');
+session_set_cookie_params([
+    'httponly' => true,
+    'secure' => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'),
+    'samesite' => 'Strict',
+]);
 session_start();
 require_once("includes/security.php");
 enforceWebSecurity();
 
-$PASSWORD = "capstone2026";
+$PASSWORD_HASH = getenv('AQ_ADMIN_PASSWORD_HASH') ?: '';
 $MAX_ATTEMPTS = 5;
 $LOCKOUT_TIME = 900; // 15 minutes
+$client_ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+$attempt_file = aq_storage() . '/cache/login_' . hash('sha256', $client_ip) . '.json';
+$attempt_state = ['attempts' => 0, 'locked_until' => 0];
+if (is_file($attempt_file)) {
+    $decoded = json_decode((string)file_get_contents($attempt_file), true);
+    if (is_array($decoded)) $attempt_state = array_merge($attempt_state, $decoded);
+}
+if ($attempt_state['locked_until'] > 0 && $attempt_state['locked_until'] <= time()) {
+    $attempt_state = ['attempts' => 0, 'locked_until' => 0];
+    $_SESSION['login_attempts'] = 0;
+    $_SESSION['lockout_time'] = 0;
+}
 
 // Initialize login attempts
 if (!isset($_SESSION["login_attempts"])) $_SESSION["login_attempts"] = 0;
 if (!isset($_SESSION["lockout_time"])) $_SESSION["lockout_time"] = 0;
 
 // Check if locked out
-if ($_SESSION["lockout_time"] > time()) {
-    $remaining = ceil(($_SESSION["lockout_time"] - time()) / 60);
+if ($attempt_state['locked_until'] > time()) {
+    $remaining = ceil(($attempt_state['locked_until'] - time()) / 60);
     $error = "CRITICAL LOCKOUT: Too many failed attempts. Security matrix locked for $remaining min.";
 } 
 elseif (isset($_POST["password"])) {
-    if ($_POST["password"] === $PASSWORD) {
+    if (!is_string($_POST['password']) || !attemptLimit('admin:' . $client_ip, $MAX_ATTEMPTS, $LOCKOUT_TIME)) {
+        http_response_code(429);
+        header('Retry-After: 900');
+        exit('Too many login attempts. Try again in 15 minutes.');
+    }
+    if ($PASSWORD_HASH !== '' && password_verify((string)$_POST["password"], $PASSWORD_HASH)) {
+        session_regenerate_id(true);
         $_SESSION["admin_logged_in"] = true;
         $_SESSION["admin_ip"] = $_SERVER['REMOTE_ADDR'];
-        $_SESSION["admin_ua"] = $_SERVER['HTTP_USER_AGENT'];
+        $_SESSION["admin_ua"] = $_SERVER['HTTP_USER_AGENT'] ?? '';
         $_SESSION["login_attempts"] = 0; // Reset
+        @unlink($attempt_file);
         $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
         header("Location: admin.php");
         exit;
     } else {
         $_SESSION["login_attempts"]++;
-        if ($_SESSION["login_attempts"] >= $MAX_ATTEMPTS) {
+        $attempt_state['attempts'] = (int)$attempt_state['attempts'] + 1;
+        if ($attempt_state['attempts'] >= $MAX_ATTEMPTS) {
             $_SESSION["lockout_time"] = time() + $LOCKOUT_TIME;
+            $attempt_state['locked_until'] = time() + $LOCKOUT_TIME;
             $error = "BRUTE-FORCE LOCKOUT TRIGGERED: Memory buffer locked for 15 minutes.";
         } else {
             $attempts_left = $MAX_ATTEMPTS - $_SESSION["login_attempts"];
             $error = "INVALID CIPHER SEQUENCE: Attempt " . $_SESSION["login_attempts"] . " of $MAX_ATTEMPTS ($attempts_left remaining).";
         }
+        file_put_contents($attempt_file, json_encode($attempt_state), LOCK_EX);
     }
 }
 
-if (isset($_GET["logout"])) {
+if (isset($_POST["logout"])) {
+    if (empty($_SESSION['csrf_token']) || !is_string($_POST['csrf_token'] ?? null) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        http_response_code(403);
+        exit('Invalid CSRF token');
+    }
     session_destroy();
     header("Location: admin.php");
     exit;
@@ -45,7 +78,7 @@ if (isset($_GET["logout"])) {
 
 // Session Hijacking Protection (Bind to IP and User-Agent)
 if (isset($_SESSION["admin_logged_in"])) {
-    if ($_SESSION["admin_ip"] !== $_SERVER['REMOTE_ADDR'] || $_SESSION["admin_ua"] !== $_SERVER['HTTP_USER_AGENT']) {
+    if ($_SESSION["admin_ip"] !== $_SERVER['REMOTE_ADDR'] || $_SESSION["admin_ua"] !== ($_SERVER['HTTP_USER_AGENT'] ?? '')) {
         session_destroy();
         header("Location: admin.php");
         exit;
@@ -59,7 +92,7 @@ if (isset($_SESSION["admin_logged_in"])) {
     if (isset($_GET["fetch_log"])) {
         header("Content-Type: text/plain; charset=utf-8");
         header("Cache-Control: no-store, no-cache, must-revalidate");
-        $log_file = __DIR__ . "/storage/cloud_serial.log";
+        $log_file = aq_storage() . "/cloud_serial.log";
         if (file_exists($log_file)) {
             readfile($log_file);
         } else {
@@ -325,36 +358,45 @@ if (!isset($_SESSION["admin_logged_in"])) {
 
 // Multi-Device Selection
 $sel_dev = isset($_GET["device"]) ? intval($_GET["device"]) : 1;
+require_once("includes/db.php");
+$selected = $conn->prepare('SELECT id FROM devices WHERE id=?');
+$selected->bind_param('i', $sel_dev); $selected->execute();
+if (!$selected->get_result()->fetch_assoc()) { http_response_code(404); exit('Unknown device'); }
 
 // Command & Maintenance State Management
-$cmd_file = __DIR__ . "/storage/command_" . $sel_dev . ".txt";
-if (!file_exists($cmd_file)) @file_put_contents($cmd_file, "NONE");
 
-$maint_file = __DIR__ . "/storage/maintenance.txt";
+$maint_file = aq_storage() . "/maintenance.txt";
 if (!file_exists($maint_file)) @file_put_contents($maint_file, "OFF");
+
+function queue_device_command($conn, $deviceId, $command) {
+    $stmt = $conn->prepare("INSERT INTO device_commands (device_id, command, status) VALUES (?, ?, 'pending')");
+    $stmt->bind_param('is', $deviceId, $command);
+    if (!$stmt->execute()) throw new RuntimeException('Unable to queue command');
+}
 
 if (isset($_POST["action"])) {
     // Enforce CSRF protection
-    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'] ?? '', $_POST['csrf_token'])) {
+    if (!is_string($_POST['csrf_token'] ?? null) || !hash_equals($_SESSION['csrf_token'] ?? '', $_POST['csrf_token'])) {
         http_response_code(403);
         die("Security Protocol Violation: Invalid or missing CSRF security token.");
     }
 
     $action = $_POST["action"];
     if ($action === "reboot") {
-        file_put_contents($cmd_file, "REBOOT");
+        queue_device_command($conn, $sel_dev, "REBOOT");
         $_SESSION["msg"] = "Reboot sequence queued for Device $sel_dev.";
     } elseif ($action === "pause") {
-        file_put_contents($cmd_file, "PAUSE_60S");
+        queue_device_command($conn, $sel_dev, "PAUSE_60S");
         $_SESSION["msg"] = "Sleep PMS sensor command queued for Device $sel_dev (60s).";
     } elseif ($action === "calibrate") {
-        file_put_contents($cmd_file, "CALIBRATE");
+        queue_device_command($conn, $sel_dev, "CALIBRATE");
         $_SESSION["msg"] = "MQ-135 calibration queued for Device $sel_dev.";
     } elseif ($action === "cancel") {
-        file_put_contents($cmd_file, "NONE");
+        $cancel = $conn->prepare("UPDATE device_commands SET status='cancelled' WHERE device_id=? AND status='pending'");
+        $cancel->bind_param('i', $sel_dev); $cancel->execute();
         $_SESSION["msg"] = "Scheduled command cancelled.";
     } elseif ($action === "clear_log") {
-        file_put_contents(__DIR__ . "/storage/cloud_serial.log", "");
+        file_put_contents(aq_storage() . "/cloud_serial.log", "");
         $_SESSION["msg"] = "Serial monitor buffer cleared.";
     } elseif ($action === "maint_on") {
         file_put_contents($maint_file, "ON");
@@ -373,14 +415,16 @@ if (isset($_SESSION["msg"])) {
     unset($_SESSION["msg"]);
 }
 
-$current_cmd = file_exists($cmd_file) ? trim(file_get_contents($cmd_file)) : "NONE";
+$pending = $conn->prepare("SELECT command FROM device_commands WHERE device_id=? AND status='pending' ORDER BY id ASC LIMIT 1");
+$pending->bind_param('i', $sel_dev); $pending->execute();
+$pending_row = $pending->get_result()->fetch_assoc();
+$current_cmd = $pending_row['command'] ?? 'NONE';
 $maint_mode = file_exists($maint_file) ? trim(file_get_contents($maint_file)) : "OFF";
 
-$res_file = __DIR__ . "/storage/command_result_" . $sel_dev . ".txt";
+$res_file = aq_storage() . "/command_result_" . $sel_dev . ".txt";
 $last_result = file_exists($res_file) ? file_get_contents($res_file) : "No execution return recorded.";
 
 // System Diagnostics
-require_once("includes/db.php");
 $db_status = ($conn->connect_error) ? "OFFLINE / ERROR" : "ONLINE & SECURE";
 $db_color = ($conn->connect_error) ? "#FFB4AB" : "#00FF88";
 
@@ -878,7 +922,10 @@ $operator_ip = $_SESSION["admin_ip"] ?? "127.0.0.1";
                 <span style="color: #00FF88;">[TLS 1.3]</span>
             </div>
             <a href="dashboard.php" class="btn-view-dash">&larr; Live Telemetry</a>
-            <a href="?logout=1" class="btn-kill-session">Log Out</a>
+            <form method="post" style="display:inline">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                <button type="submit" name="logout" value="1" class="btn-kill-session">Log Out</button>
+            </form>
         </div>
     </header>
 

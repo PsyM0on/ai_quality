@@ -25,6 +25,8 @@ $min_date = '2026-05-06';
 $date_from = $_GET['from'] ?? date('Y-m-d', strtotime('-7 days'));
 $date_to   = $_GET['to']   ?? date('Y-m-d');
 $report_type = $_GET['type'] ?? ($_GET['report_type'] ?? 'raw');
+require_once __DIR__ . '/includes/security.php';
+$device_id = requestDeviceId();
 if (!in_array($report_type, ['raw', 'daily'], true)) {
     $report_type = 'raw';
 }
@@ -90,16 +92,16 @@ if ($do_export) {
                 ROUND(AVG(hum), 1) as avg_hum,
                 COUNT(*) as total_readings
             FROM telemetry_raw
-            WHERE `timestamp` BETWEEN ? AND ?
+            WHERE device_id = ? AND `timestamp` BETWEEN ? AND ?
             GROUP BY DATE(`timestamp`)
             ORDER BY record_date ASC
         ");
-        $stmt->bind_param("ss", $from_str, $to_str);
+        $stmt->bind_param("iss", $device_id, $from_str, $to_str);
         $stmt->execute();
         $result = $stmt->get_result();
 
         if ($result->num_rows === 0) {
-            header("Location: export.php?from={$date_from}&to={$date_to}&type=daily&msg=nodata");
+            header("Location: export.php?device_id={$device_id}&from={$date_from}&to={$date_to}&type=daily&msg=nodata");
             exit;
         }
 
@@ -184,28 +186,24 @@ if ($do_export) {
     // OPTION A: RAW TELEMETRY LOGS (GRANULAR READINGS)
     // ─────────────────────────────────────────────────────────────
 
-    // 1. Fetch AI predictions in range and index by timestamp for fast in-memory matching (O(N) instead of quadratic nested query)
+    // Fetch predictions keyed by their exact source telemetry row.
     $pred_stmt = $conn->prepare("
         SELECT * FROM ai_predictions 
-        WHERE `timestamp` BETWEEN ? AND ? 
-        ORDER BY `timestamp` ASC
+        WHERE device_id = ? AND `timestamp` BETWEEN ? AND ? AND telemetry_id IS NOT NULL
     ");
-    $pred_stmt->bind_param("ss", $from_str, $to_str);
+    $pred_stmt->bind_param("iss", $device_id, $from_str, $to_str);
     $pred_stmt->execute();
     $pred_res = $pred_stmt->get_result();
     $predictions = [];
     while ($p = $pred_res->fetch_assoc()) {
-        $p_ts = strtotime($p['timestamp']);
-        $predictions[] = [
-            'ts' => $p_ts,
-            'data' => $p
-        ];
+        $predictions[(int)$p['telemetry_id']] = $p;
     }
     $pred_stmt->close();
 
     // 2. Fetch raw sensor telemetry safely with max limit (prevent crash if million records)
     $stmt = $conn->prepare("
         SELECT
+            id,
             `timestamp`,
             temp,
             hum,
@@ -213,16 +211,16 @@ if ($do_export) {
             pm10,
             aqi
         FROM telemetry_raw
-        WHERE `timestamp` BETWEEN ? AND ?
+        WHERE device_id = ? AND `timestamp` BETWEEN ? AND ?
         ORDER BY `timestamp` ASC
         LIMIT 50000
     ");
-    $stmt->bind_param("ss", $from_str, $to_str);
+    $stmt->bind_param("iss", $device_id, $from_str, $to_str);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows === 0) {
-        header("Location: export.php?from={$date_from}&to={$date_to}&type=raw&msg=nodata");
+        header("Location: export.php?device_id={$device_id}&from={$date_from}&to={$date_to}&type=raw&msg=nodata");
         exit;
     }
 
@@ -269,36 +267,13 @@ if ($do_export) {
         "Air Pattern"
     ]);
 
-    // Stream out rows with two-pointer sliding window and fallback calculation
-    $pred_idx = 0;
-    $pred_count = count($predictions);
+    // Stream rows; predictions are joined by telemetry ID, never approximate timestamps.
     $prev_row = null;
 
     while ($row = $result->fetch_assoc()) {
         $raw_ts = strtotime($row['timestamp']);
 
-        // Find closest AI prediction in memory using sliding window
-        $closest_pred = null;
-        $min_diff = 7200; // max 2 hours tolerance
-
-        // Advance index to skip predictions that are more than 2 hours behind
-        while ($pred_idx < $pred_count && ($raw_ts - $predictions[$pred_idx]['ts']) > 7200) {
-            $pred_idx++;
-        }
-
-        // Scan ahead within the 2-hour window
-        $scan_idx = $pred_idx;
-        while ($scan_idx < $pred_count) {
-            $diff = abs($predictions[$scan_idx]['ts'] - $raw_ts);
-            if ($diff < $min_diff) {
-                $min_diff = $diff;
-                $closest_pred = $predictions[$scan_idx]['data'];
-            }
-            if ($predictions[$scan_idx]['ts'] - $raw_ts > 7200) {
-                break;
-            }
-            $scan_idx++;
-        }
+        $closest_pred = $predictions[(int)$row['id']] ?? null;
 
         // Dynamic slope and trend calculation from telemetry series
         $aqi = (int)$row['aqi'];
@@ -400,17 +375,17 @@ $count = 0;
 if ($report_type === 'daily') {
     $stmt2 = $conn->prepare("
         SELECT COUNT(DISTINCT DATE(`timestamp`)) AS cnt FROM telemetry_raw
-        WHERE `timestamp` BETWEEN ? AND ?
+        WHERE device_id = ? AND `timestamp` BETWEEN ? AND ?
     ");
 } else {
     $stmt2 = $conn->prepare("
         SELECT COUNT(*) AS cnt FROM telemetry_raw
-        WHERE `timestamp` BETWEEN ? AND ?
+        WHERE device_id = ? AND `timestamp` BETWEEN ? AND ?
     ");
 }
 $from_str = $date_from . ' 00:00:00';
 $to_str   = $date_to   . ' 23:59:59';
-$stmt2->bind_param("ss", $from_str, $to_str);
+$stmt2->bind_param("iss", $device_id, $from_str, $to_str);
 $stmt2->execute();
 $row2  = $stmt2->get_result()->fetch_assoc();
 $count = $row2['cnt'] ?? 0;
@@ -674,6 +649,7 @@ $msg = $_GET['msg'] ?? '';
     <?php endif; ?>
 
     <form method="GET" action="export.php" id="exportForm">
+        <input type="hidden" name="device_id" value="<?= $device_id ?>">
         <input type="hidden" name="export" value="1">
         <input type="hidden" name="type" id="exportType" value="<?= htmlspecialchars($report_type) ?>">
 
@@ -789,7 +765,7 @@ $msg = $_GET['msg'] ?? '';
 
         countEl.textContent = "...";
 
-        fetch(`export_preview.php?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&type=${encodeURIComponent(type)}`)
+        fetch(`export_preview.php?device_id=<?= $device_id ?>&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&type=${encodeURIComponent(type)}`)
             .then(r => r.json())
             .then(data => {
                 countEl.textContent = data.count.toLocaleString();

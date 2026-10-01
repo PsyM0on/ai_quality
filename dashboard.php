@@ -5,15 +5,17 @@ enforceWebSecurity();
 // Fetch database records
 require_once("includes/db.php");
 require_once("includes/metrics.php");
+$device_id = requestDeviceId();
 
-$maint_file = __DIR__ . "/storage/maintenance.txt";
+$maint_file = aq_storage() . "/maintenance.txt";
 $maint_mode = file_exists($maint_file) ? trim(file_get_contents($maint_file)) : "OFF";
 
 if (isset($_GET['fetch'])) {
     header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
     header("Pragma: no-cache");
     header("Content-Type: application/json");
-    $result = $conn->query("SELECT * FROM telemetry_raw ORDER BY id DESC LIMIT 20");
+    $stmt = $conn->prepare("SELECT * FROM telemetry_raw WHERE device_id = ? ORDER BY id DESC LIMIT 20");
+    $stmt->bind_param('i', $device_id); $stmt->execute(); $result = $stmt->get_result();
     $data = [];
     while ($row = $result->fetch_assoc()) $data[] = $row;
     echo json_encode($data);
@@ -24,12 +26,14 @@ if (isset($_GET['latest'])) {
     header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
     header("Pragma: no-cache");
     header("Content-Type: application/json");
-    $result = $conn->query("SELECT *, UNIX_TIMESTAMP(timestamp) as ts_unix, UNIX_TIMESTAMP() as now_unix FROM telemetry_raw ORDER BY id DESC LIMIT 1");
+    $stmt = $conn->prepare("SELECT *, UNIX_TIMESTAMP(timestamp) as ts_unix, UNIX_TIMESTAMP() as now_unix FROM telemetry_raw WHERE device_id = ? ORDER BY id DESC LIMIT 1");
+    $stmt->bind_param('i', $device_id); $stmt->execute(); $result = $stmt->get_result();
     $latest = $result ? $result->fetch_assoc() : null;
     
     if ($latest) {
         // 1. Compute 5-Minute Interval Average for PM10 (Academic Standard Cadence)
-        $avg_5m_res = $conn->query("SELECT AVG(pm10) as pm10_5m, COUNT(*) as count_5m FROM telemetry_raw WHERE `timestamp` >= NOW() - INTERVAL 5 MINUTE");
+        $avg5 = $conn->prepare("SELECT AVG(pm10) as pm10_5m, COUNT(*) as count_5m FROM telemetry_raw WHERE device_id = ? AND `timestamp` >= NOW() - INTERVAL 5 MINUTE");
+        $avg5->bind_param('i', $device_id); $avg5->execute(); $avg_5m_res = $avg5->get_result();
         $avg_5m_row = $avg_5m_res ? $avg_5m_res->fetch_assoc() : null;
         if ($avg_5m_row && $avg_5m_row['pm10_5m'] !== null && intval($avg_5m_row['count_5m']) > 0) {
             $pm10_val = round(floatval($avg_5m_row['pm10_5m']), 1);
@@ -42,7 +46,8 @@ if (isset($_GET['latest'])) {
         $latest['interval_mode'] = '5-MIN';
 
         // 2. Compute 24-Hour Rolling Average for PM10 (RA 8749 Compliance Standard)
-        $avg_res = $conn->query("SELECT AVG(pm10) as pm10_24h, COUNT(*) as count_24h FROM telemetry_raw WHERE `timestamp` >= NOW() - INTERVAL 24 HOUR");
+        $avg24 = $conn->prepare("SELECT AVG(pm10) as pm10_24h, COUNT(*) as count_24h FROM telemetry_raw WHERE device_id = ? AND `timestamp` >= NOW() - INTERVAL 24 HOUR");
+        $avg24->bind_param('i', $device_id); $avg24->execute(); $avg_res = $avg24->get_result();
         $avg_row = $avg_res ? $avg_res->fetch_assoc() : null;
         $pm10_24h = ($avg_row && $avg_row['pm10_24h'] !== null) ? round(floatval($avg_row['pm10_24h']), 1) : floatval($latest['pm10'] ?? 0);
         $pm10_24h = max(0.0, $pm10_24h);
@@ -1061,6 +1066,7 @@ $feedback_next_url = (strpos($current_host, 'localhost') !== false || strpos($cu
         </div>
 
         <form method="GET" action="export.php" id="modalExportForm" onsubmit="handleExportSubmit(event)">
+            <input type="hidden" name="device_id" value="<?= $device_id ?>">
             <input type="hidden" name="export" value="1">
             <input type="hidden" name="type" id="modal_export_type" value="raw">
 
@@ -1129,11 +1135,11 @@ $feedback_next_url = (strpos($current_host, 'localhost') !== false || strpos($cu
     </div>
 </div>
 
-<script src="assets/js/dashboard.js?v=59" defer></script>
+<script src="assets/js/dashboard.js?v=60" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?update=53')
+        navigator.serviceWorker.register('./sw.js?update=55')
             .then(reg => {
                 console.log('SW Registered', reg.scope);
                 reg.update();

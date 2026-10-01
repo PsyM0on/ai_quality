@@ -32,7 +32,7 @@ const DENR_PM10_BREAKPOINTS = [
  * @return int AQI value (0 - 500)
  */
 function calc_pm10_aqi($pm10) {
-    $pm = max(0.0, floatval($pm10));
+    $pm = floor(max(0.0, floatval($pm10)));
     if ($pm > 504.0) {
         return 500;
     }

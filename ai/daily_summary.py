@@ -7,8 +7,13 @@ from datetime import datetime, date, timedelta
 warnings.filterwarnings("ignore")
 
 import sys, os
+import argparse
 sys.path.insert(0, os.path.dirname(__file__))
 from utils import get_conn, get_category, get_color, get_advice
+
+_parser = argparse.ArgumentParser()
+_parser.add_argument('--device-id', type=int, required=True)
+DEVICE_ID = _parser.parse_args().device_id
 
 # ── STEP 1: try timestamp-based query with dynamic anchor ────────────────
 use_timestamp = False
@@ -23,7 +28,7 @@ try:
     cur = conn.cursor(dictionary=True)
     
     # 1. Discover latest telemetry timestamp
-    cur.execute("SELECT MAX(`timestamp`) AS max_ts FROM telemetry_raw")
+    cur.execute("SELECT MAX(`timestamp`) AS max_ts FROM telemetry_raw WHERE device_id = %s", (DEVICE_ID,))
     max_row = cur.fetchone()
     max_ts = max_row['max_ts'] if max_row else None
     
@@ -52,8 +57,8 @@ try:
                 ROUND(AVG(hum), 1) as avg_hum,
                 COUNT(*) as readings
             FROM telemetry_raw
-            WHERE `timestamp` >= %s - INTERVAL 7 DAY AND `timestamp` <= %s
-        """, (ref_ts, ref_ts))
+            WHERE device_id = %s AND `timestamp` >= %s - INTERVAL 7 DAY AND `timestamp` <= %s
+        """, (DEVICE_ID, ref_ts, ref_ts))
         w_row = cur.fetchone()
         if w_row and w_row['readings'] and w_row['avg_aqi'] is not None:
             w_avg = round(float(w_row['avg_aqi']), 1)
@@ -77,8 +82,8 @@ try:
                 ROUND(AVG(hum), 1) as avg_hum,
                 COUNT(*) as readings
             FROM telemetry_raw
-            WHERE `timestamp` >= %s - INTERVAL 30 DAY AND `timestamp` <= %s
-        """, (ref_ts, ref_ts))
+            WHERE device_id = %s AND `timestamp` >= %s - INTERVAL 30 DAY AND `timestamp` <= %s
+        """, (DEVICE_ID, ref_ts, ref_ts))
         m_row = cur.fetchone()
         if m_row and m_row['readings'] and m_row['avg_aqi'] is not None:
             m_avg = round(float(m_row['avg_aqi']), 1)
@@ -100,10 +105,10 @@ try:
                    DATE(`timestamp`) AS day,
                    HOUR(`timestamp`) AS hour
             FROM telemetry_raw
-            WHERE `timestamp` >= %s AND `timestamp` <= %s
+            WHERE device_id = %s AND `timestamp` >= %s AND `timestamp` <= %s
             ORDER BY `timestamp` ASC
         """
-        df = pd.read_sql(query, conn, params=[win_start, win_end])
+        df = pd.read_sql(query, conn, params=[DEVICE_ID, win_start, win_end])
         df = df.dropna()
         df = df[df['pm10'] >= 0]
 
@@ -117,16 +122,19 @@ try:
     cur.close()
     conn.close()
 except Exception:
-    pass  # fall through to fallback
+    print(json.dumps({'error': 'Daily summary unavailable'}))
+    sys.exit(1)
 
 # ── STEP 2: fallback if timestamp failed OR today_df still empty ──
 if not use_timestamp or today_df.empty:
+    print(json.dumps({'error': 'No dated readings available for this device'}))
+    sys.exit(0)
     use_timestamp = False
     try:
         conn = get_conn()
         df2 = pd.read_sql(
-            "SELECT temp, hum, mq135, pm10, aqi FROM telemetry_raw ORDER BY id DESC LIMIT 96",
-            conn
+            "SELECT temp, hum, mq135, pm10, aqi FROM telemetry_raw WHERE device_id = %s ORDER BY id DESC LIMIT 96",
+            conn, params=[DEVICE_ID]
         )
         conn.close()
         df2 = df2.dropna()
@@ -191,7 +199,7 @@ if has_yesterday and y_avg and y_avg > 0:
 # ── DOMINANT CATEGORY (PHILIPPINE CLEAN AIR ACT RA 8749) ──
 bins = [0, 50, 100, 150, 200, 300, 1000]
 cats = ["Good", "Fair", "Unhealthy for Sensitive Groups", "Very Unhealthy", "Acutely Unhealthy", "Emergency"]
-today_df['cat'] = pd.cut(today_df['aqi'], bins=bins, labels=cats, right=True)
+today_df['cat'] = pd.cut(today_df['aqi'], bins=bins, labels=cats, right=True, include_lowest=True)
 mode_vals    = today_df['cat'].mode()
 dominant_cat = str(mode_vals.iloc[0]) if not mode_vals.empty else get_category(t_avg)
 

@@ -1,5 +1,10 @@
 # Python Virtual Environment
 .venv/
+.env
+firmware/**/secrets.h
+firmware/**/build/
+storage/cache/limit_*.json
+storage/login_*.json
 __pycache__/
 
 # Logs and temporary files

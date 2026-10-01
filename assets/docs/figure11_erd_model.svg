@@ -1,0 +1,260 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 820" width="100%" height="100%" style="background:#ffffff; font-family:'Segoe UI', Arial, sans-serif;">
+  <defs>
+    <!-- Drop shadow for clean entity cards -->
+    <filter id="erd-shadow" x="-5%" y="-3%" width="110%" height="108%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <!-- Title Banner -->
+  <text x="620" y="32" font-size="16" font-weight="800" fill="#0F172A" text-anchor="middle" letter-spacing="0.04em">FIGURE 11. REVISED ENTITY-RELATIONSHIP DIAGRAM (ERD)</text>
+  <text x="620" y="52" font-size="11.5" font-weight="500" fill="#64748B" text-anchor="middle">Relational Schema for IoT Telemetry Ingestion, AI Modeling, and Hardware Command &amp; Control (3NF)</text>
+
+  <!-- ==================== 1. DEVICES ENTITY (PARENT TABLE) ==================== -->
+  <g transform="translate(485, 80)" filter="url(#erd-shadow)">
+    <!-- Header -->
+    <rect x="0" y="0" width="270" height="34" rx="4" fill="#0F172A"/>
+    <text x="135" y="22" font-size="13" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="0.05em">devices</text>
+    
+    <!-- Body -->
+    <rect x="0" y="34" width="270" height="96" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.8"/>
+    <line x1="0" y1="66" x2="270" y2="66" stroke="#E2E8F0" stroke-width="1"/>
+    <line x1="0" y1="98" x2="270" y2="98" stroke="#E2E8F0" stroke-width="1"/>
+
+    <!-- Row 1: id (PK) -->
+    <text x="14" y="54" font-size="11" font-weight="700" fill="#0F172A">PK</text>
+    <text x="45" y="54" font-size="11" font-weight="700" fill="#0F172A">id</text>
+    <text x="256" y="54" font-size="10.5" font-family="monospace" fill="#64748B" text-anchor="end">int(11) AI</text>
+
+    <!-- Row 2: name -->
+    <text x="45" y="86" font-size="11" font-weight="600" fill="#0F172A">name</text>
+    <text x="256" y="86" font-size="10.5" font-family="monospace" fill="#64748B" text-anchor="end">varchar(255)</text>
+
+    <!-- Row 3: created_at -->
+    <text x="45" y="118" font-size="11" font-weight="600" fill="#0F172A">created_at</text>
+    <text x="256" y="118" font-size="10.5" font-family="monospace" fill="#64748B" text-anchor="end">timestamp</text>
+  </g>
+
+  <!-- ==================== RELATIONSHIP CONNECTOR LINES (CROW'S FOOT) ==================== -->
+  <!-- Spine down from devices (620, 210) -->
+  <line x1="620" y1="210" x2="620" y2="245" stroke="#0F172A" stroke-width="2"/>
+  <!-- "One and only one" tick marks on devices table -->
+  <line x1="612" y1="218" x2="628" y2="218" stroke="#0F172A" stroke-width="2"/>
+  <line x1="612" y1="226" x2="628" y2="226" stroke="#0F172A" stroke-width="2"/>
+
+  <!-- Horizontal Bus -->
+  <line x1="185" y1="245" x2="1055" y2="245" stroke="#0F172A" stroke-width="2"/>
+
+  <!-- Branch 1: Down to telemetry_raw (x=185) -->
+  <line x1="185" y1="245" x2="185" y2="290" stroke="#0F172A" stroke-width="2"/>
+  <!-- Crow's foot (Many) on telemetry_raw -->
+  <line x1="185" y1="290" x2="175" y2="276" stroke="#0F172A" stroke-width="2"/>
+  <line x1="185" y1="290" x2="195" y2="276" stroke="#0F172A" stroke-width="2"/>
+  <circle cx="185" cy="268" r="4" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.8"/>
+
+  <!-- Branch 2: Down to ai_predictions (x=620) -->
+  <line x1="620" y1="245" x2="620" y2="290" stroke="#0F172A" stroke-width="2"/>
+  <!-- Crow's foot (Many) on ai_predictions -->
+  <line x1="620" y1="290" x2="610" y2="276" stroke="#0F172A" stroke-width="2"/>
+  <line x1="620" y1="290" x2="630" y2="276" stroke="#0F172A" stroke-width="2"/>
+  <circle cx="620" cy="268" r="4" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.8"/>
+
+  <!-- Branch 3: Down to device_commands (x=1055) -->
+  <line x1="1055" y1="245" x2="1055" y2="290" stroke="#0F172A" stroke-width="2"/>
+  <!-- Crow's foot (Many) on device_commands -->
+  <line x1="1055" y1="290" x2="1045" y2="276" stroke="#0F172A" stroke-width="2"/>
+  <line x1="1055" y1="290" x2="1065" y2="276" stroke="#0F172A" stroke-width="2"/>
+  <circle cx="1055" cy="268" r="4" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.8"/>
+
+
+  <!-- ==================== 2. TELEMETRY_RAW (CHILD TABLE 1 - LEFT) ==================== -->
+  <g transform="translate(45, 290)" filter="url(#erd-shadow)">
+    <!-- Header -->
+    <rect x="0" y="0" width="280" height="34" rx="4" fill="#0F172A"/>
+    <text x="140" y="22" font-size="13" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="0.05em">telemetry_raw</text>
+    
+    <!-- Body -->
+    <rect x="0" y="34" width="280" height="256" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.8"/>
+    
+    <!-- Dividers -->
+    <line x1="0" y1="66" x2="280" y2="66" stroke="#E2E8F0" stroke-width="1"/>
+    <line x1="0" y1="98" x2="280" y2="98" stroke="#E2E8F0" stroke-width="1"/>
+    <line x1="0" y1="130" x2="280" y2="130" stroke="#E2E8F0" stroke-width="1"/>
+    <line x1="0" y1="162" x2="280" y2="162" stroke="#E2E8F0" stroke-width="1"/>
+    <line x1="0" y1="194" x2="280" y2="194" stroke="#E2E8F0" stroke-width="1"/>
+    <line x1="0" y1="226" x2="280" y2="226" stroke="#E2E8F0" stroke-width="1"/>
+    <line x1="0" y1="258" x2="280" y2="258" stroke="#E2E8F0" stroke-width="1"/>
+
+    <!-- Rows -->
+    <text x="14" y="54" font-size="10.5" font-weight="700" fill="#0F172A">PK</text>
+    <text x="45" y="54" font-size="11" font-weight="700" fill="#0F172A">id</text>
+    <text x="266" y="54" font-size="10" font-family="monospace" fill="#64748B" text-anchor="end">bigint(20) AI</text>
+
+    <text x="14" y="86" font-size="10.5" font-weight="700" fill="#0F172A">FK</text>
+    <text x="45" y="86" font-size="11" font-weight="700" fill="#0F172A">device_id</text>
+    <text x="266" y="86" font-size="10" font-family="monospace" fill="#64748B" text-anchor="end">int(11)</text>
+
+    <text x="45" y="118" font-size="11" fill="#0F172A">temp</text>
+    <text x="266" y="118" font-size="10" font-family="monospace" fill="#64748B" text-anchor="end">float (°C)</text>
+
+    <text x="45" y="150" font-size="11" fill="#0F172A">hum</text>
+    <text x="266" y="150" font-size="10" font-family="monospace" fill="#64748B" text-anchor="end">float (% RH)</text>
+
+    <text x="45" y="182" font-size="11" fill="#0F172A">pm10</text>
+    <text x="266" y="182" font-size="10" font-family="monospace" fill="#64748B" text-anchor="end">int(11) (µg/m³)</text>
+
+    <text x="45" y="214" font-size="11" fill="#0F172A">mq135</text>
+    <text x="266" y="214" font-size="10" font-family="monospace" fill="#64748B" text-anchor="end">int(11) (ADC)</text>
+
+    <text x="45" y="246" font-size="11" font-weight="600" fill="#0F172A">aqi</text>
+    <text x="266" y="246" font-size="10" font-family="monospace" fill="#64748B" text-anchor="end">int(11) (DENR)</text>
+
+    <text x="45" y="278" font-size="11" fill="#0F172A">timestamp</text>
+    <text x="266" y="278" font-size="10" font-family="monospace" fill="#64748B" text-anchor="end">timestamp</text>
+  </g>
+
+
+  <!-- ==================== 3. AI_PREDICTIONS (CHILD TABLE 2 - MIDDLE) ==================== -->
+  <g transform="translate(450, 290)" filter="url(#erd-shadow)">
+    <!-- Header -->
+    <rect x="0" y="0" width="340" height="34" rx="4" fill="#0F172A"/>
+    <text x="170" y="22" font-size="13" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="0.05em">ai_predictions</text>
+    
+    <!-- Body -->
+    <rect x="0" y="34" width="340" height="490" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.8"/>
+    
+    <!-- Rows -->
+    <g font-size="10.5">
+      <line x1="0" y1="64" x2="340" y2="64" stroke="#E2E8F0" stroke-width="1"/>
+      <text x="14" y="52" font-weight="700" fill="#0F172A">PK</text>
+      <text x="45" y="52" font-weight="700" fill="#0F172A">id</text>
+      <text x="326" y="52" font-family="monospace" fill="#64748B" text-anchor="end">int(11) AI</text>
+
+      <line x1="0" y1="94" x2="340" y2="94" stroke="#E2E8F0" stroke-width="1"/>
+      <text x="14" y="82" font-weight="700" fill="#0F172A">FK</text>
+      <text x="45" y="82" font-weight="700" fill="#0F172A">device_id</text>
+      <text x="326" y="82" font-family="monospace" fill="#64748B" text-anchor="end">int(11)</text>
+
+      <line x1="0" y1="124" x2="340" y2="124" stroke="#E2E8F0" stroke-width="1"/>
+      <text x="45" y="112" fill="#0F172A">predicted_aqi</text>
+      <text x="326" y="112" font-family="monospace" fill="#64748B" text-anchor="end">int(11)</text>
+
+      <line x1="0" y1="154" x2="340" y2="154" stroke="#E2E8F0" stroke-width="1"/>
+      <text x="45" y="142" font-weight="600" fill="#0F172A">actual_aqi</text>
+      <text x="326" y="142" font-family="monospace" fill="#64748B" text-anchor="end">int(11) (Test Metric)</text>
+
+      <line x1="0" y1="184" x2="340" y2="184" stroke="#E2E8F0" stroke-width="1"/>
+      <text x="45" y="172" fill="#0F172A">category</text>
+      <text x="326" y="172" font-family="monospace" fill="#64748B" text-anchor="end">varchar(50)</text>
+
+      <line x1="0" y1="214" x2="340" y2="214" stroke="#E2E8F0" stroke-width="1"/>
+      <text x="45" y="202" fill="#0F172A">advice</text>
+      <text x="326" y="202" font-family="monospace" fill="#64748B" text-anchor="end">text</text>
+
+      <line x1="0" y1="244" x2="340" y2="244" stroke="#E2E8F0" stroke-width="1"/>
+      <text x="45" y="232" fill="#0F172A">trend</text>
+      <text x="326" y="232" font-family="monospace" fill="#64748B" text-anchor="end">varchar(20)</text>
+
+      <line x1="0" y1="274" x2="340" y2="274" stroke="#E2E8F0" stroke-width="1"/>
+      <text x="45" y="262" font-weight="600" fill="#0F172A">forecast_1h</text>
+      <text x="326" y="262" font-family="monospace" fill="#64748B" text-anchor="end">int(11) (Random Forest)</text>
+
+      <line x1="0" y1="304" x2="340" y2="304" stroke="#E2E8F0" stroke-width="1"/>
+      <text x="45" y="292" font-weight="600" fill="#0F172A">forecast_2h</text>
+      <text x="326" y="292" font-family="monospace" fill="#64748B" text-anchor="end">int(11) (Random Forest)</text>
+
+      <line x1="0" y1="334" x2="340" y2="334" stroke="#E2E8F0" stroke-width="1"/>
+      <text x="45" y="322" font-weight="600" fill="#0F172A">forecast_3h</text>
+      <text x="326" y="322" font-family="monospace" fill="#64748B" text-anchor="end">int(11) (Random Forest)</text>
+
+      <line x1="0" y1="364" x2="340" y2="364" stroke="#E2E8F0" stroke-width="1"/>
+      <text x="45" y="352" fill="#0F172A">health_score</text>
+      <text x="326" y="352" font-family="monospace" fill="#64748B" text-anchor="end">float (0-100 Score)</text>
+
+      <line x1="0" y1="394" x2="340" y2="394" stroke="#E2E8F0" stroke-width="1"/>
+      <text x="45" y="382" fill="#0F172A">risk_level</text>
+      <text x="326" y="382" font-family="monospace" fill="#64748B" text-anchor="end">varchar(50)</text>
+
+      <line x1="0" y1="424" x2="340" y2="424" stroke="#E2E8F0" stroke-width="1"/>
+      <text x="45" y="412" fill="#0F172A">is_anomaly</text>
+      <text x="326" y="412" font-family="monospace" fill="#64748B" text-anchor="end">tinyint(1) (IsoForest)</text>
+
+      <line x1="0" y1="454" x2="340" y2="454" stroke="#E2E8F0" stroke-width="1"/>
+      <text x="45" y="442" fill="#0F172A">anomaly_severity</text>
+      <text x="326" y="442" font-family="monospace" fill="#64748B" text-anchor="end">varchar(20)</text>
+
+      <line x1="0" y1="484" x2="340" y2="484" stroke="#E2E8F0" stroke-width="1"/>
+      <text x="45" y="472" fill="#0F172A">cluster_label</text>
+      <text x="326" y="472" font-family="monospace" fill="#64748B" text-anchor="end">varchar(30) (K-Means)</text>
+
+      <text x="45" y="508" fill="#0F172A">timestamp</text>
+      <text x="326" y="508" font-family="monospace" fill="#64748B" text-anchor="end">timestamp</text>
+    </g>
+  </g>
+
+
+  <!-- ==================== 4. DEVICE_COMMANDS (CHILD TABLE 3 - RIGHT) ==================== -->
+  <g transform="translate(915, 290)" filter="url(#erd-shadow)">
+    <!-- Header -->
+    <rect x="0" y="0" width="280" height="34" rx="4" fill="#0F172A"/>
+    <text x="140" y="22" font-size="13" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="0.05em">device_commands</text>
+    
+    <!-- Body -->
+    <rect x="0" y="34" width="280" height="256" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.8"/>
+    
+    <!-- Dividers -->
+    <line x1="0" y1="66" x2="280" y2="66" stroke="#E2E8F0" stroke-width="1"/>
+    <line x1="0" y1="98" x2="280" y2="98" stroke="#E2E8F0" stroke-width="1"/>
+    <line x1="0" y1="130" x2="280" y2="130" stroke="#E2E8F0" stroke-width="1"/>
+    <line x1="0" y1="162" x2="280" y2="162" stroke="#E2E8F0" stroke-width="1"/>
+    <line x1="0" y1="194" x2="280" y2="194" stroke="#E2E8F0" stroke-width="1"/>
+    <line x1="0" y1="226" x2="280" y2="226" stroke="#E2E8F0" stroke-width="1"/>
+    <line x1="0" y1="258" x2="280" y2="258" stroke="#E2E8F0" stroke-width="1"/>
+
+    <!-- Rows -->
+    <text x="14" y="54" font-size="10.5" font-weight="700" fill="#0F172A">PK</text>
+    <text x="45" y="54" font-size="11" font-weight="700" fill="#0F172A">id</text>
+    <text x="266" y="54" font-size="10" font-family="monospace" fill="#64748B" text-anchor="end">bigint(20) AI</text>
+
+    <text x="14" y="86" font-size="10.5" font-weight="700" fill="#0F172A">FK</text>
+    <text x="45" y="86" font-size="11" font-weight="700" fill="#0F172A">device_id</text>
+    <text x="266" y="86" font-size="10" font-family="monospace" fill="#64748B" text-anchor="end">int(11)</text>
+
+    <text x="45" y="118" font-size="11" font-weight="600" fill="#0F172A">command</text>
+    <text x="266" y="118" font-size="10" font-family="monospace" fill="#64748B" text-anchor="end">varchar(40)</text>
+
+    <text x="45" y="150" font-size="11" fill="#0F172A">status</text>
+    <text x="266" y="150" font-size="10" font-family="monospace" fill="#64748B" text-anchor="end">enum</text>
+
+    <text x="45" y="182" font-size="11" fill="#0F172A">acknowledgement</text>
+    <text x="266" y="182" font-size="10" font-family="monospace" fill="#64748B" text-anchor="end">varchar(500)</text>
+
+    <text x="45" y="214" font-size="11" fill="#0F172A">created_at</text>
+    <text x="266" y="214" font-size="10" font-family="monospace" fill="#64748B" text-anchor="end">timestamp</text>
+
+    <text x="45" y="246" font-size="11" fill="#0F172A">delivered_at</text>
+    <text x="266" y="246" font-size="10" font-family="monospace" fill="#64748B" text-anchor="end">timestamp</text>
+
+    <text x="45" y="278" font-size="11" fill="#0F172A">acknowledged_at</text>
+    <text x="266" y="278" font-size="10" font-family="monospace" fill="#64748B" text-anchor="end">timestamp</text>
+  </g>
+
+  <!-- Cardinality Legend Box -->
+  <g transform="translate(45, 600)">
+    <rect x="0" y="0" width="370" height="90" rx="6" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1"/>
+    <text x="14" y="22" font-size="11" font-weight="700" fill="#0F172A">RELATIONAL CARDINALITY &amp; CONSTRAINTS:</text>
+    <text x="14" y="42" font-size="9.5" fill="#475569">• One-to-Many (1:N): devices ||-----&lt; telemetry_raw</text>
+    <text x="14" y="58" font-size="9.5" fill="#475569">• One-to-Many (1:N): devices ||-----&lt; ai_predictions</text>
+    <text x="14" y="74" font-size="9.5" fill="#475569">• One-to-Many (1:N): devices ||-----&lt; device_commands</text>
+  </g>
+
+  <!-- Normalization Note -->
+  <g transform="translate(825, 600)">
+    <rect x="0" y="0" width="370" height="90" rx="6" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1"/>
+    <text x="14" y="22" font-size="11" font-weight="700" fill="#0F172A">DATABASE NORMALIZATION &amp; ENGINE:</text>
+    <text x="14" y="42" font-size="9.5" fill="#475569">• 3NF Compliant: No transitive or partial dependencies</text>
+    <text x="14" y="58" font-size="9.5" fill="#475569">• InnoDB Engine: Row-level locking &amp; ACID transactions</text>
+    <text x="14" y="74" font-size="9.5" fill="#475569">• B-Tree Indexes on device_id &amp; timestamp columns</text>
+  </g>
+
+</svg>

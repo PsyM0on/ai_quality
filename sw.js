@@ -1,4 +1,4 @@
-const CACHE_NAME = 'airquality-cache-v54';
+const CACHE_NAME = 'airquality-cache-v55';
 const ASSETS_TO_CACHE = [
   './dashboard.php',
   './assets/css/dashboard.css',
@@ -32,9 +32,9 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Network-first strategy for live sensor data
+// Network-first strategy for live sensor data and dynamic telemetry endpoints
 self.addEventListener('fetch', (event) => {
-  if (event.request.url.includes('latest=1') || event.request.url.includes('api.php')) {
+  if (event.request.url.includes('latest=1') || event.request.url.includes('fetch=1') || event.request.url.includes('/api/') || event.request.url.includes('export')) {
     event.respondWith(fetch(event.request));
     return;
   }

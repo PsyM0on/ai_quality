@@ -4,6 +4,23 @@
    Dual-Mode Progressive Disclosure Dashboard • ISO/IEC 25010 & IBM CSUQ
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/* ── GLOBAL DEVICE CONTEXT & ROUTING HELPERS ────────────────────────────── */
+const aqDeviceId = (/^[1-9][0-9]{0,8}$/.test(new URLSearchParams(window.location.search).get('device_id') || ''))
+    ? new URLSearchParams(window.location.search).get('device_id')
+    : (/^[1-9][0-9]{0,8}$/.test(new URLSearchParams(window.location.search).get('device') || '')
+        ? new URLSearchParams(window.location.search).get('device')
+        : '1');
+
+function aqUrl(path) {
+    try {
+        const url = new URL(path, window.location.href);
+        url.searchParams.set('device_id', aqDeviceId);
+        return url.href;
+    } catch (e) {
+        return path;
+    }
+}
+
 /* ── DUAL-MODE PROGRESSIVE DISCLOSURE VIEW CONTROLLER ───────────────────── */
 function switchViewMode(mode, targetSubTab) {
     const citizenSection = document.getElementById('view-citizen');
@@ -261,7 +278,7 @@ function updateExportPreview() {
 
     countEl.textContent = "Calculating…";
 
-    fetch(`export_preview.php?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&type=${encodeURIComponent(reportType)}`)
+    fetch(aqUrl(`export_preview.php?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&type=${encodeURIComponent(reportType)}`))
         .then(r => r.json())
         .then(data => {
             const count = data.count || 0;
@@ -292,7 +309,7 @@ function handleExportSubmit(e) {
     if (btn) btn.disabled = true;
 
     // Trigger download via temporary anchor to prevent navigation away from dashboard
-    const downloadUrl = `export.php?export=1&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&type=${encodeURIComponent(reportType)}`;
+    const downloadUrl = aqUrl(`export.php?export=1&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&type=${encodeURIComponent(reportType)}`);
     const tempLink = document.createElement('a');
     tempLink.href = downloadUrl;
     tempLink.setAttribute('download', '');
@@ -595,7 +612,7 @@ function live() {
     if (isLiveFetching) return;
     isLiveFetching = true;
 
-    fetch('dashboard.php?latest=1&_t=' + Date.now(), { cache: 'no-store' })
+    fetch(aqUrl('dashboard.php?latest=1&_t=' + Date.now()), { cache: 'no-store' })
         .then(r => {
             if (!r.ok) throw new Error('HTTP ' + r.status);
             return r.json();
@@ -778,7 +795,7 @@ let isLoadFetching = false;
 function load() {
     if (isLoadFetching) return;
     isLoadFetching = true;
-    fetch('dashboard.php?fetch=1&_t=' + Date.now(), { cache: 'no-store' })
+    fetch(aqUrl('dashboard.php?fetch=1&_t=' + Date.now()), { cache: 'no-store' })
         .then(r => r.json())
         .then(data => {
             isLoadFetching = false;
@@ -902,7 +919,7 @@ function loadDaily() {
     ];
     targets.forEach(id => { let el = document.getElementById(id); if (el) el.classList.add('skeleton'); });
 
-    fetch('api/daily.php?t=' + Date.now(), { cache: 'no-store' })
+    fetch(aqUrl('api/daily.php?t=' + Date.now()), { cache: 'no-store' })
         .then(r => {
             if (!r.ok) throw new Error('HTTP ' + r.status);
             return r.json();
@@ -1253,7 +1270,7 @@ function loadTrend() {
     const targets = ['trend_1h', 'trend_2h', 'trend_3h'];
     targets.forEach(id => { let el = document.getElementById(id); if (el) el.classList.add('skeleton'); });
 
-    fetch('api/rf_predict.php?t=' + Date.now(), { cache: 'no-store' })
+    fetch(aqUrl('api/rf_predict.php?t=' + Date.now()), { cache: 'no-store' })
         .then(response => {
             if (!response.ok) throw new Error('HTTP ' + response.status);
             return response.json();
@@ -1343,10 +1360,10 @@ function loadTrend() {
 
             // Model Validation Benchmark (ISO/IEC 25010 Evaluation Standard)
             if (d.confidence) {
-                const r2 = d.confidence.r2_score !== undefined ? d.confidence.r2_score : 0.952;
-                const mae_rf = d.confidence.mae_rf !== undefined ? d.confidence.mae_rf : 2.74;
-                const mae_lr = d.confidence.mae_lr !== undefined ? d.confidence.mae_lr : 14.55;
-                const imp = d.confidence.improvement_pct !== undefined ? d.confidence.improvement_pct : 81.2;
+                const r2 = Number.isFinite(d.confidence.r2_score) ? d.confidence.r2_score : 'Unavailable';
+                const mae_rf = Number.isFinite(d.confidence.mae_rf) ? d.confidence.mae_rf : 'Unavailable';
+                const mae_lr = Number.isFinite(d.confidence.mae_lr) ? d.confidence.mae_lr : 'Unavailable';
+                const imp = Number.isFinite(d.confidence.improvement_pct) ? d.confidence.improvement_pct : 'Unavailable';
 
                 const r2El = document.getElementById('bm-r2');
                 if (r2El) r2El.textContent = `R² = ${r2}`;
@@ -1355,7 +1372,7 @@ function loadTrend() {
                 if (rfMaeEl) rfMaeEl.textContent = `±${mae_rf} AQI`;
                 
                 const rfR2El = document.getElementById('bm-rf-r2');
-                if (rfR2El) rfR2El.textContent = `${r2} (${Math.round(r2 * 100)}% fit)`;
+                if (rfR2El) rfR2El.textContent = Number.isFinite(r2) ? `${r2} (held-out validation)` : 'Unavailable';
                 
                 const lrMaeEl = document.getElementById('bm-lr-mae');
                 if (lrMaeEl) lrMaeEl.textContent = `±${mae_lr} AQI`;
@@ -1374,7 +1391,7 @@ function loadTrend() {
 
 /* ── ANOMALY DETECTION (ISOLATION FOREST & Z-SCORE EXPLAINABILITY) ───────── */
 function loadAnomaly() {
-    fetch('api/anomaly.php?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(d => {
+    fetch(aqUrl('api/anomaly.php?t=' + Date.now()), { cache: 'no-store' }).then(r => r.json()).then(d => {
         if (d.error) {
             document.getElementById('anomaly-label').textContent = 'System Note';
             document.getElementById('anomaly-msg').textContent = d.error;
@@ -1436,7 +1453,7 @@ function loadAnomaly() {
             const title = document.getElementById('source_title');
             const reason = document.getElementById('source_reasoning');
             
-            if (badge) badge.textContent = `${sa.confidence}% Confidence`;
+            if (badge) badge.textContent = Number.isFinite(sa.confidence) ? `${sa.confidence}% Confidence` : 'Heuristic only';
             if (icon) {
                 const srcIcons = {
                     biomass: '<svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--warn);"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>',
@@ -1451,7 +1468,7 @@ function loadAnomaly() {
             if (reason) reason.textContent = sa.reasoning;
 
             // Update Multi-Segment Stacked Covariance Attribution Bar
-            const dist = sa.distribution || { vehicular: 72, biomass: 18, marine: 10 };
+            const dist = sa.distribution || { vehicular: 0, biomass: 0, marine: 0 };
             const vEl = document.getElementById('src-bar-vehicular');
             const bEl = document.getElementById('src-bar-biomass');
             const mEl = document.getElementById('src-bar-marine');
@@ -1461,9 +1478,9 @@ function loadAnomaly() {
             if (vEl) { vEl.style.width = dist.vehicular + '%'; vEl.title = `Vehicular Transit: ${dist.vehicular}%`; }
             if (bEl) { bEl.style.width = dist.biomass + '%'; bEl.title = `Biomass & Solid Fuel: ${dist.biomass}%`; }
             if (mEl) { mEl.style.width = dist.marine + '%'; mEl.title = `Marine Aerosol & Ambient: ${dist.marine}%`; }
-            if (vPct) vPct.textContent = dist.vehicular + '%';
-            if (bPct) bPct.textContent = dist.biomass + '%';
-            if (mPct) mPct.textContent = dist.marine + '%';
+            if (vPct) vPct.textContent = sa.distribution ? dist.vehicular + '%' : 'Not measured';
+            if (bPct) bPct.textContent = sa.distribution ? dist.biomass + '%' : 'Not measured';
+            if (mPct) mPct.textContent = sa.distribution ? dist.marine + '%' : 'Not measured';
         }
 
         const stuckWrap = document.getElementById('stuck-wrap');
@@ -1823,3 +1840,4 @@ window.addEventListener('resize', () => {
         window.sensorLeafletMap.invalidateSize();
     }
 });
+

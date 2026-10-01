@@ -1,0 +1,337 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1050 780" width="100%" height="100%" style="background:#ffffff; font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <!-- Drop shadow for architectural cards -->
+    <filter id="card-shadow" x="-4%" y="-3%" width="108%" height="108%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#1E293B"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563EB"/>
+    </marker>
+    <marker id="arrow-amber" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#D97706"/>
+    </marker>
+  </defs>
+
+  <!-- Title & Manuscript Header -->
+  <text x="525" y="32" font-size="16" font-weight="800" fill="#0F172A" text-anchor="middle" letter-spacing="0.04em">FIGURE 12. END-TO-END SYSTEM ARCHITECTURE</text>
+  <text x="525" y="52" font-size="11.5" font-weight="500" fill="#64748B" text-anchor="middle">Four-Tier Architectural Framework for IoT Environmental Sensing, AI Analytics, and Web/Mobile Delivery</text>
+
+  <!-- ==================== TIER 1: PERCEPTION & IOT EDGE LAYER ==================== -->
+  <g transform="translate(40, 75)">
+    <!-- Container Card -->
+    <rect x="0" y="0" width="210" height="660" rx="8" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.5" filter="url(#card-shadow)"/>
+    <!-- Header Badge -->
+    <rect x="0" y="0" width="210" height="42" rx="8" fill="#0F172A"/>
+    <rect x="0" y="32" width="210" height="10" fill="#0F172A"/> <!-- flat bottom for badge -->
+    <text x="105" y="20" font-size="11" font-weight="800" fill="#93C5FD" text-anchor="middle" letter-spacing="0.06em">TIER 1</text>
+    <text x="105" y="34" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">PERCEPTION &amp; EDGE</text>
+
+    <!-- Subcomponent: Sensors -->
+    <g transform="translate(15, 60)">
+      <rect x="0" y="0" width="180" height="110" rx="6" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.2"/>
+      <rect x="0" y="0" width="180" height="24" rx="6" fill="#F1F5F9"/>
+      <rect x="0" y="18" width="180" height="6" fill="#F1F5F9"/>
+      <text x="90" y="16" font-size="10" font-weight="700" fill="#334155" text-anchor="middle">PHYSICAL SENSORS</text>
+      
+      <text x="12" y="42" font-size="9.5" font-weight="700" fill="#0F172A">• PMS5003 Laser</text>
+      <text x="22" y="55" font-size="8.5" fill="#64748B">PM1.0, PM2.5, PM10 (UART)</text>
+      
+      <text x="12" y="73" font-size="9.5" font-weight="700" fill="#0F172A">• MQ-135 Electrochemical</text>
+      <text x="22" y="86" font-size="8.5" fill="#64748B">Toxic Gas / NH3 / CO2 (ADC)</text>
+      
+      <text x="12" y="101" font-size="9.5" font-weight="700" fill="#0F172A">• DHT22 Digital Sensor</text>
+      <text x="22" y="112" font-size="8.5" fill="#64748B">Temperature &amp; Rel. Humidity</text>
+    </g>
+
+    <!-- Arrow down to ESP32 -->
+    <line x1="105" y1="180" x2="105" y2="215" stroke="#1E293B" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="115" y="202" font-size="8" font-family="monospace" fill="#475569">GPIO / UART</text>
+
+    <!-- Subcomponent: Microcontroller Node -->
+    <g transform="translate(15, 225)">
+      <rect x="0" y="0" width="180" height="150" rx="6" fill="#FFFFFF" stroke="#0284C7" stroke-width="1.5"/>
+      <rect x="0" y="0" width="180" height="24" rx="6" fill="#E0F2FE"/>
+      <rect x="0" y="18" width="180" height="6" fill="#E0F2FE"/>
+      <text x="90" y="16" font-size="10.5" font-weight="800" fill="#0369A1" text-anchor="middle">ESP32 MICROCONTROLLER</text>
+
+      <text x="12" y="44" font-size="9" font-weight="600" fill="#0F172A">• Tensilica 32-bit Dual Core</text>
+      <text x="12" y="62" font-size="9" font-weight="600" fill="#0F172A">• 802.11 b/g/n Wi-Fi Transceiver</text>
+      <text x="12" y="80" font-size="9" font-weight="600" fill="#0F172A">• On-Chip ADC Calibration</text>
+      <text x="12" y="98" font-size="9" font-weight="600" fill="#0F172A">• Hardware Watchdog Timer</text>
+      <text x="12" y="116" font-size="9" font-weight="600" fill="#0F172A">• Telemetry Formatting (JSON)</text>
+      <text x="12" y="134" font-size="9" font-weight="600" fill="#0F172A">• C2 Command Execution Engine</text>
+    </g>
+
+    <!-- Arrow down to Power -->
+    <line x1="105" y1="385" x2="105" y2="420" stroke="#64748B" stroke-width="1.5" stroke-dasharray="3,3"/>
+
+    <!-- Subcomponent: Power & Field Enclosure -->
+    <g transform="translate(15, 430)">
+      <rect x="0" y="0" width="180" height="90" rx="6" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.2"/>
+      <rect x="0" y="0" width="180" height="24" rx="6" fill="#F1F5F9"/>
+      <rect x="0" y="18" width="180" height="6" fill="#F1F5F9"/>
+      <text x="90" y="16" font-size="10" font-weight="700" fill="#334155" text-anchor="middle">POWER &amp; ENCLOSURE</text>
+
+      <text x="12" y="44" font-size="9" fill="#0F172A">• 3.7V Li-Ion Battery Pack</text>
+      <text x="12" y="60" font-size="9" fill="#0F172A">• TP4056 Step-Up Regulator</text>
+      <text x="12" y="76" font-size="9" fill="#0F172A">• Weatherproof IP65 Casing</text>
+    </g>
+
+    <!-- Edge Description Footer -->
+    <rect x="15" y="545" width="180" height="95" rx="6" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+    <text x="25" y="565" font-size="9" font-weight="700" fill="#1E40AF">DEPLOYMENT SITE:</text>
+    <text x="25" y="582" font-size="8.5" fill="#1E3A8A">Barangay Maypangdan,</text>
+    <text x="25" y="596" font-size="8.5" fill="#1E3A8A">Borongan City, Eastern Samar</text>
+    <text x="25" y="614" font-size="8" font-style="italic" fill="#3B82F6">Sampling Interval: 30s – 60s</text>
+    <text x="25" y="628" font-size="8" font-style="italic" fill="#3B82F6">Continuous 24/7 Field Sensing</text>
+  </g>
+
+  <!-- ==================== TIER 2: INGESTION & GATEWAY LAYER ==================== -->
+  <g transform="translate(285, 75)">
+    <!-- Container Card -->
+    <rect x="0" y="0" width="220" height="660" rx="8" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.5" filter="url(#card-shadow)"/>
+    <!-- Header Badge -->
+    <rect x="0" y="0" width="220" height="42" rx="8" fill="#0F172A"/>
+    <rect x="0" y="32" width="220" height="10" fill="#0F172A"/>
+    <text x="110" y="20" font-size="11" font-weight="800" fill="#93C5FD" text-anchor="middle" letter-spacing="0.06em">TIER 2</text>
+    <text x="110" y="34" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">INGESTION &amp; SECURITY</text>
+
+    <!-- Subcomponent: Gateway Endpoint -->
+    <g transform="translate(15, 60)">
+      <rect x="0" y="0" width="190" height="135" rx="6" fill="#FFFFFF" stroke="#059669" stroke-width="1.5"/>
+      <rect x="0" y="0" width="190" height="24" rx="6" fill="#D1FAE5"/>
+      <rect x="0" y="18" width="190" height="6" fill="#D1FAE5"/>
+      <text x="95" y="16" font-size="10.5" font-weight="800" fill="#065F46" text-anchor="middle">TELEMETRY INGESTION</text>
+      
+      <text x="12" y="44" font-size="9" font-weight="700" fill="#0F172A">Endpoint: insert.php</text>
+      <text x="12" y="60" font-size="8.5" fill="#475569">• HTTP POST / REST Protocol</text>
+      <text x="12" y="75" font-size="8.5" fill="#475569">• Schema &amp; Type Sanitization</text>
+      <text x="12" y="90" font-size="8.5" fill="#475569">• RA 8749 AQI Math Conversion</text>
+      <text x="12" y="105" font-size="8.5" fill="#475569">• Real-Time Health Indexer</text>
+      <text x="12" y="120" font-size="8.5" fill="#475569">• MySQL Transaction Commit</text>
+    </g>
+
+    <!-- Subcomponent: Security Protocols -->
+    <g transform="translate(15, 215)">
+      <rect x="0" y="0" width="190" height="145" rx="6" fill="#FFFFFF" stroke="#DC2626" stroke-width="1.2"/>
+      <rect x="0" y="0" width="190" height="24" rx="6" fill="#FEE2E2"/>
+      <rect x="0" y="18" width="190" height="6" fill="#FEE2E2"/>
+      <text x="95" y="16" font-size="10" font-weight="800" fill="#991B1B" text-anchor="middle">SECURITY &amp; FILTERING</text>
+
+      <text x="12" y="44" font-size="9" font-weight="600" fill="#0F172A">• Rate Limiting Protection</text>
+      <text x="22" y="58" font-size="8.5" fill="#64748B">3-Second Cooldown per IP</text>
+      
+      <text x="12" y="74" font-size="9" font-weight="600" fill="#0F172A">• Hardened Security Headers</text>
+      <text x="22" y="88" font-size="8.5" fill="#64748B">HSTS, CSP, X-Frame, CORS</text>
+
+      <text x="12" y="104" font-size="9" font-weight="600" fill="#0F172A">• CSRF Token Validation</text>
+      <text x="22" y="118" font-size="8.5" fill="#64748B">Strict Hash Verification</text>
+
+      <text x="12" y="134" font-size="9" font-weight="600" fill="#0F172A">• SQL Injection Shield</text>
+    </g>
+
+    <!-- Subcomponent: Command & Control Bridge -->
+    <g transform="translate(15, 380)">
+      <rect x="0" y="0" width="190" height="135" rx="6" fill="#FFFFFF" stroke="#D97706" stroke-width="1.2"/>
+      <rect x="0" y="0" width="190" height="24" rx="6" fill="#FEF3C7"/>
+      <rect x="0" y="18" width="190" height="6" fill="#FEF3C7"/>
+      <text x="95" y="16" font-size="10" font-weight="800" fill="#92400E" text-anchor="middle">COMMAND &amp; CONTROL (C2)</text>
+
+      <text x="12" y="44" font-size="9" font-weight="700" fill="#0F172A">Table: device_commands</text>
+      <text x="12" y="60" font-size="8.5" fill="#475569">• Asynchronous Instruction Queue</text>
+      <text x="12" y="75" font-size="8.5" fill="#475569">• Remote Hardware Reboot</text>
+      <text x="12" y="90" font-size="8.5" fill="#475569">• MQ-135 Sensor Calibration</text>
+      <text x="12" y="105" font-size="8.5" fill="#475569">• PMS Sleep / Standby Mode</text>
+      <text x="12" y="120" font-size="8.5" fill="#475569">• Delivery &amp; ACK Handshake</text>
+    </g>
+
+    <!-- Gateway Description Footer -->
+    <rect x="15" y="535" width="190" height="105" rx="6" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1"/>
+    <text x="25" y="555" font-size="9" font-weight="700" fill="#1E293B">TRANSACTION GUARANTEE:</text>
+    <text x="25" y="572" font-size="8.5" fill="#475569">• HTTP 200 OK Response</text>
+    <text x="25" y="587" font-size="8.5" fill="#475569">• Two-Way Piggyback Telemetry</text>
+    <text x="25" y="602" font-size="8.5" fill="#475569">• Zero Sensor Data Loss Buffer</text>
+    <text x="25" y="618" font-size="8" font-style="italic" fill="#64748B">Payload Size: &lt; 256 bytes</text>
+  </g>
+
+  <!-- ==================== TIER 3: DATA & AI ANALYTICS ENGINE ==================== -->
+  <g transform="translate(540, 75)">
+    <!-- Container Card -->
+    <rect x="0" y="0" width="240" height="660" rx="8" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.5" filter="url(#card-shadow)"/>
+    <!-- Header Badge -->
+    <rect x="0" y="0" width="240" height="42" rx="8" fill="#0F172A"/>
+    <rect x="0" y="32" width="240" height="10" fill="#0F172A"/>
+    <text x="120" y="20" font-size="11" font-weight="800" fill="#93C5FD" text-anchor="middle" letter-spacing="0.06em">TIER 3</text>
+    <text x="120" y="34" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">PERSISTENCE &amp; AI ANALYTICS</text>
+
+    <!-- Subcomponent: MySQL Database (3NF) -->
+    <g transform="translate(15, 60)">
+      <rect x="0" y="0" width="210" height="145" rx="6" fill="#FFFFFF" stroke="#4F46E5" stroke-width="1.5"/>
+      <rect x="0" y="0" width="210" height="24" rx="6" fill="#EEF2FF"/>
+      <rect x="0" y="18" width="210" height="6" fill="#EEF2FF"/>
+      <text x="105" y="16" font-size="10.5" font-weight="800" fill="#3730A3" text-anchor="middle">MYSQL 8.0 RELATIONAL DB (3NF)</text>
+
+      <text x="12" y="44" font-size="9" font-weight="700" fill="#0F172A">• devices</text>
+      <text x="24" y="56" font-size="8" fill="#64748B">Master Node Registry (PK/FK Parent)</text>
+
+      <text x="12" y="72" font-size="9" font-weight="700" fill="#0F172A">• telemetry_raw (153k+ records)</text>
+      <text x="24" y="84" font-size="8" fill="#64748B">Raw Time-Series (Temp, Hum, PM10, MQ)</text>
+
+      <text x="12" y="100" font-size="9" font-weight="700" fill="#0F172A">• ai_predictions</text>
+      <text x="24" y="112" font-size="8" fill="#64748B">Model Inferences, Risks &amp; Advisories</text>
+
+      <text x="12" y="128" font-size="9" font-weight="700" fill="#0F172A">• device_commands</text>
+      <text x="24" y="140" font-size="8" fill="#64748B">Asynchronous Hardware C2 Logs</text>
+    </g>
+
+    <!-- Subcomponent: Python AI Subsystem -->
+    <g transform="translate(15, 220)">
+      <rect x="0" y="0" width="210" height="280" rx="6" fill="#FFFFFF" stroke="#7C3AED" stroke-width="1.5"/>
+      <rect x="0" y="0" width="210" height="24" rx="6" fill="#F5F3FF"/>
+      <rect x="0" y="18" width="210" height="6" fill="#F5F3FF"/>
+      <text x="105" y="16" font-size="10.5" font-weight="800" fill="#5B21B6" text-anchor="middle">PYTHON MACHINE LEARNING</text>
+
+      <text x="12" y="44" font-size="9.5" font-weight="700" fill="#0F172A">1. Random Forest Regressor</text>
+      <text x="22" y="58" font-size="8.5" fill="#475569">• n_estimators = 100 decision trees</text>
+      <text x="22" y="71" font-size="8.5" fill="#475569">• +1h, +2h, +3h AQI Forecasting</text>
+      <text x="22" y="84" font-size="8.5" fill="#475569">• 10 engineered rolling features</text>
+
+      <text x="12" y="104" font-size="9.5" font-weight="700" fill="#0F172A">2. Hybrid Anomaly Detection</text>
+      <text x="22" y="118" font-size="8.5" fill="#475569">• Isolation Forest (c = 0.05)</text>
+      <text x="22" y="131" font-size="8.5" fill="#475569">• Z-Score Outlier Verification (±2.5σ)</text>
+      <text x="22" y="144" font-size="8.5" fill="#475569">• Stuck Sensor &amp; Drift Detection</text>
+
+      <text x="12" y="164" font-size="9.5" font-weight="700" fill="#0F172A">3. K-Means Pattern Clustering</text>
+      <text x="22" y="178" font-size="8.5" fill="#475569">• k = 3 Environmental States</text>
+      <text x="22" y="191" font-size="8.5" fill="#475569">• Diurnal Air Quality Profiles</text>
+
+      <text x="12" y="211" font-size="9.5" font-weight="700" fill="#0F172A">4. Health Risk &amp; Advisories</text>
+      <text x="22" y="225" font-size="8.5" fill="#475569">• Composite Score (0–100 Index)</text>
+      <text x="22" y="238" font-size="8.5" fill="#475569">• Dynamic Preventive Guidance</text>
+
+      <!-- Model Cache Indicator -->
+      <rect x="12" y="248" width="186" height="24" rx="4" fill="#F3E8FF"/>
+      <text x="105" y="264" font-size="8" font-family="monospace" fill="#6B21A8" text-anchor="middle">ai/models/*.joblib persistence</text>
+    </g>
+
+    <!-- Cloud Infrastructure Footer -->
+    <rect x="15" y="520" width="210" height="120" rx="6" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1"/>
+    <text x="25" y="540" font-size="9" font-weight="700" fill="#0F172A">ORACLE CLOUD INFRASTRUCTURE:</text>
+    <text x="25" y="557" font-size="8.5" fill="#475569">• Ubuntu 22.04 LTS Compute Instance</text>
+    <text x="25" y="572" font-size="8.5" fill="#475569">• Apache 2.4 Web Server + PHP 8.x</text>
+    <text x="25" y="587" font-size="8.5" fill="#475569">• Python 3 venv (scikit-learn, pandas)</text>
+    <text x="25" y="602" font-size="8.5" fill="#475569">• Automated CRON Hourly Rollups</text>
+    <text x="25" y="618" font-size="8" font-style="italic" fill="#64748B">Static Public IP: 140.245.xxx.xxx</text>
+  </g>
+
+  <!-- ==================== TIER 4: PRESENTATION & CLIENT LAYER ==================== -->
+  <g transform="translate(810, 75)">
+    <!-- Container Card -->
+    <rect x="0" y="0" width="200" height="660" rx="8" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.5" filter="url(#card-shadow)"/>
+    <!-- Header Badge -->
+    <rect x="0" y="0" width="200" height="42" rx="8" fill="#0F172A"/>
+    <rect x="0" y="32" width="200" height="10" fill="#0F172A"/>
+    <text x="100" y="20" font-size="11" font-weight="800" fill="#93C5FD" text-anchor="middle" letter-spacing="0.06em">TIER 4</text>
+    <text x="100" y="34" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">PRESENTATION &amp; CLIENTS</text>
+
+    <!-- Subcomponent: Public Web Dashboard -->
+    <g transform="translate(15, 60)">
+      <rect x="0" y="0" width="170" height="135" rx="6" fill="#FFFFFF" stroke="#0284C7" stroke-width="1.2"/>
+      <rect x="0" y="0" width="170" height="24" rx="6" fill="#E0F2FE"/>
+      <rect x="0" y="18" width="170" height="6" fill="#E0F2FE"/>
+      <text x="85" y="16" font-size="10" font-weight="800" fill="#0369A1" text-anchor="middle">PUBLIC CITIZEN PORTAL</text>
+
+      <text x="10" y="44" font-size="8.5" font-weight="600" fill="#0F172A">• Live AQI Gauge (RA 8749)</text>
+      <text x="10" y="60" font-size="8.5" font-weight="600" fill="#0F172A">• Real-Time Health Advisory</text>
+      <text x="10" y="76" font-size="8.5" font-weight="600" fill="#0F172A">• 24-Hour Interactive Charts</text>
+      <text x="10" y="92" font-size="8.5" font-weight="600" fill="#0F172A">• Multi-Hazard Risk Meter</text>
+      <text x="10" y="108" font-size="8.5" font-weight="600" fill="#0F172A">• Auto-Refresh (Polling)</text>
+      <text x="10" y="124" font-size="8.5" font-style="italic" fill="#0284C7">index.php / dashboard.php</text>
+    </g>
+
+    <!-- Subcomponent: Progressive Web App (Mobile) -->
+    <g transform="translate(15, 215)">
+      <rect x="0" y="0" width="170" height="135" rx="6" fill="#FFFFFF" stroke="#059669" stroke-width="1.2"/>
+      <rect x="0" y="0" width="170" height="24" rx="6" fill="#D1FAE5"/>
+      <rect x="0" y="18" width="170" height="6" fill="#D1FAE5"/>
+      <text x="85" y="16" font-size="10" font-weight="800" fill="#065F46" text-anchor="middle">MOBILE PWA INTERFACE</text>
+
+      <text x="10" y="44" font-size="8.5" font-weight="600" fill="#0F172A">• Responsive Mobile Layout</text>
+      <text x="10" y="60" font-size="8.5" font-weight="600" fill="#0F172A">• Service Worker Caching</text>
+      <text x="10" y="76" font-size="8.5" font-weight="600" fill="#0F172A">• Offline Incident Guidance</text>
+      <text x="10" y="92" font-size="8.5" font-weight="600" fill="#0F172A">• Standalone App Install</text>
+      <text x="10" y="108" font-size="8.5" font-weight="600" fill="#0F172A">• Low-Bandwidth 2G/3G Opt</text>
+      <text x="10" y="124" font-size="8.5" font-style="italic" fill="#059669">manifest.json / sw.js</text>
+    </g>
+
+    <!-- Subcomponent: Admin & CDRRMO Portal -->
+    <g transform="translate(15, 370)">
+      <rect x="0" y="0" width="170" height="145" rx="6" fill="#FFFFFF" stroke="#D97706" stroke-width="1.5"/>
+      <rect x="0" y="0" width="170" height="24" rx="6" fill="#FEF3C7"/>
+      <rect x="0" y="18" width="170" height="6" fill="#FEF3C7"/>
+      <text x="85" y="16" font-size="10" font-weight="800" fill="#92400E" text-anchor="middle">ADMIN &amp; CDRRMO C2</text>
+
+      <text x="10" y="44" font-size="8.5" font-weight="600" fill="#0F172A">• Node Health &amp; Ping Monitor</text>
+      <text x="10" y="60" font-size="8.5" font-weight="600" fill="#0F172A">• Hardware Command Trigger</text>
+      <text x="20" y="73" font-size="8" fill="#64748B">(Reboot, Pause, Calibrate)</text>
+      <text x="10" y="89" font-size="8.5" font-weight="600" fill="#0F172A">• AI Diagnostic Model View</text>
+      <text x="10" y="105" font-size="8.5" font-weight="600" fill="#0F172A">• Historical CSV/PDF Export</text>
+      <text x="10" y="121" font-size="8.5" font-weight="600" fill="#0F172A">• Maintenance Mode Toggle</text>
+      <text x="10" y="136" font-size="8.5" font-style="italic" fill="#D97706">admin.php (Auth Protected)</text>
+    </g>
+
+    <!-- Stakeholder Footer -->
+    <rect x="15" y="535" width="170" height="105" rx="6" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+    <text x="22" y="555" font-size="8.5" font-weight="700" fill="#1E40AF">END USERS &amp; ACTORS:</text>
+    <text x="22" y="572" font-size="8" fill="#1E3A8A">• Borongan City CDRRMO</text>
+    <text x="22" y="587" font-size="8" fill="#1E3A8A">• Barangay Health Workers</text>
+    <text x="22" y="602" font-size="8" fill="#1E3A8A">• Maypangdan Residents</text>
+    <text x="22" y="618" font-size="8" fill="#1E3A8A">• Academic &amp; NGO Researchers</text>
+  </g>
+
+  <!-- ==================== INTER-TIER DATA PIPELINES (ARROWS) ==================== -->
+  
+  <!-- Flow 1: Tier 1 to Tier 2 (HTTP POST Telemetry) -->
+  <line x1="250" y1="200" x2="285" y2="200" stroke="#0F172A" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <text x="267" y="190" font-size="8.5" font-weight="700" fill="#0F172A" text-anchor="middle">HTTP POST</text>
+  <text x="267" y="215" font-size="7.5" fill="#475569" text-anchor="middle">Wi-Fi (JSON)</text>
+
+  <!-- Flow 2: Tier 2 C2 return to Tier 1 (Piggybacked commands) -->
+  <line x1="285" y1="450" x2="250" y2="450" stroke="#D97706" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrow-amber)"/>
+  <text x="267" y="440" font-size="8" font-weight="700" fill="#D97706" text-anchor="middle">C2 Response</text>
+  <text x="267" y="465" font-size="7.5" fill="#B45309" text-anchor="middle">ACK / Control</text>
+
+  <!-- Flow 3: Tier 2 Ingestion to Tier 3 DB Ingestion -->
+  <line x1="505" y1="200" x2="540" y2="200" stroke="#0F172A" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <text x="522" y="190" font-size="8.5" font-weight="700" fill="#0F172A" text-anchor="middle">SQL INSERT</text>
+  <text x="522" y="215" font-size="7.5" fill="#475569" text-anchor="middle">telemetry_raw</text>
+
+  <!-- Flow 4: Tier 3 AI to Tier 3 DB (Bidirectional Internal Loop) -->
+  <line x1="645" y1="205" x2="645" y2="220" stroke="#7C3AED" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Flow 5: Tier 3 DB/AI to Tier 4 Web Clients (JSON Telemetry & Predictions) -->
+  <line x1="780" y1="200" x2="810" y2="200" stroke="#2563EB" stroke-width="2.5" marker-end="url(#arrow-blue)"/>
+  <text x="795" y="190" font-size="8.5" font-weight="700" fill="#2563EB" text-anchor="middle">REST API</text>
+  <text x="795" y="215" font-size="7.5" fill="#1D4ED8" text-anchor="middle">Live Feeds</text>
+
+  <!-- Flow 6: Tier 4 Admin C2 to Tier 2 Command Queue -->
+  <path d="M 810 440 L 780 440 L 780 480 L 505 480" fill="none" stroke="#D97706" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrow-amber)"/>
+  <text x="645" y="472" font-size="8.5" font-weight="700" fill="#D97706" text-anchor="middle">Admin C2 Queue Request (REBOOT / CALIBRATE / PAUSE)</text>
+
+  <!-- Flow 7: Tier 4 Diagnostics to Tier 3 Models -->
+  <line x1="810" y1="280" x2="780" y2="280" stroke="#059669" stroke-width="1.8" stroke-dasharray="3,3" marker-end="url(#arrow)"/>
+  <text x="795" y="272" font-size="7.5" font-weight="600" fill="#059669" text-anchor="middle">Query Logs</text>
+
+  <!-- Legend Bar at Bottom -->
+  <rect x="40" y="745" width="970" height="24" rx="4" fill="#F1F5F9" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="50" y="761" font-size="9" font-weight="700" fill="#1E293B">COMMUNICATION PROTOCOLS:</text>
+  <line x1="220" y1="757" x2="250" y2="757" stroke="#0F172A" stroke-width="2.5"/>
+  <text x="256" y="761" font-size="8.5" fill="#334155">Telemetry Ingestion (HTTP/JSON)</text>
+  <line x1="430" y1="757" x2="460" y2="757" stroke="#2563EB" stroke-width="2.5"/>
+  <text x="466" y="761" font-size="8.5" fill="#334155">Client Dashboard Data API (JSON/Polling)</text>
+  <line x1="680" y1="757" x2="710" y2="757" stroke="#D97706" stroke-width="2" stroke-dasharray="4,3"/>
+  <text x="716" y="761" font-size="8.5" fill="#D97706">Command &amp; Control Reverse Channel (C2)</text>
+</svg>

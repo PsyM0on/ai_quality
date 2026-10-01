@@ -37,9 +37,13 @@ CREATE TABLE `ai_predictions` (
   `is_anomaly` tinyint(1) DEFAULT 0,
   `anomaly_severity` varchar(20) DEFAULT NULL,
   `cluster_label` varchar(30) DEFAULT NULL,
+  `telemetry_id` bigint(20) DEFAULT NULL,
+  `device_id` int(11) DEFAULT NULL,
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
-  KEY `idx_pred_timestamp` (`timestamp`)
+  KEY `idx_pred_timestamp` (`timestamp`),
+  UNIQUE KEY `uq_prediction_telemetry` (`telemetry_id`),
+  KEY `idx_prediction_device` (`device_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14539 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -78,6 +82,19 @@ CREATE TABLE `devices` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+CREATE TABLE `device_commands` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `device_id` int(11) NOT NULL,
+  `command` varchar(40) NOT NULL,
+  `status` enum('pending','delivered','acknowledged','cancelled') NOT NULL DEFAULT 'pending',
+  `acknowledgement` varchar(500) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `delivered_at` timestamp NULL DEFAULT NULL,
+  `acknowledged_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`), KEY `idx_command_poll` (`device_id`,`status`,`id`),
+  CONSTRAINT `fk_command_device` FOREIGN KEY (`device_id`) REFERENCES `devices` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 --
 -- Dumping data for table `devices`
 --
@@ -99,7 +116,7 @@ CREATE TABLE `telemetry_hourly` (
   `hum_avg` float DEFAULT NULL,
   `pm10_avg` float DEFAULT NULL,
   `aqi_max` int(11) DEFAULT NULL,
-  `hour_timestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `hour_timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_device_hour` (`device_id`,`hour_timestamp`),
   CONSTRAINT `telemetry_hourly_ibfk_1` FOREIGN KEY (`device_id`) REFERENCES `devices` (`id`)
@@ -128,6 +145,9 @@ CREATE TABLE `telemetry_raw` (
   CONSTRAINT `telemetry_raw_ibfk_1` FOREIGN KEY (`device_id`) REFERENCES `devices` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=18401 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+ALTER TABLE `ai_predictions`
+  ADD CONSTRAINT `fk_prediction_telemetry` FOREIGN KEY (`telemetry_id`) REFERENCES `telemetry_raw` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_prediction_device` FOREIGN KEY (`device_id`) REFERENCES `devices` (`id`);
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

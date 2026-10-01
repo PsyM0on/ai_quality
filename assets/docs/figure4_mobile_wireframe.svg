@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 960" width="100%" height="100%" style="background:#ffffff; font-family:'Segoe UI', -apple-system, sans-serif;">
+  <defs>
+    <!-- Blueprint grid pattern -->
+    <pattern id="grid-mobile" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#F1F5F9" stroke-width="1"/>
+    </pattern>
+    <filter id="phone-shadow" x="-5%" y="-3%" width="110%" height="108%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-opacity="0.12" flood-color="#0F172A"/>
+    </filter>
+  </defs>
+
+  <!-- Background Grid -->
+  <rect width="620" height="960" fill="url(#grid-mobile)"/>
+
+  <!-- Figure Title -->
+  <text x="50" y="32" font-size="15" font-weight="800" fill="#0F172A" letter-spacing="0.04em">FIGURE 4. MOBILE PROGRESSIVE WEB APP (PWA) WIREFRAME</text>
+  <text x="50" y="50" font-size="11" font-weight="500" fill="#64748B">Planned Mobile Interface Blueprint for On-the-Go Air Quality &amp; Public Health Alerts</text>
+
+  <!-- ==================== SMARTPHONE FRAME ==================== -->
+  <g transform="translate(120, 68)" filter="url(#phone-shadow)">
+    <!-- Outer Bezel -->
+    <rect x="0" y="0" width="380" height="850" rx="36" fill="#FFFFFF" stroke="#0F172A" stroke-width="3"/>
+    
+    <!-- Speaker & Camera Notch -->
+    <path d="M 130 0 L 250 0 Q 250 18 238 18 L 142 18 Q 130 18 130 0 Z" fill="#0F172A"/>
+    <circle cx="210" cy="8" r="3.5" fill="#64748B"/>
+    <line x1="165" y1="8" x2="195" y2="8" stroke="#64748B" stroke-width="2" stroke-linecap="round"/>
+
+    <!-- Screen Area Boundary -->
+    <rect x="14" y="24" width="352" height="802" rx="20" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1"/>
+
+    <!-- Top App Bar -->
+    <rect x="14" y="24" width="352" height="52" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+    
+    <!-- Brand / Title -->
+    <circle cx="42" cy="50" r="10" fill="#E2E8F0" stroke="#0F172A" stroke-width="1.2"/>
+    <text x="60" y="55" font-size="14" font-weight="800" fill="#0F172A">Eco Quality</text>
+    
+    <!-- Action Icons -->
+    <circle cx="305" cy="50" r="12" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+    <text x="305" y="54" font-size="11" text-anchor="middle" fill="#0F172A">🌙</text>
+    
+    <rect x="328" y="42" width="22" height="16" rx="3" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+    <line x1="332" y1="46" x2="346" y2="46" stroke="#0F172A" stroke-width="1.2"/>
+    <line x1="332" y1="50" x2="346" y2="50" stroke="#0F172A" stroke-width="1.2"/>
+    <line x1="332" y1="54" x2="346" y2="54" stroke="#0F172A" stroke-width="1.2"/>
+
+    <!-- Mobile Segmented Tabs -->
+    <rect x="28" y="86" width="324" height="32" rx="6" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1"/>
+    <rect x="30" y="88" width="158" height="28" rx="5" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.2"/>
+    <text x="109" y="106" font-size="11" font-weight="700" fill="#0F172A" text-anchor="middle">Overview</text>
+    <text x="270" y="106" font-size="11" font-weight="600" fill="#64748B" text-anchor="middle">Diagnostics</text>
+
+    <!-- Station Chip -->
+    <rect x="28" y="128" width="220" height="22" rx="11" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1"/>
+    <circle cx="40" cy="139" r="3" fill="#0F172A"/>
+    <text x="50" y="142" font-size="9" font-weight="600" fill="#0F172A">Maypangdan Bridge • ONLINE</text>
+
+    <!-- Main AQI Gauge Card -->
+    <rect x="28" y="158" width="324" height="160" rx="8" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5"/>
+    <text x="42" y="178" font-size="9" font-weight="800" fill="#64748B" letter-spacing="0.05em">AIR QUALITY INDEX (5-MIN)</text>
+    
+    <!-- Circular Gauge -->
+    <circle cx="100" cy="242" r="44" fill="none" stroke="#E2E8F0" stroke-width="10"/>
+    <path d="M 64 270 A 44 44 0 1 1 136 270" fill="none" stroke="#0F172A" stroke-width="10" stroke-linecap="round"/>
+    <text x="100" y="246" font-size="24" font-weight="800" fill="#0F172A" text-anchor="middle">22</text>
+    <rect x="80" y="254" width="40" height="14" rx="7" fill="#0F172A"/>
+    <text x="100" y="264" font-size="7.5" font-weight="700" fill="#FFFFFF" text-anchor="middle">GOOD</text>
+
+    <!-- Guidance Mini Box -->
+    <rect x="160" y="194" width="180" height="74" rx="6" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1"/>
+    <text x="170" y="210" font-size="8.5" font-weight="800" fill="#0F172A">HEALTH GUIDANCE</text>
+    <text x="170" y="225" font-size="8" fill="#64748B">Air quality is ideal.</text>
+    <text x="170" y="238" font-size="8" fill="#64748B">Safe for regular outdoor</text>
+    <text x="170" y="251" font-size="8" fill="#64748B">activities and exercise.</text>
+
+    <text x="42" y="306" font-size="8" font-weight="600" fill="#64748B">Standard: DENR DAO 2000-81 (RA 8749)</text>
+
+    <!-- 3-Hour Forecast Strip -->
+    <rect x="28" y="328" width="324" height="106" rx="8" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5"/>
+    <text x="42" y="346" font-size="9" font-weight="800" fill="#64748B" letter-spacing="0.05em">3-HOUR PREDICTIVE OUTLOOK</text>
+
+    <!-- 3 Mini Forecast Cards -->
+    <rect x="42" y="356" width="92" height="66" rx="6" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1"/>
+    <text x="88" y="372" font-size="8.5" font-weight="700" fill="#64748B" text-anchor="middle">+1 HOUR</text>
+    <text x="88" y="396" font-size="16" font-weight="800" fill="#0F172A" text-anchor="middle">20</text>
+    <text x="88" y="412" font-size="7.5" font-weight="700" fill="#64748B" text-anchor="middle">Good</text>
+
+    <rect x="144" y="356" width="92" height="66" rx="6" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1"/>
+    <text x="190" y="372" font-size="8.5" font-weight="700" fill="#64748B" text-anchor="middle">+2 HOURS</text>
+    <text x="190" y="396" font-size="16" font-weight="800" fill="#0F172A" text-anchor="middle">18</text>
+    <text x="190" y="412" font-size="7.5" font-weight="700" fill="#64748B" text-anchor="middle">Good</text>
+
+    <rect x="246" y="356" width="92" height="66" rx="6" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1"/>
+    <text x="292" y="372" font-size="8.5" font-weight="700" fill="#64748B" text-anchor="middle">+3 HOURS</text>
+    <text x="292" y="396" font-size="16" font-weight="800" fill="#0F172A" text-anchor="middle">24</text>
+    <text x="292" y="412" font-size="7.5" font-weight="700" fill="#64748B" text-anchor="middle">Good</text>
+
+    <!-- Stacked Telemetry Cards -->
+    <!-- Temp & Hum Row -->
+    <rect x="28" y="444" width="156" height="74" rx="8" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5"/>
+    <text x="38" y="462" font-size="8" font-weight="800" fill="#64748B">TEMP (DHT22)</text>
+    <text x="38" y="488" font-size="18" font-weight="800" fill="#0F172A">26.4 °C</text>
+    <path d="M 38 506 Q 70 496 100 502 T 160 498" fill="none" stroke="#0F172A" stroke-width="1.4"/>
+
+    <rect x="196" y="444" width="156" height="74" rx="8" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5"/>
+    <text x="206" y="462" font-size="8" font-weight="800" fill="#64748B">HUMIDITY</text>
+    <text x="206" y="488" font-size="18" font-weight="800" fill="#0F172A">68 % RH</text>
+    <path d="M 206 506 Q 238 510 268 498 T 330 502" fill="none" stroke="#0F172A" stroke-width="1.4"/>
+
+    <!-- PM10 & Gas Row -->
+    <rect x="28" y="528" width="156" height="74" rx="8" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5"/>
+    <text x="38" y="546" font-size="8" font-weight="800" fill="#64748B">PM10 (PMS5003)</text>
+    <text x="38" y="572" font-size="18" font-weight="800" fill="#0F172A">24.1 µg/m³</text>
+    <path d="M 38 590 Q 70 598 100 584 T 160 592" fill="none" stroke="#0F172A" stroke-width="1.4"/>
+
+    <rect x="196" y="528" width="156" height="74" rx="8" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5"/>
+    <text x="206" y="546" font-size="8" font-weight="800" fill="#64748B">GAS CONTAMINANTS</text>
+    <text x="206" y="572" font-size="18" font-weight="800" fill="#0F172A">254 ADC</text>
+    <path d="M 206 590 Q 238 584 268 590 T 330 586" fill="none" stroke="#0F172A" stroke-width="1.4"/>
+
+    <!-- Mini Sensor Chart -->
+    <rect x="28" y="612" width="324" height="136" rx="8" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5"/>
+    <text x="42" y="630" font-size="9" font-weight="800" fill="#64748B">24-HOUR SENSOR HISTORY</text>
+    
+    <line x1="42" y1="710" x2="338" y2="710" stroke="#CBD5E1" stroke-width="1"/>
+    <path d="M 42 696 Q 100 670 170 690 T 260 675 T 338 680" fill="none" stroke="#0F172A" stroke-width="2"/>
+    <path d="M 42 704 Q 100 688 170 700 T 260 688 T 338 694" fill="none" stroke="#64748B" stroke-width="1.2" stroke-dasharray="3,2"/>
+    <text x="42" y="726" font-size="8" fill="#64748B">00:00</text>
+    <text x="180" y="726" font-size="8" fill="#64748B" text-anchor="middle">12:00</text>
+    <text x="338" y="726" font-size="8" fill="#64748B" text-anchor="end">NOW</text>
+
+    <!-- Bottom Navigation Bar (Matching Page 38 Description) -->
+    <rect x="14" y="764" width="352" height="62" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+    
+    <!-- Tab 1: Dashboard (Active) -->
+    <circle cx="72" cy="788" r="8" fill="#0F172A"/>
+    <text x="72" y="814" font-size="9.5" font-weight="700" fill="#0F172A" text-anchor="middle">Dashboard</text>
+
+    <!-- Tab 2: History -->
+    <circle cx="190" cy="788" r="8" fill="none" stroke="#64748B" stroke-width="1.5"/>
+    <text x="190" y="814" font-size="9.5" font-weight="600" fill="#64748B" text-anchor="middle">History</text>
+
+    <!-- Tab 3: Export -->
+    <rect x="298" y="780" width="16" height="16" rx="3" fill="none" stroke="#64748B" stroke-width="1.5"/>
+    <text x="306" y="814" font-size="9.5" font-weight="600" fill="#64748B" text-anchor="middle">Export</text>
+
+    <!-- Home Indicator -->
+    <rect x="125" y="836" width="130" height="4" rx="2" fill="#CBD5E1"/>
+  </g>
+</svg>

@@ -1,0 +1,10 @@
+Options -Indexes
+RewriteEngine On
+# Preserve bearer credentials for PHP on Apache configurations that consume
+# the Authorization header before populating HTTP_AUTHORIZATION.
+SetEnvIf Authorization "(.+)" HTTP_AUTHORIZATION=$1
+# Internal files must never be served, even if an extension is not handled by PHP.
+RewriteRule ^(?:\.git|\.venv|includes|ai|storage|tests|scripts|migrations|deploy|firmware)(?:/|$) - [F,L,NC]
+<FilesMatch "(^\.|\.(sql|sh|bat|md|json\.example|ini|log|joblib)$|^requirements\.txt$)">
+    Require all denied
+</FilesMatch>

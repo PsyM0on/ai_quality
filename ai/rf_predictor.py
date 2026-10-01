@@ -19,6 +19,7 @@ import warnings
 import pandas as pd
 import numpy as np
 import joblib
+import argparse
 
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LinearRegression
@@ -32,11 +33,15 @@ warnings.filterwarnings("ignore")
 sys.path.insert(0, os.path.dirname(__file__))
 from utils import get_conn, get_category, get_color
 
-MODELS_DIR = os.path.join(os.path.dirname(__file__), 'models')
-RF_MODEL_PATH = os.path.join(MODELS_DIR, 'rf_model.joblib')
-RF_SCALER_PATH = os.path.join(MODELS_DIR, 'rf_scaler.joblib')
-RF_FEATURES_PATH = os.path.join(MODELS_DIR, 'rf_features.joblib')
-RF_METRICS_PATH = os.path.join(MODELS_DIR, 'rf_metrics.json')
+_parser = argparse.ArgumentParser()
+_parser.add_argument('--device-id', type=int, required=True)
+DEVICE_ID = _parser.parse_args().device_id
+
+MODELS_DIR = os.environ.get('AQ_MODEL_DIR', os.path.join(os.path.dirname(__file__), 'models'))
+RF_MODEL_PATH = os.path.join(MODELS_DIR, f'rf_model_device_{DEVICE_ID}.joblib')
+RF_SCALER_PATH = os.path.join(MODELS_DIR, f'rf_scaler_device_{DEVICE_ID}.joblib')
+RF_FEATURES_PATH = os.path.join(MODELS_DIR, f'rf_features_device_{DEVICE_ID}.joblib')
+RF_METRICS_PATH = os.path.join(MODELS_DIR, f'rf_metrics_device_{DEVICE_ID}.json')
 
 DEFAULT_FEATURES = [
     'temp', 'hum', 'pm10', 'mq135', 
@@ -80,8 +85,8 @@ def get_fallback_payload(base_aqi=42, model_note="Statistical Baseline"):
     cat = get_category(base)
     col = get_color(base)
     return {
-        "model": "RandomForest",
-        "n_estimators": 100,
+        "model": "Persistence baseline",
+        "n_estimators": 0,
         "forecast_1h": base,
         "forecast_2h": base,
         "forecast_3h": base,
@@ -94,19 +99,14 @@ def get_fallback_payload(base_aqi=42, model_note="Statistical Baseline"):
         "trend": "stable",
         "trend_msg": f"Projections indicate steady air quality across the next 3 hours ({model_note}).",
         "confidence": {
-            "r2_score": 0.952,
-            "mae_rf": 2.74,
-            "mae_lr": 14.55,
-            "improvement_pct": 81.2
+            "r2_score": None,
+            "mae_rf": None,
+            "mae_lr": None,
+            "improvement_pct": None
         },
-        "feature_importance": [
-            {"feature": "pm10", "importance": 0.42},
-            {"feature": "rolling_avg_1h", "importance": 0.28},
-            {"feature": "hour_of_day", "importance": 0.18},
-            {"feature": "hum", "importance": 0.12}
-        ],
+        "feature_importance": [],
         "model_info": {
-            "training_samples": 2017,
+            "training_samples": 0,
             "features_used": 10,
             "model_age_minutes": 0,
             "mode": model_note
@@ -128,11 +128,11 @@ def main():
                 AVG(mq135) as mq135, 
                 AVG(aqi) as aqi
             FROM telemetry_raw
-            WHERE timestamp >= NOW() - INTERVAL 7 DAY
+            WHERE device_id = %s AND timestamp >= NOW() - INTERVAL 7 DAY
             GROUP BY time_bucket
             ORDER BY time_bucket ASC
         """
-        df = pd.read_sql(query_recent, conn)
+        df = pd.read_sql(query_recent, conn, params=[DEVICE_ID])
         
         # Tier 2: If fewer than 50 buckets (e.g. sensor was powered down or clock difference),
         # query relative to the latest timestamp recorded in telemetry_raw
@@ -146,12 +146,12 @@ def main():
                     AVG(mq135) as mq135, 
                     AVG(aqi) as aqi
                 FROM telemetry_raw
-                WHERE timestamp >= (SELECT MAX(timestamp) FROM telemetry_raw) - INTERVAL 7 DAY
+                WHERE device_id = %s AND timestamp >= (SELECT MAX(timestamp) FROM telemetry_raw WHERE device_id = %s) - INTERVAL 7 DAY
                 GROUP BY time_bucket
                 ORDER BY time_bucket ASC
             """
             try:
-                df = pd.read_sql(query_rel, conn)
+                df = pd.read_sql(query_rel, conn, params=[DEVICE_ID, DEVICE_ID])
             except Exception:
                 pass
 
@@ -165,18 +165,18 @@ def main():
                     AVG(pm10) as pm10, 
                     AVG(mq135) as mq135, 
                     AVG(aqi) as aqi
-                FROM (SELECT * FROM telemetry_raw ORDER BY id DESC LIMIT 1000) AS sub
+                FROM (SELECT * FROM telemetry_raw WHERE device_id = %s ORDER BY id DESC LIMIT 1000) AS sub
                 GROUP BY time_bucket
                 ORDER BY time_bucket ASC
             """
             try:
-                df = pd.read_sql(query_limit, conn)
+                df = pd.read_sql(query_limit, conn, params=[DEVICE_ID])
             except Exception:
                 pass
 
         # Also get absolute latest reading directly for inference grounding
         cur = conn.cursor(dictionary=True)
-        cur.execute("SELECT * FROM telemetry_raw ORDER BY id DESC LIMIT 1")
+        cur.execute("SELECT * FROM telemetry_raw WHERE device_id = %s ORDER BY id DESC LIMIT 1", (DEVICE_ID,))
         latest_db_record = cur.fetchone()
         cur.close()
         conn.close()
@@ -190,7 +190,7 @@ def main():
 
         # If data is completely empty and no records exist in DB
         if df.empty and not latest_db_record:
-            print(json.dumps(get_fallback_payload(42, "No sensor data recorded")))
+            print(json.dumps({'error': 'No sensor data recorded'}))
             return
 
         features = DEFAULT_FEATURES
@@ -205,7 +205,9 @@ def main():
             df['rolling_avg_3h'] = df['aqi'].rolling(window=36, min_periods=1).mean()
             df['pm10_rate'] = df['pm10'].diff().fillna(0)
             df['aqi_rate'] = df['aqi'].diff().fillna(0)
-            df['target'] = df['aqi'].shift(-12)
+            # Match an actual hour ahead instead of twelve rows across gaps.
+            lookup = df.set_index('time_bucket')['aqi']
+            df['target'] = (df['time_bucket'] + 3600).map(lookup)
             train_df = df.dropna(subset=['target'])
         else:
             train_df = pd.DataFrame()
@@ -227,10 +229,10 @@ def main():
 
         rf = None
         scaler = None
-        mae_rf = 2.74
-        mae_lr = 14.55
-        r2 = 0.952
-        improvement_pct = 81.2
+        mae_rf = float('nan')
+        mae_lr = float('nan')
+        r2 = float('nan')
+        improvement_pct = float('nan')
         feat_imp = [
             {"feature": "pm10", "importance": 0.42},
             {"feature": "rolling_avg_1h", "importance": 0.28},
@@ -262,18 +264,22 @@ def main():
                 y = train_df['target']
                 
                 new_scaler = StandardScaler()
-                X_scaled = new_scaler.fit_transform(X)
+                # Evaluate on later observations with a 1h purge to prevent target leakage.
+                split = max(15, int(len(X) * 0.8))
+                training_end = max(1, split - 12)
+                new_scaler.fit(X.iloc[:training_end])
+                X_scaled = new_scaler.transform(X)
                 
                 new_rf = RandomForestRegressor(n_estimators=100, random_state=42, n_jobs=-1)
-                new_rf.fit(X_scaled, y)
+                new_rf.fit(X_scaled[:training_end], y.iloc[:training_end])
                 
                 lr = LinearRegression(n_jobs=-1)
-                lr.fit(X_scaled, y)
+                lr.fit(X_scaled[:training_end], y.iloc[:training_end])
                 
-                y_pred_rf = new_rf.predict(X_scaled)
-                mae_rf = float(mean_absolute_error(y, y_pred_rf))
-                r2 = float(r2_score(y, y_pred_rf))
-                mae_lr = float(mean_absolute_error(y, lr.predict(X_scaled)))
+                y_pred_rf = new_rf.predict(X_scaled[split:])
+                mae_rf = float(mean_absolute_error(y.iloc[split:], y_pred_rf))
+                r2 = float(r2_score(y.iloc[split:], y_pred_rf))
+                mae_lr = float(mean_absolute_error(y.iloc[split:], lr.predict(X_scaled[split:])))
                 
                 if mae_lr > 0:
                     improvement_pct = round(((mae_lr - mae_rf) / mae_lr) * 100, 1)
@@ -282,6 +288,9 @@ def main():
                 feat_imp = [{"feature": f, "importance": float(imp)} for f, imp in zip(features, importances)]
                 feat_imp.sort(key=lambda x: x['importance'], reverse=True)
 
+                # Refit on all history after measuring held-out performance.
+                X_scaled = new_scaler.fit_transform(X)
+                new_rf.fit(X_scaled, y)
                 # Persist model and metrics atomically
                 atomic_joblib_dump(new_rf, RF_MODEL_PATH)
                 atomic_joblib_dump(new_scaler, RF_SCALER_PATH)
@@ -383,14 +392,14 @@ def main():
                 "trend": trend,
                 "trend_msg": trend_msg,
                 "confidence": {
-                    "r2_score": round(float(r2), 3),
-                    "mae_rf": round(float(mae_rf), 2),
-                    "mae_lr": round(float(mae_lr), 2),
-                    "improvement_pct": round(float(improvement_pct), 1)
+                    "r2_score": round(float(r2), 3) if np.isfinite(r2) else None,
+                    "mae_rf": round(float(mae_rf), 2) if np.isfinite(mae_rf) else None,
+                    "mae_lr": round(float(mae_lr), 2) if np.isfinite(mae_lr) else None,
+                    "improvement_pct": round(float(improvement_pct), 1) if np.isfinite(improvement_pct) else None
                 },
                 "feature_importance": feat_imp,
                 "model_info": {
-                    "training_samples": len(train_df) if len(train_df) > 0 else 2017,
+                    "training_samples": len(train_df),
                     "features_used": len(features),
                     "model_age_minutes": model_age_minutes
                 }
@@ -403,11 +412,8 @@ def main():
             return
 
     except Exception as e:
-        # Ultimate fail-safe: Never break JSON output contract
-        try:
-            print(json.dumps(get_fallback_payload(42, f"Failsafe: {str(e)[:40]}")))
-        except Exception:
-            print(json.dumps(get_fallback_payload(42, "Emergency Recovery")))
+        print(str(e), file=sys.stderr)
+        print(json.dumps({'error': 'Forecast unavailable'}))
 
 if __name__ == "__main__":
     main()

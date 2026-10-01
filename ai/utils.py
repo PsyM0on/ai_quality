@@ -3,15 +3,31 @@ utils.py — Shared utilities for the AI-Driven Environmental Monitoring System.
 Import from this module instead of copy-pasting logic across scripts.
 """
 
+import os
+import json
+from pathlib import Path
 import mysql.connector
+
+config_path = Path(os.environ.get('AQ_CONFIG_FILE', str(Path(__file__).resolve().parents[3] / 'private/ai_quality/config.json') if os.name == 'nt' else '/etc/ai_quality/config.json'))
+if config_path.is_file():
+    for key, value in json.loads(config_path.read_text(encoding='utf-8')).items():
+        if key.startswith('AQ_'):
+            os.environ.setdefault(key, str(value))
 
 # ── DATABASE ──────────────────────────────────────────────────────────────────
 
-DB = dict(host="localhost", user="aq_user", password="aq_secure_2024", database="air_quality")
+DB = dict(
+    host=os.environ.get("AQ_DB_HOST", "localhost"),
+    user=os.environ.get("AQ_DB_USER", "aq_user"),
+    password=os.environ.get("AQ_DB_PASSWORD"),
+    database=os.environ.get("AQ_DB_NAME", "air_quality"),
+)
 
 def get_conn():
     """Return a new MySQL connection using project credentials."""
-    return mysql.connector.connect(**DB)
+    if not DB["password"]:
+        raise RuntimeError("AQ_DB_PASSWORD is not configured")
+    return mysql.connector.connect(**DB, time_zone='+08:00', connection_timeout=5)
 
 
 # ── AQI HELPERS ───────────────────────────────────────────────────────────────
@@ -28,12 +44,13 @@ _AQI_BREAKPOINTS = [
 
 def calc_aqi(pm10: float) -> int:
     """Compute AQI from PM10 using Philippine Clean Air Act (RA 8749 / DENR DAO 2000-81) breakpoints."""
+    pm10 = max(0, int(pm10))
     if pm10 > 504.0:
         return 500
     for c_low, c_high, i_low, i_high in _AQI_BREAKPOINTS:
         if c_low <= pm10 <= c_high:
             aqi = (i_high - i_low) / (c_high - c_low) * (pm10 - c_low) + i_low
-            return round(int(aqi))
+            return int(aqi + 0.5)
     return 500  # Cap at Emergency
 
 

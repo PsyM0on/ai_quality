@@ -1,267 +1,91 @@
-"""
-Anomaly Detection Module using Isolation Forest and Z-Score Explainability
-========================================================================
-
-For the capstone defense:
-Algorithm Details:
-- Isolation Forest (IF): An ensemble algorithm that detects anomalies using random 
-  partitioning trees. It isolates observations by randomly selecting a feature and then 
-  randomly selecting a split value between the maximum and minimum values of the selected feature.
-- Anomaly Score: The anomaly score is based on the average path length from the root node to the 
-  terminating node. Shorter paths indicate anomalies because fewer random partitions were needed 
-  to isolate them.
-- Contamination Parameter: Set to 0.05, representing the expected proportion of outliers in the dataset.
-- Explainability Layer: While IF detects multi-dimensional anomalies, per-feature Z-scores 
-  are used as a secondary explainability layer to identify which specific sensors 
-  contributed to the anomaly (e.g., "Isolation Forest detects, Z-scores explain").
-"""
-
-import pandas as pd
-import numpy as np
-import json
-import warnings
-import time
-import os
-import sys
+"""Per-device anomaly detection using a historical-only baseline."""
+import argparse, json, math, os, sys, tempfile, time
 import joblib
-
+import numpy as np
+import pandas as pd
 from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import StandardScaler
-
-warnings.filterwarnings("ignore")
 
 sys.path.insert(0, os.path.dirname(__file__))
 from utils import get_conn
 
-# Paths for model persistence
-MODEL_DIR = os.path.join(os.path.dirname(__file__), "models")
-os.makedirs(MODEL_DIR, exist_ok=True)
-MODEL_PATH = os.path.join(MODEL_DIR, "iforest_model.joblib")
-SCALER_PATH = os.path.join(MODEL_DIR, "iforest_scaler.joblib")
+FEATURES = ["pm10", "mq135", "temp", "hum"]
+MODEL_DIR = os.environ.get('AQ_MODEL_DIR', os.path.join(os.path.dirname(__file__), "models"))
 
-def atomic_joblib_dump(obj, target_path):
-    """Safely write joblib model using atomic file rename to prevent concurrency corruption."""
-    os.makedirs(os.path.dirname(target_path), exist_ok=True)
-    tmp_path = target_path + ".tmp"
+def atomic_dump(obj, target):
+    os.makedirs(os.path.dirname(target), exist_ok=True)
+    fd, temporary = tempfile.mkstemp(prefix=os.path.basename(target), dir=os.path.dirname(target))
+    os.close(fd)
     try:
-        joblib.dump(obj, tmp_path)
-        os.replace(tmp_path, target_path)
-    except Exception:
-        if os.path.exists(tmp_path):
-            try:
-                os.remove(tmp_path)
-            except Exception:
-                pass
+        joblib.dump(obj, temporary)
+        os.replace(temporary, target)
+    finally:
+        if os.path.exists(temporary): os.remove(temporary)
 
-# ── DB CONNECTION
-conn = get_conn()
-# Increased window to 500 rows for better Isolation Forest training
-query = "SELECT temp, hum, mq135, pm10, aqi, timestamp FROM telemetry_raw ORDER BY id DESC LIMIT 500"
-df = pd.read_sql(query, conn)
-conn.close()
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--device-id", type=int, required=True)
+    args = parser.parse_args()
+    if args.device_id < 1: raise ValueError("device-id must be positive")
 
-df = df.dropna()
-df = df[df['pm10'] >= 0]
-
-if len(df) < 10:
-    print(json.dumps({"error": "Not enough data for anomaly detection. Need at least 10 readings."}))
-    sys.exit()
-
-features = ['pm10', 'mq135', 'aqi', 'temp', 'hum']
-
-# Check model age
-model_age_minutes = 0
-train_model = True
-if os.path.exists(MODEL_PATH) and os.path.exists(SCALER_PATH):
-    file_mtime = os.path.getmtime(MODEL_PATH)
-    model_age_minutes = (time.time() - file_mtime) / 60
-    if model_age_minutes < 30:
-        train_model = False
-
-X = df[features].values
-
-if train_model:
-    scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(X)
-    
-    # Train Isolation Forest
-    model = IsolationForest(contamination=0.05, n_estimators=100, random_state=42, n_jobs=-1)
-    model.fit(X_scaled)
-    
-    atomic_joblib_dump(model, MODEL_PATH)
-    atomic_joblib_dump(scaler, SCALER_PATH)
-    model_age_minutes = 0
-else:
+    conn = get_conn()
     try:
-        model = joblib.load(MODEL_PATH)
-        scaler = joblib.load(SCALER_PATH)
-        X_scaled = scaler.transform(X)
-    except Exception:
-        scaler = StandardScaler()
-        X_scaled = scaler.fit_transform(X)
+        df = pd.read_sql(
+            "SELECT temp, hum, mq135, pm10, timestamp FROM telemetry_raw WHERE device_id = %s ORDER BY id DESC LIMIT 501",
+            conn, params=[args.device_id])
+    finally:
+        conn.close()
+    df = df.replace([np.inf, -np.inf], np.nan).dropna(subset=FEATURES)
+    df = df[(df.pm10 >= 0) & df.hum.between(0, 100)]
+    if len(df) < 51:
+        print(json.dumps({"error": "At least 51 valid readings are required."})); return
+
+    latest, history = df.iloc[0], df.iloc[1:].copy()
+    model_path = os.path.join(MODEL_DIR, f"iforest_device_{args.device_id}.joblib")
+    scaler_path = os.path.join(MODEL_DIR, f"iforest_scaler_device_{args.device_id}.joblib")
+    fresh = all(os.path.exists(p) for p in (model_path, scaler_path)) and time.time() - os.path.getmtime(model_path) < 1800
+    if fresh:
+        try: model, scaler = joblib.load(model_path), joblib.load(scaler_path)
+        except Exception: fresh = False
+    if not fresh:
+        scaler = StandardScaler().fit(history[FEATURES])
         model = IsolationForest(contamination=0.05, n_estimators=100, random_state=42, n_jobs=-1)
-        model.fit(X_scaled)
-        try:
-            atomic_joblib_dump(model, MODEL_PATH)
-            atomic_joblib_dump(scaler, SCALER_PATH)
-        except Exception:
-            pass
-        model_age_minutes = 0
+        model.fit(scaler.transform(history[FEATURES]))
+        atomic_dump(model, model_path); atomic_dump(scaler, scaler_path)
 
-# The most recent row is at index 0 because of DESC order
-latest_scaled = X_scaled[0].reshape(1, -1)
-latest = df.iloc[0]
-history = df.iloc[1:]
+    latest_x = scaler.transform(latest[FEATURES].to_frame().T)
+    prediction = int(model.predict(latest_x)[0])
+    decision_score = float(model.decision_function(latest_x)[0])
+    historical_scores = model.decision_function(scaler.transform(history[FEATURES]))
+    percentile = float(np.mean(historical_scores >= decision_score) * 100)
+    z_scores = {}
+    for col in FEATURES:
+        std = float(history[col].std())
+        delta = float(latest[col]) - float(history[col].mean())
+        # A change from a constant baseline is significant, not a zero Z-score.
+        z = delta / max(std if math.isfinite(std) else 0.0, 0.1)
+        z_scores[col] = round(z, 2)
+    flagged = [name for name, value in z_scores.items() if abs(value) > 3.5]
+    max_z = max(abs(value) for value in z_scores.values())
+    # Stable temperature or integer PM values alone are not evidence of a failed sensor.
+    sensor_stuck = all(df[col].head(20).nunique() == 1 for col in FEATURES)
+    is_anomaly = prediction == -1 or max_z > 5 or sensor_stuck
+    evidence = max(percentile, min(100.0, max_z * 15.0), 80.0 if sensor_stuck else 0.0)
+    severity = "critical" if is_anomaly and evidence >= 90 else "warning" if is_anomaly else "normal"
+    message = "Possible stuck sensor detected." if sensor_stuck else ("Anomaly in: " + ", ".join(flagged) + "." if flagged else ("Multivariate environmental anomaly detected." if is_anomaly else "No anomaly detected."))
+    source = "combustion indicator" if latest.pm10 > 155 and latest.mq135 > 500 else "undetermined"
+    source_indicator = {"type": source, "method": "unvalidated rule-based heuristic"}
+    print(json.dumps({
+        "device_id": args.device_id, "is_anomaly": bool(is_anomaly), "severity": severity, "message": message,
+        "severity_msg": message,
+        "detection_method": "historical-only Isolation Forest + Z-score",
+        "isolation_forest": {"decision_score": round(decision_score, 4), "historical_extremeness_percentile": round(percentile, 1), "anomaly_score": round(evidence, 1), "prediction": prediction},
+        "flagged": flagged, "z_scores": z_scores, "sensor_stuck": sensor_stuck,
+        "source_indicator": source_indicator,
+        "source_attribution": {"source": source, "tag": "Heuristic indicator", "confidence": None, "reasoning": "Unvalidated rule-based indicator; not source apportionment.", "recommendation": "Confirm with calibrated instruments and field inspection.", "distribution": None},
+        "latest": {key: float(latest[key]) for key in FEATURES}}))
 
-# Get Isolation Forest prediction and score
-# prediction: 1 for normal, -1 for anomaly
-prediction = int(model.predict(latest_scaled)[0])
-
-# Sklearn's decision_function returns a score: < 0 is anomaly, > 0 is normal.
-# Let's map it to an anomaly score 0-100 where 100=extreme anomaly.
-raw_score = float(model.decision_function(latest_scaled)[0])
-# raw_score typically ranges roughly between -0.5 and 0.5.
-# -0.5 -> 100, 0 -> 50, 0.5 -> 0.
-mapped_score = 50 - (raw_score * 100)
-iforest_score = max(0, min(100, mapped_score))
-
-# Z-SCORE EXPLAINABILITY
-z_scores = {}
-anomalies_z = {}
-for col in features:
-    mean = history[col].mean()
-    std = history[col].std()
-    if std == 0:
-        z = 0.0
-    else:
-        z = (latest[col] - mean) / std
-    z_scores[col] = round(float(z), 2)
-    anomalies_z[col] = abs(z) > 3.5
-
-flagged_cols = [k for k, v in anomalies_z.items() if v]
-any_z_anomaly = any(anomalies_z.values())
-max_z = max(abs(v) for v in z_scores.values())
-
-# Combined decision logic
-is_anomaly = (prediction == -1) or (max_z > 5.0)
-
-if iforest_score > 70:
-    severity = "critical"
-    severity_msg = "Significant spike detected. Readings are shifting rapidly."
-elif iforest_score > 50:
-    severity = "warning"
-    severity_msg = "Minor environmental fluctuation detected."
-else:
-    severity = "normal"
-    severity_msg = "All readings are relatively stable."
-
-# Stuck sensor check
-recent_pm_std = df['pm10'].head(10).std()
-sensor_stuck = bool(recent_pm_std < 0.05)
-
-if is_anomaly:
-    sensor_names = {"pm10": "PM10", "mq135": "VOC/MQ135", "aqi": "AQI", "temp": "Temperature", "hum": "Humidity"}
-    flag_labels = [sensor_names.get(c, c) for c in flagged_cols]
-    if flag_labels:
-        message = "Anomaly in: " + ", ".join(flag_labels) + ". " + severity_msg
-    else:
-        message = "Environmental anomaly detected. " + severity_msg
-else:
-    message = severity_msg
-
-
-# ── AI SOURCE FINGERPRINTING & ROOT-CAUSE ATTRIBUTION ────────────
-# Analyzes multi-sensor covariance, rate of change, and diurnal cycles
-# to classify the active environmental emission profile.
-try:
-    ts_val = latest.get('timestamp')
-    hour = pd.to_datetime(ts_val).hour if ts_val is not None and pd.notnull(ts_val) else time.localtime().tm_hour
-except Exception:
-    hour = time.localtime().tm_hour
-
-pm10_rate = float(latest['pm10'] - df.iloc[1]['pm10']) if len(df) > 1 else 0.0
-mq_rate = float(latest['mq135'] - df.iloc[1]['mq135']) if len(df) > 1 else 0.0
-
-is_rush_hour = (7 <= hour <= 9) or (16 <= hour <= 19)
-z_pm = z_scores.get('pm10', 0.0)
-z_mq = z_scores.get('mq135', 0.0)
-
-# Decision Matrix based on environmental signatures:
-if (z_pm > 1.8 or pm10_rate > 15) and (latest['hum'] < 82) and (z_mq > 0.8 or latest['mq135'] > 180):
-    source_type = "Biomass / Open Waste Combustion"
-    source_icon = "biomass"
-    source_tag = "Combustion Signature"
-    confidence = min(96, int(75 + abs(z_pm) * 5 + (5 if pm10_rate > 20 else 0)))
-    reasoning = f"Rapid particulate surge (rate: {pm10_rate:+.1f} µg/m³) accompanied by combustion gas signature under {latest['hum']:.0f}% humidity indicates localized open waste or biomass burning."
-    recommendation = "LGU anti-open burning enforcement; downwind residents keep windows closed."
-    distribution = {"vehicular": 18, "biomass": 72, "marine": 10}
-elif is_rush_hour and (latest['mq135'] > 160 or z_mq > 1.2 or z_pm > 1.0):
-    source_type = "Vehicular Traffic Dispersion"
-    source_icon = "traffic"
-    source_tag = "Traffic Plume"
-    confidence = min(92, int(70 + (10 if is_rush_hour else 0) + abs(z_mq) * 6))
-    reasoning = f"Synchronized elevation in gas contaminants ({latest['mq135']:.0f} ADC) and PM10 aligning with urban peak commuting hours ({hour:02d}:00)."
-    recommendation = "Traffic pacing recommended; pedestrians avoid high-density roadside corridors."
-    distribution = {"vehicular": 72, "biomass": 18, "marine": 10}
-elif latest['hum'] >= 85 and latest['pm10'] > 45 and abs(pm10_rate) < 10:
-    source_type = "Atmospheric Inversion / Humidity Trapping"
-    source_icon = "inversion"
-    source_tag = "Microclimate Trapping"
-    confidence = min(90, int(65 + (latest['hum'] - 85) * 2 + (10 if latest['temp'] < 26 else 0)))
-    reasoning = f"High relative humidity ({latest['hum']:.0f}%) suppresses atmospheric vertical mixing, trapping suspended ambient particulate matter near ground level."
-    recommendation = "Atmospheric dispersal is constrained; expect dissipation as temperature rises and humidity drops."
-    distribution = {"vehicular": 35, "biomass": 20, "marine": 45}
-elif latest['aqi'] > 100 or is_anomaly:
-    source_type = "Mixed Urban Industrial / Commercial Plume"
-    source_icon = "urban"
-    source_tag = "Urban Emissions"
-    confidence = 78
-    reasoning = f"Compound elevation across multiple environmental parameters (AQI {latest['aqi']:.0f}) indicating mixed anthropogenic urban activity."
-    recommendation = "General public health advisory in effect; sensitive groups limit prolonged outdoor activities."
-    distribution = {"vehicular": 48, "biomass": 32, "marine": 20}
-else:
-    source_type = "Clean Baseline / Normal Urban Dispersion"
-    source_icon = "clean"
-    source_tag = "Normal Dispersion"
-    confidence = 94
-    reasoning = f"Particulate concentration ({latest['pm10']:.1f} µg/m³) and gas index are well within expected baseline limits with active atmospheric dispersion."
-    recommendation = "Air quality is suitable for all regular outdoor activities."
-    distribution = {"vehicular": 30, "biomass": 12, "marine": 58}
-
-source_attribution = {
-    "source": source_type,
-    "icon": source_icon,
-    "tag": source_tag,
-    "confidence": confidence,
-    "reasoning": reasoning,
-    "recommendation": recommendation,
-    "distribution": distribution,
-    "pm10_rate": round(pm10_rate, 2),
-    "mq_rate": round(mq_rate, 2)
-}
-
-result = {
-    "source_attribution": source_attribution,
-    "is_anomaly": is_anomaly,
-    "severity": severity,
-    "severity_msg": severity_msg,
-    "message": message,
-    "detection_method": "Isolation Forest + Z-Score",
-    "isolation_forest": {
-        "anomaly_score": round(iforest_score, 1),
-        "prediction": prediction,
-        "model_age_minutes": round(model_age_minutes, 1)
-    },
-    "flagged": flagged_cols,
-    "z_scores": z_scores,
-    "sensor_stuck": sensor_stuck,
-    "latest": {
-        "pm10": float(latest['pm10']),
-        "mq135": float(latest['mq135']),
-        "aqi": float(latest['aqi']),
-        "temp": float(latest['temp']),
-        "hum": float(latest['hum'])
-    }
-}
-
-print(json.dumps(result))
+if __name__ == "__main__":
+    try: main()
+    except Exception as exc:
+        print(json.dumps({"error": "Anomaly analysis failed"})); print(str(exc), file=sys.stderr)
